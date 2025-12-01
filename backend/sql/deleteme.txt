@@ -1,10 +1,11 @@
 API da produrre:
 lista di tutti gli utenti
-lista di tutti i giochi per un dato genere
+lista di tutti i giochi per un dato genere V
 lista di tutti le recensioni di un gioco
 lista di tutti i commenti del forum di un gioco
 lista di tutti i giochi ordinati per rating
 lista di tutti i giochi ordinati per novità
+dettagio di un gioco V
 aggiunta nuovo commento
 aggiunta nuova recensione
 aggiunta nuovo utente
