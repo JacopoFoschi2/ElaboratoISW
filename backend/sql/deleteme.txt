@@ -1,17 +1,24 @@
 API da produrre:
+
+Utenti:
 lista di tutti gli utenti
+aggiunta nuovo utente
+rimozione utente
+
+Giochi:
 lista di tutti i giochi per un dato genere V
-lista di tutti le recensioni di un gioco
-lista di tutti i commenti del forum di un gioco
 lista di tutti i giochi ordinati per rating
 lista di tutti i giochi ordinati per novità
 dettagio di un gioco V
+
+Forum:
+lista di tutti i commenti del forum di un gioco
 aggiunta nuovo commento
-aggiunta nuova recensione
-aggiunta nuovo utente
 modifica commento
-modifica recensione
 rimozione commento
+
+Recensioni:
+lista di tutti le recensioni di un gioco
+aggiunta nuova recensione
+modifica recensione
 rimozione recensione
-rimozione utente
-autenticazione
