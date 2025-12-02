@@ -1,4 +1,4 @@
-import mysql, { Connection } from 'mysql2'
+import mysql, { type Connection } from 'mysql2'
 
 export const connection: Connection = mysql.createConnection({
   host: 'localhost',

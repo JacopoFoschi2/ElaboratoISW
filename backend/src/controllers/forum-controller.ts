@@ -1,4 +1,4 @@
-import { Request, Response } from "express"
+import type { Request, Response } from "express"
 import { connection } from "../utils/db-connection.js"
 
 export async function allCommentsOfGame(req: Request, res: Response) {
