@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
-import { connection } from "../utils/db_connection"
+import { connection } from "../utils/db-connection.js"
 
-export async function allUsersAndPrivileges(req: Request, res: Response) {
+export async function allReviewsOfGame(req: Request, res: Response) {
     connection.execute(
         ``,
         [],
