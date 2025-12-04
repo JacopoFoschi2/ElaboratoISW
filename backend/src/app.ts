@@ -1,8 +1,8 @@
 import express, { type Express } from "express";
-import forumRouter from "./routes/forum-router.js";
-import gamesRouter from "./routes/games-router.js";
-import usersRouter from "./routes/users-router.js";
-import reviewsRouter from "./routes/reviews-router.js";
+import forumRouter from "./routes/forum-router";
+import gamesRouter from "./routes/games-router";
+import usersRouter from "./routes/users-router";
+import reviewsRouter from "./routes/reviews-router";
 
 const app: Express = express();
 const port: number = 3000;
