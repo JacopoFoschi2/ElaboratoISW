@@ -18,7 +18,11 @@ modifica commento
 rimozione commento
 
 Recensioni:
-lista di tutti le recensioni di un gioco
+lista di tutti le recensioni di un gioco meno quella dell'utente
+recensione dell'utente
+    //queste due query coesistono permettendo di mettere in cima la
+    recensione dell'utente per poi aggiungere a seguito le altre ordinate
+    per data di pubblicazione
 aggiunta nuova recensione
 modifica recensione
 rimozione recensione
