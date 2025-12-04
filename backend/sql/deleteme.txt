@@ -7,8 +7,8 @@ rimozione utente
 
 Giochi:
 lista di tutti i giochi per un dato genere V
-lista di tutti i giochi ordinati per rating
-lista di tutti i giochi ordinati per novità
+lista di tutti i giochi ordinati per rating V
+lista di tutti i giochi ordinati per novità V
 dettagio di un gioco V
 
 Forum:
