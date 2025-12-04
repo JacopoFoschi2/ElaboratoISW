@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import * as forumController from '../controllers/forum_controller';
+import * as usersController from '../controllers/users-controller.js';
 
 const reviewsRouter = Router();
 
