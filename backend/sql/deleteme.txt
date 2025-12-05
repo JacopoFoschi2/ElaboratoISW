@@ -10,8 +10,12 @@ lista di tutti i giochi per un dato genere V
 lista di tutti i giochi ordinati per rating V
 lista di tutti i giochi ordinati per novità V
 dettagio di un gioco V
+aggiunta di un nuovo gioco
+whishlist
+owned
 
 Forum:
+lista di tutti i forum (tutti i giochi esponendo il banner piccolo)
 lista di tutti i commenti del forum di un gioco
 aggiunta nuovo commento
 modifica commento
