@@ -11,6 +11,7 @@
   "author": "Jacopo Foschi",
   "license": "ISC",
   "dependencies": {
+    "@alepertu/metacritic-api": "^2.0.4",
     "express": "^5.1.0",
     "mysql2": "^3.15.3",
     "tsx": "^4.21.0"
