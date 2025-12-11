@@ -4,7 +4,7 @@
     </header>
     <nav>
         <ul>
-            <li><router-link to="/">IMG PCMASTERRACEDB</router-link></li>
+            <li class="logo-home"><router-link to="/">IMG PCMASTERRACEDB</router-link></li>
             <li><router-link to="/">FORUM</router-link></li>
             <li><router-link to="/">BEST</router-link></li>
             <li><router-link to="/">RECENTLY RELEASED</router-link></li>
@@ -33,5 +33,11 @@
         gap: 20px;
         padding: 0;
         margin: 0;
+    }
+    .logo-home {
+        font-weight: bold;
+        font-size: 1.8em;
+        color: #FFE001;
+        background-color: black;
     }
 </style>
