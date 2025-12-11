@@ -16,5 +16,22 @@
     <main>
         <router-view />
     </main>
-
 </template>
+
+<style scoped>
+    nav{
+        display: flex;
+        background-color: #d9d9d9;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 20px;
+    }
+
+    ul{
+        list-style: none;
+        display: flex;
+        gap: 20px;
+        padding: 0;
+        margin: 0;
+    }
+</style>
