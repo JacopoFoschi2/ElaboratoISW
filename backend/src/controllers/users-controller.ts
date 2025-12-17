@@ -10,3 +10,23 @@ export async function allUsersAndPrivileges(req: Request, res: Response) {
         }
     )
 };
+
+export async function addNewUser(req: Request, res: Response) {
+    connection.execute(
+        ``,
+        [],
+        function (err, results, fields) {
+            res.json(results)
+        }
+    )
+};
+
+export async function removeUser(req: Request, res: Response) {
+    connection.execute(
+        ``,
+        [],
+        function (err, results, fields) {
+            res.json(results)
+        }
+    )
+};

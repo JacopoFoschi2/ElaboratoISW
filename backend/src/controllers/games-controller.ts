@@ -31,7 +31,97 @@ export async function allGamesOrderedByRelease(req: Request, res: Response) {
     )
 };
 
-export async function gameFromID(req: Request, res: Response) {
+export async function addGame(req: Request, res: Response) {
+    connection.execute(
+        ``,
+        [req.params["id"]],
+        function (err, results, fields) {
+            res.json(results)
+        }
+    )
+};
+
+export async function removeGame(req: Request, res: Response) {
+    connection.execute(
+        ``,
+        [req.params["id"]],
+        function (err, results, fields) {
+            res.json(results)
+        }
+    )
+};
+
+export async function allWishlistOfUser(req: Request, res: Response) {
+    connection.execute(
+        ``,
+        [req.params["id"]],
+        function (err, results, fields) {
+            res.json(results)
+        }
+    )
+};
+
+export async function checkIfInWishlist(req: Request, res: Response) {
+    connection.execute(
+        ``,
+        [req.params["id"]],
+        function (err, results, fields) {
+            res.json(results)
+        }
+    )
+};
+
+export async function addToWishlist(req: Request, res: Response) {
+    connection.execute(
+        ``,
+        [req.params["id"]],
+        function (err, results, fields) {
+            res.json(results)
+        }
+    )
+};
+
+export async function removeFromWishlist(req: Request, res: Response) {
+    connection.execute(
+        ``,
+        [req.params["id"]],
+        function (err, results, fields) {
+            res.json(results)
+        }
+    )
+};
+
+export async function allOwnedOfUser(req: Request, res: Response) {
+    connection.execute(
+        ``,
+        [req.params["id"]],
+        function (err, results, fields) {
+            res.json(results)
+        }
+    )
+};
+
+export async function checkIfOwned(req: Request, res: Response) {
+    connection.execute(
+        ``,
+        [req.params["id"]],
+        function (err, results, fields) {
+            res.json(results)
+        }
+    )
+};
+
+export async function addToOwned(req: Request, res: Response) {
+    connection.execute(
+        ``,
+        [req.params["id"]],
+        function (err, results, fields) {
+            res.json(results)
+        }
+    )
+};
+
+export async function removeFromOwned(req: Request, res: Response) {
     connection.execute(
         ``,
         [req.params["id"]],
