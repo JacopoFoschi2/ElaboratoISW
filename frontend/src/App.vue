@@ -1,14 +1,13 @@
 <template>
-    <nav class="navbar-home">
-        <ul>
-            <div class="nav-container">
-                <li class="logo-home"><router-link to="/"><img src="./assets/logo.svg" alt="Logo"></router-link></li>
+    <nav class="navbar-everywhere">
+        <ul class="nav-container">
+                <li><router-link to="/"><img src="./assets/logo.svg" alt="Logo"></router-link></li>
                 <li><router-link to="/prova">FORUM</router-link></li>
                 <li><router-link to="/">BEST</router-link></li>
                 <li><router-link to="/">RECENTLY RELEASED</router-link></li>
                 <li><router-link to="/">GENRE</router-link></li>
-                <li><router-link to="/"><img src="./assets/pfpIcon.svg" alt="User Icon"></img></router-link></li>
-            </div>
+                <li><router-link to="/"><img class="pfp-" src="./assets/pfpIcon.svg" alt="User Icon">
+                </img></router-link></li>
         </ul>
     </nav>
     <main>
@@ -19,43 +18,44 @@
 </template>
 
 <style scoped>
-    html, body {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+.navbar-everywhere {
+    display: flex;
+    background-color: #d9d9d9;
+    align-items: center;
+    justify-content: center;
+    height: 60px;
+    width: 100%;
 
-    .navbar-home{
+    .nav-container {
+        max-width: 1060px;
+        width: 100%;
         display: flex;
-        background-color: #d9d9d9;
         align-items: center;
-        justify-content: space-between;
-        padding: 10px 20px;
+        gap: 50px;
     }
+}
 
-    ul{
-        list-style: none;
+ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+    padding: 0;
+    margin: 0;
+    align-items: center;
+
+    .nav-container {
         display: flex;
+        align-items: center;
         gap: 20px;
-        padding: 0;
-        margin: 0;
-        align-items: center;
+        max-width: 1060px;
+    }
 
-        .nav-container{
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            max-width: 1060px;
-        }
-        
-        a{
+    li {
+        a {
             text-decoration: none;
             font: 1em sans-serif;
         }
     }
-    .logo-home {
-        font-weight: bold;
-        color: #FFE001;
-        background-color: black;
-    }
+
+}
 </style>
