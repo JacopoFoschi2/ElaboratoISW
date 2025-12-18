@@ -1,4 +1,16 @@
-body, header, h1, h2, h5, ul {
-  margin: 0;
-  padding: 0;
+body,
+header,
+h1,
+h2,
+h5,
+ul {
+    margin: 0;
+    padding: 0;
+}
+
+li {
+    a {
+        text-decoration: none;
+        font: 1em sans-serif;
+    }
 }

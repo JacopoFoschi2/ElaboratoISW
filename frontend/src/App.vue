@@ -13,7 +13,14 @@
     <main>
         <router-view />
     </main>
-    <nav class="footer-home"></nav>
+    <nav class="footer-everywhere">
+        <ul>
+            <li><router-link to="/privacy-policy">Privacy Policy</router-link></li>
+            <li><router-link to="/terms-of-service">Terms of Service</router-link></li>
+            <li><router-link to="/community-guidelines">Community Guidelines</router-link></li>
+            <li><router-link to="/cookie-policy">Cookie Policy</router-link></li>
+        </ul>
+    </nav>
 
 </template>
 
@@ -50,12 +57,29 @@ ul {
         max-width: 1060px;
     }
 
-    li {
-        a {
+    
+
+}
+
+.footer-everywhere {
+    background-color: #262626;
+    height: 70px;
+    border-top: 1px solid #4A1AAA;
+
+    ul {
+        max-width: 1060px;
+        margin: 0 auto;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 30px;
+
+        li, a {
+            color: white;
+            font-size: 14px;
             text-decoration: none;
-            font: 1em sans-serif;
         }
     }
-
 }
 </style>
