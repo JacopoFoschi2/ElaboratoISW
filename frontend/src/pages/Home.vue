@@ -22,7 +22,6 @@
 <style scoped>
     .homepage {
         margin: 0;
-        
         min-height: 100vh;
         display: flex;
         flex-direction: column;
