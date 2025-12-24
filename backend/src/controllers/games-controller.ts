@@ -71,7 +71,7 @@ export async function allWishlistOfUser(req: Request, res: Response) {
     )
 };
 
-export async function checkIfInWishlist(req: Request, res: Response) {
+export async function isGameInWishlist(req: Request, res: Response) {
     connection.execute(
         ``,
         [req.params["id"]],

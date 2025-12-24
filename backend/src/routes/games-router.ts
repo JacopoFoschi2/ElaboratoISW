@@ -3,6 +3,19 @@ import * as gamesController from '../controllers/games-controller';
 
 const router: Router = Router();
 
-// router.get('/api/games', gamesController.allGames);
+router.get('/api/games/:genreId', gamesController.allGamesOfGenre);
+router.get('/api/games/rating', gamesController.allGamesOrderedByRating);
+router.get('/api/games/release', gamesController.allGamesOrderedByRelease);
+router.post('/api/game/add', gamesController.addGame);
+router.delete('/api/game/delete/:gameName', gamesController.removeGame);
+router.put('/api/game/modify/:gameName', gamesController.modifyGame);
+router.get('/api/wishlist/:userId', gamesController.allWishlistOfUser);
+router.get('/api/wishlist/contains/:userId/:gameId', gamesController.isGameInWishlist);
+router.post('/api/wishlist/add/:userId/:gameId', gamesController.addToWishlist);
+router.delete('/api/wishlist/delete/:userId/:gameId', gamesController.removeFromWishlist);
+router.get('/api/owned/:userId', gamesController.allOwnedOfUser);
+router.get('/api/owned/contains/:userId/:gameId', gamesController.checkIfOwned);
+router.post('/api/owned/add/:userId/:gameId', gamesController.addToOwned);
+router.delete('/api/owned/delete/:userId/:gameId', gamesController.removeFromOwned);
 
 export default router;
