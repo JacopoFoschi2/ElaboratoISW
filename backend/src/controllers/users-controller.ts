@@ -30,3 +30,13 @@ export async function removeUser(req: Request, res: Response) {
         }
     )
 };
+
+export async function modifyUser(req: Request, res: Response) {
+    connection.execute(
+        ``,
+        [],
+        function (err, results, fields) {
+            res.json(results)
+        }
+    )
+};

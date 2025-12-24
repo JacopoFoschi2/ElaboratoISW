@@ -4,14 +4,16 @@ Utenti:
 lista di tutti gli utenti V
 aggiunta nuovo utente V
 rimozione utente V
+modifica limitata utente V
 
 Giochi:
 lista di tutti i giochi per un dato genere V
 lista di tutti i giochi ordinati per rating V
 lista di tutti i giochi ordinati per novità V
-dettagio di un gioco V
+dettaglio di un gioco V
 aggiunta di un nuovo gioco V
 rimozione di un gioco V
+modifica di un gioco V
 lista wishlist V
 vedi se è in wishlist V
 aggiungi a wishlist V

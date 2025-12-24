@@ -51,6 +51,16 @@ export async function removeGame(req: Request, res: Response) {
     )
 };
 
+export async function modifyGame(req: Request, res: Response) {
+    connection.execute(
+        ``,
+        [],
+        function (err, results, fields) {
+            res.json(results)
+        }
+    )
+};
+
 export async function allWishlistOfUser(req: Request, res: Response) {
     connection.execute(
         ``,
