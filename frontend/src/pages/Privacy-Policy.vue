@@ -9,3 +9,5 @@
         and participate in the forums
     </p>
 </template>
+<style scoped>
+</style>
