@@ -1,5 +1,12 @@
 # ElaboratoISW
 
+Crud naming convention:
+
+- Create: create for new entities, add for new relations
+- Read: list for collections, get for single object
+- Update: update
+- Delete: delete
+
 API da produrre:
 
 Utenti:
