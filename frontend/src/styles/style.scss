@@ -13,9 +13,15 @@ body{
     font-family: "Jaidi Regular", sans-serif;
 }
 
+h1,h2,h3{
+    font-family: "Jaidi Bold", sans-serif;
+    color: style-variables.$default-text-color;
+}
+
 li {
     a {
         text-decoration: none;
-        font: 1em sans-serif;
+        font-family: "Jaidi Bold", sans-serif;
+        color: style-variables.$default-text-color;
     }
 }

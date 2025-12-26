@@ -1,13 +1,13 @@
 <template>
     <nav class="navbar-everywhere">
         <ul class="nav-container">
-                <li><router-link to="/"><img src="./assets/logo.svg" alt="Logo"></router-link></li>
-                <li><router-link to="/prova">FORUM</router-link></li>
-                <li><router-link to="/">BEST</router-link></li>
-                <li><router-link to="/">RECENTLY RELEASED</router-link></li>
-                <li><router-link to="/">GENRE</router-link></li>
-                <li><router-link to="/"><img class="pfp-" src="./assets/pfpIcon.svg" alt="User Icon">
-                </img></router-link></li>
+            <li><router-link to="/"><img src="./assets/logo.svg" alt="Logo"></router-link></li>
+            <li><router-link to="/prova">FORUM</router-link></li>
+            <li><router-link to="/">BEST</router-link></li>
+            <li><router-link to="/">RECENTLY RELEASED</router-link></li>
+            <li><router-link to="/">GENRE</router-link></li>
+            <li><router-link to="/"><img class="pfp-" src="./assets/pfpIcon.svg" alt="User Icon">
+                    </img></router-link></li>
         </ul>
     </nav>
     <main>
@@ -57,9 +57,16 @@ ul {
         max-width: 1060px;
     }
 
-    
-
+    li {
+        a {
+            color: black;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    }
 }
+
 
 .footer-everywhere {
     background-color: #262626;
@@ -75,9 +82,10 @@ ul {
         justify-content: center;
         gap: 30px;
 
-        li, a {
+        li,
+        a {
             color: white;
-            font-size: 14px;
+            font-size: 18px;
             text-decoration: none;
         }
     }
