@@ -1,7 +1,7 @@
 import type { Request, Response } from "express"
 import { connection } from "../utils/db-connection"
 
-export async function allGamesOfGenre(req: Request, res: Response) {
+export async function createGame(req: Request, res: Response) {
     connection.execute(
         ``,
         [req.params["id"]],
@@ -11,27 +11,7 @@ export async function allGamesOfGenre(req: Request, res: Response) {
     )
 };
 
-export async function allGamesOrderedByRating(req: Request, res: Response) {
-    connection.execute(
-        ``,
-        [],
-        function (err, results, fields) {
-            res.json(results)
-        }
-    )
-};
-
-export async function allGamesOrderedByRelease(req: Request, res: Response) {
-    connection.execute(
-        ``,
-        [],
-        function (err, results, fields) {
-            res.json(results)
-        }
-    )
-};
-
-export async function addGame(req: Request, res: Response) {
+export async function listGamesOfGenre(req: Request, res: Response) {
     connection.execute(
         ``,
         [req.params["id"]],
@@ -41,20 +21,40 @@ export async function addGame(req: Request, res: Response) {
     )
 };
 
-export async function removeGame(req: Request, res: Response) {
+export async function listGamesOrderedByRating(req: Request, res: Response) {
     connection.execute(
         ``,
-        [req.params["id"]],
+        [],
         function (err, results, fields) {
             res.json(results)
         }
     )
 };
 
-export async function modifyGame(req: Request, res: Response) {
+export async function listGamesOrderedByRelease(req: Request, res: Response) {
     connection.execute(
         ``,
         [],
+        function (err, results, fields) {
+            res.json(results)
+        }
+    )
+};
+
+export async function updateGame(req: Request, res: Response) {
+    connection.execute(
+        ``,
+        [],
+        function (err, results, fields) {
+            res.json(results)
+        }
+    )
+};
+
+export async function deleteGame(req: Request, res: Response) {
+    connection.execute(
+        ``,
+        [req.params["id"]],
         function (err, results, fields) {
             res.json(results)
         }

@@ -3,10 +3,10 @@ import * as reviewsController from '../controllers/reviews-controller';
 
 const router = Router();
 
-router.get('/api/reviews/game/:id', reviewsController.allReviewsOfGame);
-router.get('/api/reviews/user/:id', reviewsController.reviewOfUser);
-router.post('/api/reviews/game/:gameName/user/:userId', reviewsController.addReview);
-router.put('/api/reviews/game/:gameName/user/:userId', reviewsController.modifyReview);
-router.delete('/api/reviews/game/:gameName/user/:userId', reviewsController.removeReview);
+router.post('/api/reviews/game/:gameName/user/:userId', reviewsController.createReview);
+router.get('/api/reviews/game/:id', reviewsController.listReviewsOfGame);
+router.get('/api/reviews/user/:id', reviewsController.listReviewsOfUser);
+router.put('/api/reviews/game/:gameName/user/:userId', reviewsController.updateReview);
+router.delete('/api/reviews/game/:gameName/user/:userId', reviewsController.deleteReview);
 
 export default router;

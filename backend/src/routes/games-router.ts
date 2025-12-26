@@ -3,11 +3,11 @@ import * as gamesController from '../controllers/games-controller';
 
 const router: Router = Router();
 
-router.get('/api/games/:genreId', gamesController.allGamesOfGenre);
-router.get('/api/games/rating', gamesController.allGamesOrderedByRating);
-router.get('/api/games/release', gamesController.allGamesOrderedByRelease);
-router.post('/api/game/add', gamesController.addGame);
-router.delete('/api/game/delete/:gameName', gamesController.removeGame);
-router.put('/api/game/modify/:gameName', gamesController.modifyGame);
+router.post('/api/game/add', gamesController.createGame);
+router.get('/api/games/:genreId', gamesController.listGamesOfGenre);
+router.get('/api/games/rating', gamesController.listGamesOrderedByRating);
+router.get('/api/games/release', gamesController.listGamesOrderedByRelease);
+router.put('/api/game/modify/:gameName', gamesController.updateGame);
+router.delete('/api/game/delete/:gameName', gamesController.deleteGame);
 
 export default router;
