@@ -3,9 +3,9 @@ import * as categoriesController from "../controllers/categories-controller";
 
 const router: Router = Router();
 
-router.post("/categories", categoriesController.createCategory);
-router.get("/categories", categoriesController.listCategories);
-router.put("/categories/:id", categoriesController.updateCategory);
-router.delete("/categories/:id", categoriesController.deleteCategory);
+router.post("/api/categories", categoriesController.createCategory);
+router.get("/api/categories", categoriesController.listCategories);
+router.put("/api/categories/:categoryId", categoriesController.updateCategory);
+router.delete("/api/categories/:categoryId", categoriesController.deleteCategory);
 
 export default router;

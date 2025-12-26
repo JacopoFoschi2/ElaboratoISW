@@ -3,9 +3,9 @@ import * as usersController from '../controllers/users-controller';
 
 const router: Router = Router();
 
-router.post('/api/user/add', usersController.createNewUser);
-router.get('/api/users', usersController.listUsersAndPrivileges);
-router.put('/api/user/modify/:id', usersController.updateUser);
-router.delete('/api/user/delete/:id', usersController.deleteUser);
+router.post('/api/users', usersController.createUser);
+router.get('/api/users', usersController.listUsers);
+router.put('/api/users/:userId', usersController.updateUser);
+router.delete('/api/users/:userId', usersController.deleteUser);
 
 export default router;

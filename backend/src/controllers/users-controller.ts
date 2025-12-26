@@ -1,7 +1,7 @@
 import type { Request, Response } from "express"
 import { connection } from "../utils/db-connection"
 
-export async function createNewUser(req: Request, res: Response) {
+export async function createUser(req: Request, res: Response) {
     connection.execute(
         ``,
         [],
@@ -11,7 +11,7 @@ export async function createNewUser(req: Request, res: Response) {
     )
 };
 
-export async function listUsersAndPrivileges(req: Request, res: Response) {
+export async function listUsers(req: Request, res: Response) {
     connection.execute(
         ``,
         [],
