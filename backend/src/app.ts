@@ -14,6 +14,9 @@ app.use(forumRouter);
 app.use(gamesRouter);
 app.use(usersRouter);
 app.use(reviewsRouter);
+app.use(ownedRouter);
+app.use(wishlistRouter);
+app.use(categoriesRouter);
 
 app.use(function(req, res, next) {
   res.setHeader("Content-Type", "text/plain")
