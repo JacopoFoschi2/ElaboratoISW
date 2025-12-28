@@ -40,3 +40,23 @@ export async function deleteUser(req: Request, res: Response) {
         }
     )
 };
+
+export async function isUsernameTaken(req: Request, res: Response) {
+    connection.execute(
+        ``,
+        [],
+        function (err, results, fields) {
+            res.json(results)
+        }
+    )
+};
+
+export async function isEmailRegistered(req: Request, res: Response) {
+    connection.execute(
+        ``,
+        [],
+        function (err, results, fields) {
+            res.json(results)
+        }
+    )
+};
