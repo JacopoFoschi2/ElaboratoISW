@@ -3,6 +3,9 @@ import forumRouter from "./routes/forum-router";
 import gamesRouter from "./routes/games-router";
 import usersRouter from "./routes/users-router";
 import reviewsRouter from "./routes/reviews-router";
+import ownedRouter from "./routes/owned-router";
+import wishlistRouter from "./routes/wishlist-router";
+import categoriesRouter from "./routes/categories-router";
 
 const app: Express = express();
 const port: number = 3000;
