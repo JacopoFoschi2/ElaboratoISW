@@ -29,9 +29,7 @@ CREATE TABLE games (
     gameCoverName VARCHAR(100) NOT NULL,
     gameCoverBin MEDIUMBLOB NOT NULL,
     gameBigBannerName VARCHAR(100) NOT NULL,
-    gameBigBannerBin MEDIUMBLOB NOT NULL,
-    categoryId INT NOT NULL,
-    FOREIGN KEY (categoryId) REFERENCES categories(categoryId)
+    gameBigBannerBin MEDIUMBLOB NOT NULL
 );
 
 CREATE TABLE users (
@@ -51,8 +49,8 @@ CREATE TABLE comments (
     commentTimeStamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     gameId INT NOT NULL,
     userId INT NOT NULL,
-    FOREIGN KEY (gameId) REFERENCES games(gameId),
-    FOREIGN KEY (userId) REFERENCES users(userId)
+    FOREIGN KEY (gameId) REFERENCES games(gameId) ON DELETE CASCADE,
+    FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE
 );
 
 CREATE TABLE reviews (
@@ -60,37 +58,47 @@ CREATE TABLE reviews (
     reviewTitle VARCHAR(100) NOT NULL,
     reviewBody TEXT NOT NULL,
     reviewRating TINYINT NOT NULL,
-    reviewTimeStamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    reviewTimeStamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    reviewWasEdited BOOLEAN NOT NULL DEFAULT FALSE,
+    reviewEditTimeStamp DATETIME DEFAULT NULL
 );
 
 CREATE TABLE user_reviews (
     reviewId INT NOT NULL,
     userId INT NOT NULL,
     PRIMARY KEY (reviewId, userId),
-    FOREIGN KEY (reviewId) REFERENCES reviews(reviewId),
-    FOREIGN KEY (userId) REFERENCES users(userId)
+    FOREIGN KEY (reviewId) REFERENCES reviews(reviewId) ON DELETE CASCADE,
+    FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE
 );
 
 CREATE TABLE wishlist (
     gameId INT NOT NULL,
     userId INT NOT NULL,
     PRIMARY KEY (gameId, userId),
-    FOREIGN KEY (gameId) REFERENCES games(gameId),
-    FOREIGN KEY (userId) REFERENCES users(userId)
+    FOREIGN KEY (gameId) REFERENCES games(gameId) ON DELETE CASCADE,
+    FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE
 );
 
 CREATE TABLE owned (
     gameId INT NOT NULL,
     userId INT NOT NULL,
     PRIMARY KEY (gameId, userId),
-    FOREIGN KEY (gameId) REFERENCES games(gameId),
-    FOREIGN KEY (userId) REFERENCES users(userId)
+    FOREIGN KEY (gameId) REFERENCES games(gameId) ON DELETE CASCADE,
+    FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE
 );
 
 CREATE TABLE game_reviews (
     gameId INT NOT NULL,
     reviewId INT NOT NULL,
     PRIMARY KEY (gameId, reviewId),
-    FOREIGN KEY (gameId) REFERENCES games(gameId),
-    FOREIGN KEY (reviewId) REFERENCES reviews(reviewId)
+    FOREIGN KEY (gameId) REFERENCES games(gameId) ON DELETE CASCADE,
+    FOREIGN KEY (reviewId) REFERENCES reviews(reviewId) ON DELETE CASCADE
+);
+
+CREATE TABLE game_categories (
+    gameId INT NOT NULL,
+    categoryId INT NOT NULL,
+    PRIMARY KEY (gameId, categoryId),
+    FOREIGN KEY (gameId) REFERENCES games(gameId) ON DELETE CASCADE,
+    FOREIGN KEY (categoryId) REFERENCES categories(categoryId) ON DELETE CASCADE
 );
