@@ -15,3 +15,11 @@ type Game = {
     gameGoGLink: string | null;
     gameEpicLink: string | null;
 }
+
+const jsonPath = path.resolve(__dirname, "games.json");
+const content = fs.readFileSync(jsonPath, "utf-8");
+const games: Game[] = JSON.parse(content);
+
+const covers = "covers";
+const bigBanners = "bigBanners";
+const smallBanners = "smallBanners";
