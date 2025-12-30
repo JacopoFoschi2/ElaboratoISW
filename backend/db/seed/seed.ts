@@ -1,6 +1,13 @@
 import fs from "fs";
 import path from "path";
-import { connection } from "../../src/utils/db-connection";
+import mysql, { Connection } from "mysql2";
+
+const connection: Connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'TODO_DB_NAME'
+})
 
 type Game = {
   imagesName: string;
