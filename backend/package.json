@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node dist/app.js",
     "dev": "npx ts-node-dev src/app.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "seed:build": "tsc -p tsconfig.seed.json",
+    "seed:run": "node dist-seed/seed.js"
   },
   "author": "Jacopo Foschi",
   "license": "ISC",
