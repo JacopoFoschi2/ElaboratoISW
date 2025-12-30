@@ -3,7 +3,7 @@
     "imagesName": "clair_obscur_expedition_33",
     "gameName": "Clair Obscur: Expedition 33",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2025-04-24",
     "gameSteamLink": "https://store.steampowered.com/app/1903340/Clair_Obscur_Expedition_33/",
     "gameGoGLink": "https://www.gog.com/en/game/clair_obscur_expedition_33",
     "gameEpicLink": "https://store.epicgames.com/it/p/expedition-33-b3240d"
@@ -12,7 +12,7 @@
     "imagesName": "fallout_new_vegas",
     "gameName": "Fallout New Vegas",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2010-10-22",
     "gameSteamLink": "https://store.steampowered.com/app/22380/Fallout_New_Vegas/",
     "gameGoGLink": null,
     "gameEpicLink": "https://store.epicgames.com/it/p/fallout-new-vegas"
@@ -21,7 +21,7 @@
     "imagesName": "dragon_age_origins_ultimate_edition",
     "gameName": "Dragon Age Origin: ultimate edition",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2010-10-27",
     "gameSteamLink": "https://store.steampowered.com/app/47810/Dragon_Age_Origins__Ultimate_Edition/",
     "gameGoGLink": "https://www.gog.com/en/game/dragon_age_origins",
     "gameEpicLink": "https://store.epicgames.com/it/p/dragon-age-origins-ultimate-edition-ca4fbf"
@@ -30,7 +30,7 @@
     "imagesName": "cities_skylines_2",
     "gameName": "Cities Skylines 2",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2023-10-24",
     "gameSteamLink": "https://store.steampowered.com/app/949230/Cities_Skylines_II/",
     "gameGoGLink": null,
     "gameEpicLink": null
@@ -39,7 +39,7 @@
     "imagesName": "cities_skylines",
     "gameName": "Cities Skylines",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2015-03-10",
     "gameSteamLink": "https://store.steampowered.com/app/255710/Cities_Skylines/",
     "gameGoGLink": null,
     "gameEpicLink": "https://store.epicgames.com/it/p/cities-skylines"
@@ -48,7 +48,7 @@
     "imagesName": "hearts_of_iron_iv",
     "gameName": "Hearts of Iron 4",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2016-06-06",
     "gameSteamLink": "https://store.steampowered.com/app/394360/Hearts_of_Iron_IV/",
     "gameGoGLink": null,
     "gameEpicLink": null
@@ -57,7 +57,7 @@
     "imagesName": "victoria_3",
     "gameName": "Victoria 3",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2022-10-25",
     "gameSteamLink": "https://store.steampowered.com/app/529340/Victoria_3/",
     "gameGoGLink": null,
     "gameEpicLink": null
@@ -66,7 +66,7 @@
     "imagesName": "halo_infinite",
     "gameName": "Halo Infinite",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2021-12-08",
     "gameSteamLink": "https://store.steampowered.com/app/1240440/Halo_Infinite/",
     "gameGoGLink": null,
     "gameEpicLink": null
@@ -75,7 +75,7 @@
     "imagesName": "warhammer_40000_dawn_of_war_anniversary_edition",
     "gameName": "Warhammer 40000: Dawn of War Anniversary Edition",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2006-01-01",
     "gameSteamLink": "https://store.steampowered.com/app/4570/Warhammer_40000_Dawn_of_War__Anniversary_Edition/",
     "gameGoGLink": "https://www.gog.com/en/game/warhammer_40000_dawn_of_war_anniversary_edition",
     "gameEpicLink": null
@@ -84,7 +84,7 @@
     "imagesName": "warhammer_40000_dawn_of_war_definitive_edition",
     "gameName": "Warhammer 40000: Dawn of War Definitive Edition",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2025-08-14",
     "gameSteamLink": "https://store.steampowered.com/app/3556750/Warhammer_40000_Dawn_of_War__Definitive_Edition/",
     "gameGoGLink": "https://www.gog.com/en/game/warhammer_40000_dawn_of_war_definitive_edition",
     "gameEpicLink": null
@@ -93,26 +93,26 @@
     "imagesName": "warhammer_40000_dawn_of_war_2_anniversary_edition",
     "gameName": "Warhammer 40000: Dawn of War 2 Anniversary Edition",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2009-02-18",
     "gameSteamLink": "https://store.steampowered.com/app/15620/Warhammer_40000_Dawn_of_War_II__Anniversary_Edition",
-    "gameGoGLink": "https://www.gog.com/en/game/warhammer_40000_dawn_of_war_anniversary_edition",
+    "gameGoGLink": "https://www.gog.com/en/game/warhammer_40000_dawn_of_war_ii_anniversary_edition",
     "gameEpicLink": null
   },
   {
     "imagesName": "phoenix_wright_ace_attorney_trilogy",
     "gameName": "Phoenix Wright: Ace Attorney Trilogy",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2019-04-09",
     "gameSteamLink": "https://store.steampowered.com/app/787480/Phoenix_Wright_Ace_Attorney_Trilogy/",
     "gameGoGLink": null,
-    "gameEpicLink": "https://store.epicgames.com/it/p/phoenix-wright-ace-attorney-trilogy"
+    "gameEpicLink": null
   },
   {
     "imagesName": "cloverpit",
     "gameName": "Cloverpit",
     "gameDesc": "",
-    "gameReleaseDate": "",
-    "gameSteamLink": "https://store.steampowered.com/app/2154240/Clover_Pit/",
+    "gameReleaseDate": "2025-09-26",
+    "gameSteamLink": "https://store.steampowered.com/app/3314790/CloverPit/",
     "gameGoGLink": null,
     "gameEpicLink": null
   },
@@ -120,7 +120,7 @@
     "imagesName": "mount_and_blade",
     "gameName": "Mount and Blade",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2008-09-16",
     "gameSteamLink": "https://store.steampowered.com/app/22100/Mount__Blade/",
     "gameGoGLink": "https://www.gog.com/en/game/mount_blade",
     "gameEpicLink": null
@@ -129,7 +129,7 @@
     "imagesName": "mount_and_blade_warband",
     "gameName": "Mount and Blade Warband",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2010-03-31",
     "gameSteamLink": "https://store.steampowered.com/app/48700/Mount__Blade_Warband/",
     "gameGoGLink": "https://www.gog.com/en/game/mount_blade_warband",
     "gameEpicLink": null
@@ -138,16 +138,16 @@
     "imagesName": "mount_and_blade_bannerlord",
     "gameName": "Mount and Blade Bannerlord",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2022-10-25",
     "gameSteamLink": "https://store.steampowered.com/app/261550/Mount__Blade_II_Bannerlord/",
     "gameGoGLink": "https://www.gog.com/en/game/mount_blade_ii_bannerlord",
-    "gameEpicLink": "https://store.epicgames.com/it/p/mount-and-blade-ii-bannerlord"
+    "gameEpicLink": "https://store.epicgames.com/it/p/mount-and-blade-2"
   },
   {
     "imagesName": "xcom_enemy_unknown",
     "gameName": "Xcom Enemy Unknown",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2012-10-12",
     "gameSteamLink": "https://store.steampowered.com/app/200510/XCOM_Enemy_Unknown/",
     "gameGoGLink": null,
     "gameEpicLink": null
@@ -156,7 +156,7 @@
     "imagesName": "dark_souls_remastered",
     "gameName": "Dark Souls Remastered",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2018-05-24",
     "gameSteamLink": "https://store.steampowered.com/app/570940/DARK_SOULS_REMASTERED/",
     "gameGoGLink": null,
     "gameEpicLink": null
@@ -165,7 +165,7 @@
     "imagesName": "dark_souls_3",
     "gameName": "Dark Souls 3",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2016-04-11",
     "gameSteamLink": "https://store.steampowered.com/app/374320/DARK_SOULS_III/",
     "gameGoGLink": null,
     "gameEpicLink": null
@@ -174,7 +174,7 @@
     "imagesName": "elden_ring",
     "gameName": "Elden Ring",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2022-02-25",
     "gameSteamLink": "https://store.steampowered.com/app/1245620/ELDEN_RING/",
     "gameGoGLink": null,
     "gameEpicLink": null
@@ -183,7 +183,7 @@
     "imagesName": "nioh_complete_edition",
     "gameName": "Nioh: Complete Edition",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2017-11-07",
     "gameSteamLink": "https://store.steampowered.com/app/485510/Nioh_Complete_Edition/",
     "gameGoGLink": null,
     "gameEpicLink": "https://store.epicgames.com/it/p/nioh-the-complete-edition"
@@ -192,7 +192,7 @@
     "imagesName": "nioh_2_complete_edition",
     "gameName": "Nioh 2: The Complete Edition",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2020-02-05",
     "gameSteamLink": "https://store.steampowered.com/app/1325200/Nioh_2__The_Complete_Edition/",
     "gameGoGLink": null,
     "gameEpicLink": "https://store.epicgames.com/it/p/nioh-2-the-complete-edition"
@@ -201,7 +201,7 @@
     "imagesName": "palworld",
     "gameName": "Palworld",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2024-01-19",
     "gameSteamLink": "https://store.steampowered.com/app/1623730/Palworld/",
     "gameGoGLink": null,
     "gameEpicLink": null
@@ -210,7 +210,7 @@
     "imagesName": "total_war_warhammer",
     "gameName": "Total War: Warhammer",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2016-05-24",
     "gameSteamLink": "https://store.steampowered.com/app/364360/Total_War_WARHAMMER/",
     "gameGoGLink": null,
     "gameEpicLink": "https://store.epicgames.com/it/p/total-war-warhammer"
@@ -219,7 +219,7 @@
     "imagesName": "total_war_warhammer_2",
     "gameName": "Total War: Warhammer 2",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2017-09-28",
     "gameSteamLink": "https://store.steampowered.com/app/594570/Total_War_WARHAMMER_II/",
     "gameGoGLink": null,
     "gameEpicLink": "https://store.epicgames.com/it/p/total-war-warhammer-ii"
@@ -228,7 +228,7 @@
     "imagesName": "total_war_warhammer_3",
     "gameName": "Total War: Warhammer 3",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2022-02-17",
     "gameSteamLink": "https://store.steampowered.com/app/1142710/Total_War_WARHAMMER_III/",
     "gameGoGLink": null,
     "gameEpicLink": "https://store.epicgames.com/it/p/total-war-warhammer-3"
@@ -237,7 +237,7 @@
     "imagesName": "total_war_shogun_2",
     "gameName": "Total War: Shogun 2",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2011-03-15",
     "gameSteamLink": "https://store.steampowered.com/app/201270/Total_War_SHOGUN_2/",
     "gameGoGLink": null,
     "gameEpicLink": null
@@ -246,7 +246,7 @@
     "imagesName": "total_war_empire",
     "gameName": "Total War: Empire",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2009-03-04",
     "gameSteamLink": "https://store.steampowered.com/app/10500/Empire_Total_War/",
     "gameGoGLink": null,
     "gameEpicLink": null
@@ -255,7 +255,7 @@
     "imagesName": "total_war_napoleon",
     "gameName": "Total War: Napoleon",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2010-02-25",
     "gameSteamLink": "https://store.steampowered.com/app/34030/Napoleon_Total_War/",
     "gameGoGLink": null,
     "gameEpicLink": null
@@ -264,25 +264,25 @@
     "imagesName": "mafia_definitive_edition",
     "gameName": "Mafia: Definitive Edition",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2020-09-25",
     "gameSteamLink": "https://store.steampowered.com/app/1030840/Mafia_Definitive_Edition/",
     "gameGoGLink": "https://www.gog.com/en/game/mafia_definitive_edition",
     "gameEpicLink": "https://store.epicgames.com/it/p/mafia-definitive-edition"
   },
   {
-    "imagesName": "mafia_2_definitive_edition",
-    "gameName": "Mafia 2: Definitive Edition",
+    "imagesName": "mafia_ii_definitive_edition",
+    "gameName": "Mafia II: Definitive Edition",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2020-05-19",
     "gameSteamLink": "https://store.steampowered.com/app/1030830/Mafia_II_Definitive_Edition/",
     "gameGoGLink": "https://www.gog.com/en/game/mafia_ii_definitive_edition",
     "gameEpicLink": "https://store.epicgames.com/it/p/mafia-ii-definitive-edition"
   },
   {
-    "imagesName": "mafia_3_definitive_edition",
-    "gameName": "Mafia 3: Definitive Edition",
+    "imagesName": "mafia_iii_definitive_edition",
+    "gameName": "Mafia III: Definitive Edition",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2020-05-19",
     "gameSteamLink": "https://store.steampowered.com/app/360430/Mafia_III_Definitive_Edition/",
     "gameGoGLink": "https://www.gog.com/en/game/mafia_iii_definitive_edition",
     "gameEpicLink": "https://store.epicgames.com/it/p/mafia-iii-definitive-edition"
@@ -291,7 +291,7 @@
     "imagesName": "fallout_4",
     "gameName": "Fallout 4",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2015-11-10",
     "gameSteamLink": "https://store.steampowered.com/app/377160/Fallout_4/",
     "gameGoGLink": null,
     "gameEpicLink": "https://store.epicgames.com/it/p/fallout-4"
@@ -300,8 +300,8 @@
     "imagesName": "fallout_3_goty_edition",
     "gameName": "Fallout 3: Game of the Year Edition",
     "gameDesc": "",
-    "gameReleaseDate": "",
-    "gameSteamLink": "https://store.steampowered.com/app/22300/Fallout_3_Game_of_the_Year_Edition/",
+    "gameReleaseDate": "2009-10-13",
+    "gameSteamLink": "https://store.steampowered.com/app/22370/Fallout_3_Game_of_the_Year_Edition/",
     "gameGoGLink": "https://www.gog.com/en/game/fallout_3_game_of_the_year_edition",
     "gameEpicLink": "https://store.epicgames.com/it/p/fallout-3-game-of-the-year-edition"
   },
@@ -309,7 +309,7 @@
     "imagesName": "civilization_v",
     "gameName": "Civilization V",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2010-09-23",
     "gameSteamLink": "https://store.steampowered.com/app/8930/Sid_Meiers_Civilization_V/",
     "gameGoGLink": null,
     "gameEpicLink": null
@@ -318,7 +318,7 @@
     "imagesName": "civilization_vi",
     "gameName": "Civilization VI",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2016-10-21",
     "gameSteamLink": "https://store.steampowered.com/app/289070/Sid_Meiers_Civilization_VI/",
     "gameGoGLink": null,
     "gameEpicLink": "https://store.epicgames.com/it/p/sid-meiers-civilization-vi"
@@ -327,7 +327,7 @@
     "imagesName": "civilization_vii",
     "gameName": "Civilization VII",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2025-02-11",
     "gameSteamLink": "https://store.steampowered.com/app/1295660/Sid_Meiers_Civilization_VII",
     "gameGoGLink": null,
     "gameEpicLink": "https://store.epicgames.com/it/p/sid-meiers-civilization-vii"
@@ -336,7 +336,7 @@
     "imagesName": "halo_the_master_chief_collection",
     "gameName": "Halo: The Master Chief Collection",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2019-12-03",
     "gameSteamLink": "https://store.steampowered.com/app/976730/Halo_The_Master_Chief_Collection/",
     "gameGoGLink": null,
     "gameEpicLink": null
@@ -345,7 +345,7 @@
     "imagesName": "warhammer_40000_space_marine_2",
     "gameName": "Warhammer 40000: Space Marine 2",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2024-09-09",
     "gameSteamLink": "https://store.steampowered.com/app/2183900/Warhammer_40000_Space_Marine_2/",
     "gameGoGLink": null,
     "gameEpicLink": "https://store.epicgames.com/it/p/warhammer-40000-space-marine-2"
@@ -363,16 +363,16 @@
     "imagesName": "battlefield_iv",
     "gameName": "Battlefield IV",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2013-10-29",
     "gameSteamLink": "https://store.steampowered.com/app/1238860/Battlefield_4/",
     "gameGoGLink": null,
-    "gameEpicLink": "https://store.epicgames.com/it/p/battlefield-4"
+    "gameEpicLink": "https://store.epicgames.com/it/p/battlefield-4-412248"
   },
   {
     "imagesName": "battlefield_6",
     "gameName": "Battlefield 6",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2025-10-10",
     "gameSteamLink": "https://store.steampowered.com/app/2807960/Battlefield_6",
     "gameGoGLink": null,
     "gameEpicLink": "https://store.epicgames.com/it/p/battlefield-6"
@@ -381,34 +381,34 @@
     "imagesName": "battlefield_i",
     "gameName": "Battlefield I",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2016-10-21",
     "gameSteamLink": "https://store.steampowered.com/app/1238840/Battlefield_1/",
     "gameGoGLink": null,
-    "gameEpicLink": "https://store.epicgames.com/it/p/battlefield-1"
+    "gameEpicLink": "https://store.epicgames.com/it/p/battlefield-1-124758"
   },
   {
     "imagesName": "titanfall_2",
     "gameName": "Titanfall 2",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2016-10-28",
     "gameSteamLink": "https://store.steampowered.com/app/1237970/Titanfall_2/",
     "gameGoGLink": null,
-    "gameEpicLink": "https://store.epicgames.com/it/p/titanfall-2"
+    "gameEpicLink": "https://store.epicgames.com/it/p/titanfall-2-6231e2"
   },
   {
     "imagesName": "apex_legends",
     "gameName": "Apex Legends",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2019-02-04",
     "gameSteamLink": "https://store.steampowered.com/app/1172470/Apex_Legends/",
     "gameGoGLink": null,
-    "gameEpicLink": "https://store.epicgames.com/it/p/apex-legends"
+    "gameEpicLink": "https://store.epicgames.com/it/p/apex-legends-006cde"
   },
   {
     "imagesName": "hades",
     "gameName": "Hades",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2020-09-17",
     "gameSteamLink": "https://store.steampowered.com/app/1145360/Hades/",
     "gameGoGLink": null,
     "gameEpicLink": "https://store.epicgames.com/it/p/hades"
@@ -417,7 +417,7 @@
     "imagesName": "hades_ii",
     "gameName": "Hades 2",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2025-09-25",
     "gameSteamLink": "https://store.steampowered.com/app/1145350/Hades_II/",
     "gameGoGLink": null,
     "gameEpicLink": "https://store.epicgames.com/it/p/hades-ii"
@@ -426,7 +426,7 @@
     "imagesName": "hollow_knight",
     "gameName": "Hollow Knight",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2017-02-24",
     "gameSteamLink": "https://store.steampowered.com/app/367520/Hollow_Knight/",
     "gameGoGLink": "https://www.gog.com/en/game/hollow_knight",
     "gameEpicLink": null
@@ -435,7 +435,7 @@
     "imagesName": "hollow_knight_silksong",
     "gameName": "Hollow Knight Silksong",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2025-09-25",
     "gameSteamLink": "https://store.steampowered.com/app/1030300/Hollow_Knight_Silksong/",
     "gameGoGLink": "https://www.gog.com/en/game/hollow_knight_silksong",
     "gameEpicLink": null
@@ -444,7 +444,7 @@
     "imagesName": "helldivers_ii",
     "gameName": "Helldivers 2",
     "gameDesc": "",
-    "gameReleaseDate": "",
+    "gameReleaseDate": "2024-02-08",
     "gameSteamLink": "https://store.steampowered.com/app/553850/HELLDIVERS_2/",
     "gameGoGLink": null,
     "gameEpicLink": null
