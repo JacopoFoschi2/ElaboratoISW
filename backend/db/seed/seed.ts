@@ -1,15 +1,8 @@
 import fs from "fs";
 import path from "path";
-import mysql, { Connection } from "mysql2";
 import { Game } from "./types/game";
 import { readImage } from "./utils/seeding-utils";
-
-const connection: Connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'TODO_DB_NAME'
-})
+import { connection } from "./utils/connection";
 
 const jsonPath = path.resolve(__dirname, "games.json");
 const content = fs.readFileSync(jsonPath, "utf-8");
