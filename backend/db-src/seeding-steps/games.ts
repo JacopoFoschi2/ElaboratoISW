@@ -68,7 +68,6 @@ export async function seedGames() {
   try {
     for (const game of games) {
       await insertGame(game);
-      console.log(`Inserted game: ${game.gameName}`);
     }
   } catch (error) {
     console.error("Error seeding games:", error);
