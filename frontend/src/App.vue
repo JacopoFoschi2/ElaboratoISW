@@ -2,7 +2,7 @@
     <nav class="navbar-everywhere">
         <ul class="nav-container">
             <li><router-link to="/"><img src="./assets/logo.svg" alt="Logo"></router-link></li>
-            <li><router-link to="/prova">FORUM</router-link></li>
+            <li><router-link to="/forum">FORUM</router-link></li>
             <li><router-link to="/">BEST</router-link></li>
             <li><router-link to="/">RECENTLY RELEASED</router-link></li>
             <li><router-link to="/">GENRE</router-link></li>
@@ -24,10 +24,12 @@
 
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@use "../src/styles/style-variables.scss" as style-variables;
+
 .navbar-everywhere {
     display: flex;
-    background-color: #d9d9d9;
+    background-color: style-variables.$default-navbar-color;
     align-items: center;
     justify-content: center;
     height: 60px;
@@ -69,9 +71,9 @@ ul {
 
 
 .footer-everywhere {
-    background-color: #262626;
+    background-color: style-variables.$default-footer-color;
     height: 70px;
-    border-top: 1px solid #4A1AAA;
+    border-top: 1px solid style-variables.$button-and-border-footer-color;
 
     ul {
         max-width: 1060px;

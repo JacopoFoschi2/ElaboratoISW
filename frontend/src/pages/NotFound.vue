@@ -6,8 +6,8 @@
   </div>
 
 </template>
-<style scoped>
-
+<style scoped lang="scss">
+@use "../styles/style-variables.scss" as style-variables;
 .content-not-found {
   height: 100vh;
   display: flex;
@@ -25,6 +25,12 @@ h3 {
 
 p{
   font-size: 30px;
+}
+
+a{
+  color: style-variables.$default-text-color;
+  text-decoration: underline;
+  font-weight: bold;
 }
 
 
