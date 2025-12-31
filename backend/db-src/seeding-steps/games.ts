@@ -44,7 +44,7 @@ const games: Game[] = JSON.parse(content);
 const covers = "covers";
 const bigBanners = "bigBanners";
 const smallBanners = "smallBanners";
-const assetsPath = path.resolve(process.cwd(), "db/seed/assets");
+const assetsPath = path.resolve(process.cwd(), "db/assets");
 
 const query = `
     INSERT INTO games (
