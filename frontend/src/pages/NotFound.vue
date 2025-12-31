@@ -1,18 +1,31 @@
 <template>
-  <h2>404</h2>
-  <h3>Pagina non trovata</h3>
+  <div class="content-not-found">
+    <h2>404</h2>
+    <h3>Page not found</h3>
+    <p>The page doesn't exists or it has been moved, please return to the <router-link to="/">homepage</router-link>.</p>
+  </div>
+
 </template>
 <style scoped>
-  h2{
-    text-align: center;
-    align-items: center;
-    font-size: 100px;
-  }
-  h3{
-    text-align: center;
-    align-items: center;
-    font-size: 50px;
-  }
+
+.content-not-found {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+h2 {
+  font-size: 100px;
+}
+
+h3 {
+  font-size: 50px;
+}
+
+p{
+  font-size: 30px;
+}
 
 
 </style>
