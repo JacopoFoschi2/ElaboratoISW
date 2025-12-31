@@ -8,7 +8,7 @@
     "dev": "npx ts-node-dev src/app.ts",
     "start": "node dist/app.js",
     "seed:build": "tsc -p tsconfig.seed.json",
-    "seed:run": "node dist-seed/seed.js",
+    "seed:run": "node dist-db/seed.js",
     "seed": "npm run seed:build && npm run seed:run"
   },
   "author": "Jacopo Foschi",
