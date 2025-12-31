@@ -4,6 +4,39 @@ import { Game } from "./types/game";
 import { readImage } from "./utils/seeding-utils";
 import { connection } from "./utils/connection";
 
+function insertGame(game: Game): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const coverBin = readImage(assetsPath, covers, game.imagesName);
+    const smallBannerBin = readImage(assetsPath, smallBanners, game.imagesName);
+    const bigBannerBin = readImage(assetsPath, bigBanners, game.imagesName);
+    const params = [
+      game.gameName,
+      game.gameDesc,
+      game.gameSteamLink,
+      game.gameGoGLink,
+      game.gameEpicLink,
+      game.gameReleaseDate,
+      game.imagesName,
+      smallBannerBin,
+      game.imagesName,
+      coverBin,
+      game.imagesName,
+      bigBannerBin,
+    ];
+    connection.execute(
+      query,
+      params,
+      function (err: any, results: any, fields: any) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      }
+    );
+  });
+}
+
 const jsonPath = path.resolve(__dirname, "games.json");
 const content = fs.readFileSync(jsonPath, "utf-8");
 const games: Game[] = JSON.parse(content);
@@ -13,8 +46,7 @@ const bigBanners = "bigBanners";
 const smallBanners = "smallBanners";
 const assetsPath = path.resolve(__dirname, "assets");
 
-const values: string[] = [];
-const baseQuery = `
+const query = `
     INSERT INTO games (
         gameName,
         gameDesc,
@@ -35,29 +67,11 @@ const baseQuery = `
 const params: any[] = [];
 
 for (const game of games) {
-  const coverBin = readImage(assetsPath, covers, game.imagesName);
-  const smallBannerBin = readImage(assetsPath, smallBanners, game.imagesName);
-  const bigBannerBin = readImage(assetsPath, bigBanners, game.imagesName);
-  values.push();
-  params.push(
-    game.gameName,
-    game.gameDesc,
-    game.gameSteamLink,
-    game.gameGoGLink,
-    game.gameEpicLink,
-    game.gameReleaseDate,
-    game.imagesName,
-    smallBannerBin,
-    game.imagesName,
-    coverBin,
-    game.imagesName,
-    bigBannerBin
-  );
+  params.push();
 }
 
-const finalQuery = baseQuery + values.join(",\n");
 connection.execute(
-  finalQuery,
+  query,
   params,
   function (err: any, results: any, fields: any) {
     if (err) {
