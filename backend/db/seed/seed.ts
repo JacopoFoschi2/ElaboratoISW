@@ -44,7 +44,7 @@ const games: Game[] = JSON.parse(content);
 const covers = "covers";
 const bigBanners = "bigBanners";
 const smallBanners = "smallBanners";
-const assetsPath = path.resolve(__dirname, "assets");
+const assetsPath = path.resolve(process.cwd(), "db/seed/assets");
 
 const query = `
     INSERT INTO games (
@@ -61,15 +61,21 @@ const query = `
         gameBigBannerName,
         gameBigBannerBin
     )
-    VALUES "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-try {
-  for (const game of games) {
-    await insertGame(game);
+async function main() {
+  try {
+    for (const game of games) {
+      await insertGame(game);
+      console.log(`Inserted game: ${game.gameName}`);
+    }
+  } catch (error) {
+    console.error("Error seeding games:", error);
+  } finally {
+    console.log("Seeding completed.");
+    connection.end();
   }
-} catch (error) {
-  console.error("Error seeding games:", error);
-} finally {
-  connection.end();
 }
+
+main();
