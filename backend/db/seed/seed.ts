@@ -1,6 +1,8 @@
 import fs from "fs";
 import path from "path";
 import mysql, { Connection } from "mysql2";
+import { Game } from "./types/game";
+import { readImage } from "./utils/seeding-utils";
 
 const connection: Connection = mysql.createConnection({
   host: 'localhost',
@@ -8,20 +10,6 @@ const connection: Connection = mysql.createConnection({
   password: '',
   database: 'TODO_DB_NAME'
 })
-
-type Game = {
-  imagesName: string;
-  gameName: string;
-  gameDesc: string;
-  gameReleaseDate: string;
-  gameSteamLink: string | null;
-  gameGoGLink: string | null;
-  gameEpicLink: string | null;
-};
-
-function readImage(basePath: string, folder: string, fileName: string) {
-  return fs.readFileSync(path.join(basePath, folder, fileName));
-}
 
 const jsonPath = path.resolve(__dirname, "games.json");
 const content = fs.readFileSync(jsonPath, "utf-8");
@@ -33,7 +21,6 @@ const smallBanners = "smallBanners";
 const assetsPath = path.resolve(__dirname, "assets");
 
 const values: string[] = [];
-const params: any[] = [];
 const baseQuery = `
     INSERT INTO games (
         gameName,
@@ -49,14 +36,16 @@ const baseQuery = `
         gameBigBannerName,
         gameBigBannerBin
     )
-    VALUES 
+    VALUES "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
     `;
+
+const params: any[] = [];
 
 for (const game of games) {
   const coverBin = readImage(assetsPath, covers, game.imagesName);
   const smallBannerBin = readImage(assetsPath, smallBanners, game.imagesName);
   const bigBannerBin = readImage(assetsPath, bigBanners, game.imagesName);
-  values.push("(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+  values.push();
   params.push(
     game.gameName,
     game.gameDesc,
