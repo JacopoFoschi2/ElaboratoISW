@@ -37,7 +37,7 @@ function insertGame(game: Game): Promise<void> {
   });
 }
 
-const jsonPath = path.resolve(__dirname, "games.json");
+const jsonPath = path.resolve(__dirname, "../games.json");
 const content = fs.readFileSync(jsonPath, "utf-8");
 const games: Game[] = JSON.parse(content);
 
