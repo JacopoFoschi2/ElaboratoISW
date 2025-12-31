@@ -64,22 +64,12 @@ const query = `
     VALUES "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
     `;
 
-const params: any[] = [];
-
-for (const game of games) {
-  params.push();
-}
-
-connection.execute(
-  query,
-  params,
-  function (err: any, results: any, fields: any) {
-    if (err) {
-      console.error("Error seeding database:", err);
-      return;
-    } else {
-      console.log("Database seeded successfully.");
-    }
-    connection.end();
+try {
+  for (const game of games) {
+    await insertGame(game);
   }
-);
+} catch (error) {
+  console.error("Error seeding games:", error);
+} finally {
+  connection.end();
+}
