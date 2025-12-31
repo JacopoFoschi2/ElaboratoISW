@@ -3,15 +3,8 @@
   "compilerOptions": {
     "rootDir": "./db/seed",
     "outDir": "./dist-seed",
-
-    "module": "CommonJS",
-    "moduleResolution": "Node",
-
-    "resolveJsonModule": true,
-    "noEmit": false
   },
   "include": [
-    "db/seed/**/*.ts",
-    "db/seed/**/*.json"
+    "db"
   ]
 }
