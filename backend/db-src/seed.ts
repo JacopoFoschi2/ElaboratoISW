@@ -1,5 +1,9 @@
 import { createDB } from "./seeding-steps/database";
 import { seedGames } from "./seeding-steps/games";
 
-createDB();
-seedGames();
+async function main() {
+    await createDB();
+    await seedGames();
+}
+
+main()
