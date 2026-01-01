@@ -1,10 +1,8 @@
-import { connection } from "../utils/connection";
+import { Connection } from "mysql2";
 import { readTextFile, executeSQL } from "../utils/seeding-utils";
 
-const conn = connection;
 const sqlFileContent = readTextFile("db-src/sql/seed-owned.sql");
 
-export async function createDB() {
-    await executeSQL(conn, sqlFileContent, "Owned seeding completed.");
-    conn.end();
+export async function seedOwned(connection: Connection) {
+  await executeSQL(connection, sqlFileContent, "Owned seeding completed.");
 }
