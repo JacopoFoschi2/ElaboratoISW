@@ -53,3 +53,16 @@ export async function seedData(
     connection.end();
   }
 }
+
+export async function executeSQL(multiQueryConnection: Connection, sqlFileContent: string, successMessage: string){
+    return new Promise<void>((resolve, reject) => {
+        multiQueryConnection.query(sqlFileContent, function (err: any) {
+            if (err) {
+                reject(err);
+            } else {
+                console.log(successMessage);
+                resolve();
+            }
+        });
+    });
+}
