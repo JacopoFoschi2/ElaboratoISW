@@ -1,24 +1,11 @@
 import fs from "fs";
 import path from "path";
-import { CreateDbConnection } from "../utils/connection";
+import { createDbConnection } from "../utils/connection";
+import { readTextFile, executeSQL } from "../utils/seeding-utils";
 
-const sqlFilePath = path.resolve(process.cwd(), "db-src/sql/create-db.sql");
-const sqlFileContent = fs.readFileSync(sqlFilePath, "utf-8");
-
-async function executeSQL(){
-    return new Promise<void>((resolve, reject) => {
-        CreateDbConnection.query(sqlFileContent, function (err: any, results: any, fields: any) {
-            if (err) {
-                reject(err);
-            } else {
-                console.log("Database and tables created successfully.");
-                resolve();
-            }
-        });
-    });
-}
+const sqlFileContent = readTextFile("db-src/sql/create-db.sql");
 
 export async function createDB() {
-    await executeSQL();
-    CreateDbConnection.end();
+    await executeSQL(createDbConnection, sqlFileContent, "Database and tables created successfully.");
+    createDbConnection.end();
 }
