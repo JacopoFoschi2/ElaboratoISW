@@ -6,10 +6,13 @@ export function readImage(basePath: string, folder: string, fileName: string) {
   return fs.readFileSync(path.join(basePath, folder, fileName));
 }
 
+export function readFile(filePath: string) {
+  const resolvedPath = path.resolve(process.cwd(), filePath);
+  return fs.readFileSync(resolvedPath, "utf-8");
+}
+
 export function readJson(jsonPath: string) {
-  const resolvedJsonPath = path.resolve(process.cwd(), jsonPath);
-  const content = fs.readFileSync(resolvedJsonPath, "utf-8");
-  return JSON.parse(content);;
+  return JSON.parse(readFile(jsonPath));
 }
 
 export function getBaseAssetsPath(assetsFolder: string): string {
