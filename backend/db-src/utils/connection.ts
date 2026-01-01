@@ -1,15 +1,18 @@
 import mysql, { Connection } from "mysql2";
 
-export const CreateDbConnection: Connection = mysql.createConnection({
+const baseDbConfig = {
   host: 'localhost',
   user: 'root',
-  password: '',
+  password: ''
+};
+
+export const createDbConnection: Connection = mysql.createConnection({
+  ...baseDbConfig,
   multipleStatements: true
 })
 
-export const connection: Connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'pcmasterracedb'
-})
+export const connection = (multipleStatements = false): Connection => mysql.createConnection({
+  ...baseDbConfig,
+  database: 'pcmasterracedb',
+  multipleStatements
+});
