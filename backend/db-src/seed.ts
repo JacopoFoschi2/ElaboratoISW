@@ -4,7 +4,7 @@ import { connection } from "./utils/connection";
 
 async function main() {
     await createDB();
-    const conn = connection();
+    const conn = connection;
     await seedGames(conn);
     conn.end();
 }
