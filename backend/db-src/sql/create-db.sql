@@ -60,14 +60,10 @@ CREATE TABLE reviews (
     reviewRating TINYINT NOT NULL,
     reviewTimeStamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     reviewWasEdited BOOLEAN NOT NULL DEFAULT FALSE,
-    reviewEditTimeStamp DATETIME DEFAULT NULL
-);
-
-CREATE TABLE user_reviews (
-    reviewId INT NOT NULL,
+    reviewEditTimeStamp DATETIME DEFAULT NULL,
+    gameId INT NOT NULL,
     userId INT NOT NULL,
-    PRIMARY KEY (reviewId, userId),
-    FOREIGN KEY (reviewId) REFERENCES reviews(reviewId) ON DELETE CASCADE,
+    FOREIGN KEY (gameId) REFERENCES games(gameId) ON DELETE CASCADE,
     FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE
 );
 
@@ -85,14 +81,6 @@ CREATE TABLE owned (
     PRIMARY KEY (gameId, userId),
     FOREIGN KEY (gameId) REFERENCES games(gameId) ON DELETE CASCADE,
     FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE
-);
-
-CREATE TABLE game_reviews (
-    gameId INT NOT NULL,
-    reviewId INT NOT NULL,
-    PRIMARY KEY (gameId, reviewId),
-    FOREIGN KEY (gameId) REFERENCES games(gameId) ON DELETE CASCADE,
-    FOREIGN KEY (reviewId) REFERENCES reviews(reviewId) ON DELETE CASCADE
 );
 
 CREATE TABLE game_categories (
