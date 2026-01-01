@@ -1,10 +1,15 @@
 @use "./style-variables.scss";
 
 body, html {
-    height: 100%;
     background-color: style-variables.$default-background-color;
 }
 
+main {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
 body,
 header,
 h1,

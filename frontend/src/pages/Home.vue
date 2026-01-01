@@ -1,8 +1,5 @@
 <template>
     <div class="homepage">
-
-        <h1>THE HOME PAGE</h1>
-
         <main class="content-wrapper">
             <div class="search-container">
                 <input type="text" placeholder="search your games..." class="search-input" />
