@@ -51,14 +51,14 @@ function insertGame(game: Game): Promise<void> {
     game.imagesName,
     bigBannerBin,
   ];
-  return insertRecord(connection, params, query);
+  return insertRecord(connection(), params, query);
 }
 
 export async function seedGames() {
   await seedData(
     games,
     insertGame,
-    connection,
+    connection(),
     "Error seeding games:",
     "Games seeding completed."
   );
