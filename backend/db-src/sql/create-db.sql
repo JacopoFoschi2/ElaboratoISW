@@ -39,8 +39,7 @@ CREATE TABLE users (
     userPassword VARCHAR(255) NOT NULL,
     userIconBin BLOB,
     userIconName VARCHAR(100),
-    userAdminFlag BOOLEAN NOT NULL DEFAULT FALSE,
-    userMasterFlag BOOLEAN NOT NULL DEFAULT FALSE
+    userRole ENUM('user', 'admin', 'master') NOT NULL DEFAULT 'user'
 );
 
 CREATE TABLE comments (

@@ -4,31 +4,27 @@
         "userUsername": "a.zani",
         "userPassword": "TODO",
         "userIconName": "user2.jpg",
-        "userAdminFlag": true,
-        "userMasterFlag": true
+        "userRole": "master"
     },
     {
         "userEmail": "gianpaolo.bernardini@gmail.com",
         "userUsername": "g.bernardini",
         "userPassword": "TODO",
         "userIconName": "user4.jpg",
-        "userAdminFlag": true,
-        "userMasterFlag": false
+        "userRole": "admin"
     },
     {
         "userEmail": "marika.graziani@gmail.com",
         "userUsername": "m.graziani",
         "userPassword": "TODO",
         "userIconName": "user1.jpg",
-        "userAdminFlag": false,
-        "userMasterFlag": false
+        "userRole": "user"
     },
     {
         "userEmail": "bernardo.panfili@gmail.com",
         "userUsername": "b.panfili",
         "userPassword": "TODO",
         "userIconName": "user3.jpg",
-        "userAdminFlag": false,
-        "userMasterFlag": false
+        "userRole": "user"
     }
 ]
