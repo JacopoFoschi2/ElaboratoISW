@@ -16,7 +16,7 @@ export function getBaseAssetsPath(assetsFolder: string): string {
   return path.resolve(process.cwd(), assetsFolder);
 }
 
-function insertRecord(connection: Connection, params: any[], query: string): Promise<void> {
+export function insertRecord(connection: Connection, params: any[], query: string): Promise<void> {
   return new Promise((resolve, reject) => {
     connection.execute(
       query,
