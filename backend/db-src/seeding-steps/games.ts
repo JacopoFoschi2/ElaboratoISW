@@ -1,3 +1,4 @@
+import { Connection } from "mysql2";
 import { Game } from "../types/game";
 import {
   getBaseAssetsPath,
@@ -6,7 +7,6 @@ import {
   readJson,
   seedData,
 } from "../utils/seeding-utils";
-import { connection } from "../utils/connection";
 
 const games: Game[] = readJson("db-src/data/games.json");
 
@@ -33,7 +33,7 @@ const query = `
   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
-function insertGame(game: Game): Promise<void> {
+function insertGame(game: Game, connection: Connection): Promise<void> {
   const coverBin = readImage(assetsPath, covers, game.imagesName);
   const smallBannerBin = readImage(assetsPath, smallBanners, game.imagesName);
   const bigBannerBin = readImage(assetsPath, bigBanners, game.imagesName);
@@ -51,14 +51,14 @@ function insertGame(game: Game): Promise<void> {
     game.imagesName,
     bigBannerBin,
   ];
-  return insertRecord(connection(), params, query);
+  return insertRecord(connection, params, query);
 }
 
-export async function seedGames() {
+export async function seedGames(connection: Connection) {
   await seedData(
     games,
     insertGame,
-    connection(),
+    connection,
     "Error seeding games:",
     "Games seeding completed."
   );

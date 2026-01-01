@@ -37,20 +37,19 @@ export function insertRecord(connection: Connection, params: any[], query: strin
 
 export async function seedData(
   datas: any[], 
-  insertFunction: (data: any) => Promise<void>, 
+  insertFunction: (data: any, connection: Connection) => Promise<void>, 
   connection: Connection, 
   errorMessage: string,
   seedingCompleteMessage: string
 ) {
   try {
     for (const data of datas) {
-      await insertFunction(data);
+      await insertFunction(data, connection);
     }
   } catch (error) {
     console.error(errorMessage, error);
   } finally {
     console.log(seedingCompleteMessage);
-    connection.end();
   }
 }
 
