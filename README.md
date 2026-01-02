@@ -9,12 +9,13 @@
 
 ## Backend Apis
 
-- Categories:
-  - Create:
-    - /api/categories
-  - Read:
-    - /api/categories
-  - Update:
-    - /api/categories/:categoryId
-  - Delete:
-    - /api/categories/:categoryId
+### Categories
+
+- Create:
+- /api/categories
+- Read:
+- /api/categories
+- Update:
+- /api/categories/:categoryId
+- Delete:
+- /api/categories/:categoryId
