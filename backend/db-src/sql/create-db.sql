@@ -62,7 +62,6 @@ CREATE TABLE reviews (
     reviewRating TINYINT NOT NULL,
     reviewTimeStamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     reviewWasEdited BOOLEAN NOT NULL DEFAULT FALSE,
-    reviewEditTimeStamp DATETIME DEFAULT NULL,
     gameId INT NOT NULL,
     userId INT NOT NULL,
     FOREIGN KEY (gameId) REFERENCES games(gameId) ON DELETE CASCADE,
