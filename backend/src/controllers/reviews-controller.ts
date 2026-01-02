@@ -1,52 +1,43 @@
 import type { Request, Response } from "express"
 import { connection } from "../utils/db-connection"
+import { handleQueryOutput } from "../utils/query-handling"
 
 export async function createReview(req: Request, res: Response) {
     connection.execute(
-        ``,
-        [],
-        function (err, results, fields) {
-            res.json(results)
-        }
+        `INSERT INTO reviews (gameId, userId, reviewRating, reviewBody, reviewTimeStamp) VALUES (?, ?, ?, ?, NOW())`,
+        [req.params["gameId"], req.params["userId"], req.body["reviewRating"], req.body["reviewBody"]],
+        handleQueryOutput(201, res)
     )
 };
 
 export async function listReviewsOfGame(req: Request, res: Response) {
     connection.execute(
-        ``,
-        [],
-        function (err, results, fields) {
-            res.json(results)
-        }
+        `SELECT * FROM reviews WHERE gameId = ?`,
+        [req.params['gameId']],
+        handleQueryOutput(200, res)
     )
 };
 
 export async function listReviewsOfUser(req: Request, res: Response) {
     connection.execute(
-        ``,
-        [],
-        function (err, results, fields) {
-            res.json(results)
-        }
+        `SELECT * FROM reviews WHERE userId = ?`,
+        [req.params['userId']],
+        handleQueryOutput(200, res)
     )
 };
 
 export async function updateReview(req: Request, res: Response) {
     connection.execute(
-        ``,
-        [],
-        function (err, results, fields) {
-            res.json(results)
-        }
+        `UPDATE reviews SET reviewRating = ?, reviewBody = ?, reviewTimeStamp = NOW(), reviewWasEdited = true WHERE gameId = ? AND userId = ?`,
+        [req.body["reviewRating"], req.body["reviewBody"], req.params["gameId"], req.params["userId"]],
+        handleQueryOutput(200, res)
     )
 };
 
 export async function deleteReview(req: Request, res: Response) {
     connection.execute(
-        ``,
-        [],
-        function (err, results, fields) {
-            res.json(results)
-        }
+        `DELETE FROM reviews WHERE gameId = ? AND userId = ?`,
+        [req.params["gameId"], req.params["userId"]],
+        handleQueryOutput(200, res)
     )
 };
