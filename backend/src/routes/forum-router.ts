@@ -3,8 +3,8 @@ import * as forumController from "../controllers/forum-controller";
 
 const router: Router = Router();
 
-router.get('/api/forums', forumController.listForums);
 router.post('/api/games/:gameId/comments', forumController.addComment);
+router.get('/api/forums', forumController.listForums);
 router.get('/api/games/:gameId/comments', forumController.listCommentsOfGame);
 router.put('/api/comments/:commentId', forumController.updateComment);
 router.delete('/api/comments/:commentId', forumController.deleteComment);
