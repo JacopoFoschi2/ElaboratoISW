@@ -1,6 +1,7 @@
 @use "./style-variables.scss";
 
-body, html {
+body,
+html {
     background-color: style-variables.$default-background-color;
 }
 
@@ -10,6 +11,7 @@ main {
     display: flex;
     flex-direction: column;
 }
+
 body,
 header,
 h1,
@@ -20,24 +22,29 @@ ul {
     padding: 0;
 }
 
-input{
+input {
     font-family: "Jaidi Regular", sans-serif;
 }
 
-body{
+body {
     font-family: "Jaidi Regular", sans-serif;
 }
 
-h1,h2,h3{
+h1,
+h2,
+h3 {
     font-family: "Jaidi Bold", sans-serif;
     color: style-variables.$default-text-color;
 }
 
-p{
+p {
     color: style-variables.$default-text-color;
 }
 
 li {
+    font-family: "Jaidi Bold", sans-serif;
+    color: style-variables.$default-text-color;
+
     a {
         text-decoration: none;
         font-family: "Jaidi Bold", sans-serif;
