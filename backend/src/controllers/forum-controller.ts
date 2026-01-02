@@ -5,7 +5,7 @@ import { handleQueryOutput } from "../utils/query-handling"
 export async function addComment(req: Request, res: Response) {
     connection.execute(
         `INSERT INTO comments (gameId, userId, commentBody, commentTimeStamp) VALUES (?, ?, ?, NOW())`,
-        [req.body.gameId, req.body.userId, req.body.commentBody],
+        [req.body["gameId"], req.body["userId"], req.body["commentBody"]],
         handleQueryOutput(201, res)
     )
 };
@@ -29,7 +29,7 @@ export async function listCommentsOfGame(req: Request, res: Response) {
 export async function updateComment(req: Request, res: Response) {
     connection.execute(
         `INSERT INTO comments (commentBody, commentWasEdited) VALUES (?, true) WHERE commentId = ?`,
-        [req.body.commentBody, req.params['commentId']],
+        [req.body["commentBody"], req.params["commentId"]],
         handleQueryOutput(200, res)
     )
 };
