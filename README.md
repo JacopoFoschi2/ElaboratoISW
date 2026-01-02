@@ -1,1 +1,50 @@
 # ElaboratoISW
+
+Crud naming convention:
+
+- Create: create for new entities, add for new relations
+- Read: list for collections, get for single object
+- Update: update
+- Delete: delete
+
+API da produrre:
+
+Utenti:
+lista di tutti gli utenti V
+aggiunta nuovo utente V
+rimozione utente V
+modifica limitata utente V
+
+Giochi:
+lista di tutti i giochi per un dato genere V
+lista di tutti i giochi ordinati per rating V
+lista di tutti i giochi ordinati per novità V
+dettaglio di un gioco V
+aggiunta di un nuovo gioco V
+rimozione di un gioco V
+modifica di un gioco V
+lista wishlist V
+vedi se è in wishlist V
+aggiungi a wishlist V
+rimuovi da wishlist V
+lista posseduti V
+vedi se è posseduto V
+aggiungi a posseduti V
+rimuovi dai posseduti V
+
+Forum:
+lista di tutti i forum (tutti i giochi esponendo il banner piccolo) V
+lista di tutti i commenti del forum di un gioco V
+aggiunta nuovo commento V
+modifica commento V
+rimozione commento V
+
+Recensioni:
+lista di tutti le recensioni di un gioco meno quella dell'utente V
+recensione dell'utente V
+    //queste due query coesistono permettendo di mettere in cima la
+    recensione dell'utente per poi aggiungere a seguito le altre ordinate
+    per data di pubblicazione
+aggiunta nuova recensione V
+modifica recensione V
+rimozione recensione V

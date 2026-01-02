@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./db-src",
+    "outDir": "./dist-db",
+  },
+  "include": [
+    "db-src"
+  ]
+}

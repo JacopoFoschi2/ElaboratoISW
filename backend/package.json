@@ -1,12 +1,32 @@
 {
   "name": "backend",
-  "version": "0.0.0",
+  "version": "0.5.0",
   "description": "",
-  "main": "index.js",
-  "type": "module",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc -p tsconfig.json",
+    "dev": "npx ts-node-dev src/app.ts",
+    "start": "node dist/app.js",
+    "seed:build": "tsc -p tsconfig.seed.json",
+    "seed:run": "node dist-db/seed.js",
+    "seed": "npm run seed:build && npm run seed:run"
   },
   "author": "Jacopo Foschi",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "mysql2": "^3.15.3",
+    "tsx": "^4.21.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/express": "^5.0.5",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.10.1",
+    "typescript": "^5.9.3"
+  }
 }
