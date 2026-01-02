@@ -5,7 +5,23 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "sass": "sass src/styles/style.scss dist/style.css"
+  },
+  "dependencies": {
+    "axios": "^1.13.2",
+    "vue": "^3.5.12",
+    "vue-router": "^4.0.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.1",
+    "sass": "^1.97.1",
+    "sass-embedded": "^1.97.1",
+    "typescript": "^5.6.3",
+    "vite": "^7.2.2",
+    "vue-tsc": "^2.1.8"
   },
   "author": "Mosè Barbieri",
   "license": "ISC"
