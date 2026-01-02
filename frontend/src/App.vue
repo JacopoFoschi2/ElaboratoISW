@@ -37,7 +37,7 @@
 
     .nav-container {
         max-width: 1060px;
-        width: 100%;
+        
         display: flex;
         align-items: center;
         gap: 50px;
@@ -86,7 +86,7 @@ ul {
 
         li,
         a {
-            color: white;
+            color: style-variables.$default-footer-text-color;
             font-size: 18px;
             text-decoration: none;
         }
