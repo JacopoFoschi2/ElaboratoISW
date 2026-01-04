@@ -8,6 +8,7 @@ import Forum from "./pages/Forum.vue"
 import TermsOfService from "./pages/Terms-of-Service.vue"
 import CommunityGuidelines from "./pages/Community-Guidelines.vue"
 import CookiePolicy from "./pages/Cookie-Policy.vue"
+import GameDetail from "./pages/GameDetail.vue"
 
 
 
@@ -16,6 +17,12 @@ const router: Router = createRouter({
     routes: [
         { path: "/", component: Home },
         { path: "/forum", component: Forum },
+        {
+            path: "/game/:id",
+            name: "GameDetail",
+            component: GameDetail,
+            props: true
+        },
         { path: "/privacy-policy", component: PrivacyPolicy },
         {path: "/terms-of-service", component: TermsOfService},
         {path: "/Community-Guidelines", component: CommunityGuidelines},
