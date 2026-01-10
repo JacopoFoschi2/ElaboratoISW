@@ -1,11 +1,15 @@
 <script>
+    import { ref, onMounted } from 'vue';
+    import StarRating from '../components/StarRating.vue';
 
 </script>
 <template>
     <div class="game-detail-page">
         <main class="content-wrapper">
-            <img src="#" alt="game cover" />
+            <img src="#" alt="game cover" class="game-cover" />
             <h2 class="game-title">Game Title</h2>
+
+            <StarRating :rating="4" :size="30" /> <!-- this is only an example-->
 
             <p class="game-description">Description of the game</p>
 
