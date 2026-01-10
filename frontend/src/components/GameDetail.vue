@@ -4,7 +4,7 @@
 
 </script>
 <template>
-    <div class="game-detail-page">
+    <div v-if="true" class="game-detail-page">
         <main class="content-wrapper">
             <img src="#" alt="game cover" class="game-cover" />
             <h2 class="game-title">Game Title</h2>
@@ -17,6 +17,9 @@
         </main>
 
     </div>
+    <div v-else>
+        <p>Loading...</p>
+    </div>  
 </template>
 
 <style scoped lang="scss">
