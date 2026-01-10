@@ -13,6 +13,7 @@
 
             <p class="game-description">Description of the game</p>
 
+            
 
         </main>
 
