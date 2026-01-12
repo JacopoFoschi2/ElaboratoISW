@@ -24,12 +24,26 @@ export default {
             <li><router-link to="/">BEST</router-link></li>
             <li><router-link to="/">RECENTLY RELEASED</router-link></li>
             <li><router-link to="/">GENRE</router-link></li>
-            <li><router-link to="/"><img class="pfp-" src="./assets/pfpIcon.svg" alt="User Icon">
-                    </img></router-link></li>
+            <li><img @click="toggleSingIn" class="pfp-" src="./assets/pfpIcon.svg" alt="User Icon"></img></li>
         </ul>
     </nav>
     <main>
         <router-view />
+
+        <div v-if="showSignIn" class="sign-in-container">
+            <div class="sign-in-elements">
+                <img @click="toggleSingIn" class="close-icon" src="../src/assets/xIcon.svg"/>
+                <h2>Sign In</h2>
+                <form>
+                    <input type="text" placeholder="insert your email..."/>
+                    <input type="password" placeholder="insert your password..."/>
+                    <button type="submit">Enter</button>
+                    <p>Don't have an account? <router-link to="/registration" @click="toggleSingIn">Register</router-link></p>
+                </form>
+
+                
+            </div>
+        </div>
     </main>
     <nav class="footer-everywhere">
         <ul>
