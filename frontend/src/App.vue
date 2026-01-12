@@ -1,3 +1,21 @@
+<script>
+export default {
+    name: 'App',
+    data() {
+        return {
+            showSignIn: false,
+        };
+    },
+    methods: {
+        toggleSingIn(){
+            this.showSignIn = !this.showSignIn;
+        }
+    }
+};
+
+    
+</script>
+
 <template>
     <nav class="navbar-everywhere">
         <ul class="nav-container">

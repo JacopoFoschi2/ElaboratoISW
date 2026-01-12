@@ -16,7 +16,7 @@
             <div class="avaible-container">
                 <h3>Avaible on:</h3>
                 <ul>
-                    <li> <img src='../assets/avaibleIcons/SteamLogo.svg' alt="Steam Logo" /></li>
+                    <li><img src='../assets/avaibleIcons/SteamLogo.svg' alt="Steam Logo" /></li>
                     <li><img src='../assets/avaibleIcons/GogLogo.svg' alt="Gog Logo" /></li>
                     <li><img src='../assets/avaibleIcons/EpicGamesLogo.svg' alt="Epic Games Logo" /></li>
                 </ul>
