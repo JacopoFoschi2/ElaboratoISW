@@ -8,7 +8,7 @@ import Forum from "./pages/Forum.vue"
 import TermsOfService from "./pages/Terms-of-Service.vue"
 import CommunityGuidelines from "./pages/Community-Guidelines.vue"
 import CookiePolicy from "./pages/Cookie-Policy.vue"
-import GameDetail from "./pages/GameDetail.vue"
+import GameDetail from "./components/GameDetail.vue"
 
 
 

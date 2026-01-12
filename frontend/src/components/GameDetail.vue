@@ -44,12 +44,12 @@
 
 .game-title {
     font-size: 3rem;
-    color: style-variables.$primary-text-color;
+    color: style-variables.$default-text-color;
 }
 
 .game-description {
     font-size: 1.5rem;
-    color: style-variables.$secondary-text-color;
+    color: style-variables.$default-text-color;
 }
 
 .content-wrapper {
