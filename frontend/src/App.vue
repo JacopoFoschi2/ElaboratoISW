@@ -7,7 +7,7 @@ export default {
         };
     },
     methods: {
-        toggleSingIn(){
+        toggleSignIn(){
             this.showSignIn = !this.showSignIn;
         }
     }
@@ -24,7 +24,7 @@ export default {
             <li><router-link to="/">BEST</router-link></li>
             <li><router-link to="/">RECENTLY RELEASED</router-link></li>
             <li><router-link to="/">GENRE</router-link></li>
-            <li><img @click="toggleSingIn" class="pfp-" src="./assets/pfpIcon.svg" alt="User Icon"></img></li>
+            <li><img @click="toggleSignIn" class="pfp-" src="./assets/pfpIcon.svg" alt="User Icon"></img></li>
         </ul>
     </nav>
     <main>
@@ -32,13 +32,13 @@ export default {
 
         <div v-if="showSignIn" class="sign-in-background">
             <div class="sign-in-container">
-                <img @click="toggleSingIn" class="close-icon" src="../src/assets/xIcon.svg"/>
+                <img @click="toggleSignIn" class="close-icon" src="../src/assets/xIcon.svg"/>
                 <h2>SIGN IN</h2>
                 <form>
                     <input type="text" placeholder="insert your email..."/>
                     <input type="password" placeholder="insert your password..."/>
                     <button type="submit">Enter</button>
-                    <p>Don't have an account? <router-link to="/registration" @click="toggleSingIn">Register</router-link></p>
+                    <p>Don't have an account? <router-link to="/registration" @click="toggleSignIn">Register</router-link></p>
                 </form>
             </div>
         </div>
