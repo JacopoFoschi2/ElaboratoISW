@@ -4,11 +4,27 @@ export default {
     data() {
         return {
             showSignIn: false,
+            isLoggedIn: false,
+            currentUserId: null,
         };
     },
     methods: {
         toggleSignIn(){
             this.showSignIn = !this.showSignIn;
+        },
+        handleClickpfp(){
+            if(this.isLoggedIn){
+                this.$router.push(`/profile/${this.currentUserId}`);
+            } else {
+                this.toggleSignIn();
+            }
+        },
+        handleLogin(){
+            // const mockUserId = 1;
+            // this.currentUserId = mockUserId;
+            this.isLoggedIn = true;
+            this.showSignIn = false;
+            this.$router.push(`/profile/${this.currentUserId}`);
         }
     }
 };
@@ -34,7 +50,7 @@ export default {
             <div class="sign-in-container">
                 <img @click="toggleSignIn" class="close-icon" src="../src/assets/xIcon.svg"/>
                 <h2>SIGN IN</h2>
-                <form>
+                <form @submit.prevent="handleLogin">
                     <input type="text" placeholder="insert your email..."/>
                     <input type="password" placeholder="insert your password..."/>
                     <button type="submit">Enter</button>

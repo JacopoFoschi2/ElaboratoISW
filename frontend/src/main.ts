@@ -9,6 +9,7 @@ import TermsOfService from "./pages/Terms-of-Service.vue"
 import CommunityGuidelines from "./pages/Community-Guidelines.vue"
 import CookiePolicy from "./pages/Cookie-Policy.vue"
 import GameDetail from "./components/GameDetail.vue"
+import Profile from "./pages/Profile.vue"
 
 
 
@@ -22,6 +23,10 @@ const router: Router = createRouter({
             name: "GameDetail",
             component: GameDetail,
             props: true
+        },
+        { 
+            path: "/profile/:id", 
+            component: Profile 
         },
         { path: "/privacy-policy", component: PrivacyPolicy },
         {path: "/terms-of-service", component: TermsOfService},
