@@ -19,6 +19,8 @@
   - /api/games/rating
   - /api/games/release
   - /api/games/:genreId
+  - /api/games/as-you-type/:partialName
+  - /api/games/matching/:partialName
   - /api/game/:gameId
 - Update:
   - /api/games/:gameId
@@ -91,6 +93,8 @@
   - /api/games/:gameId/comments
 - Read:
   - /api/forums
+  - /api/forums/as-you-type/:partialName
+  - /api/forums/matching/:partialName
   - /api/games/:gameId/comments
 - Update:
   - /api/comments/:commentId

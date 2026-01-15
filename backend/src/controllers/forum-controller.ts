@@ -12,15 +12,41 @@ export async function addComment(req: Request, res: Response) {
 
 export async function listForums(req: Request, res: Response) {
     connection.execute(
-        `SELECT gameName, gameSmallBannerName, gameSmallBannerBin FROM games`,
+        `SELECT gameId, gameName, gameSmallBannerName, gameSmallBannerBin FROM games`,
         [],
+        handleQueryOutput(200, res)
+    )
+};
+
+export async function listForumsAsYouType(req: Request, res: Response) {
+    connection.execute(
+        `SELECT gameId, gameName, gameSmallBannerBin, gameSmallBannerName
+        FROM games
+        WHERE gameName LIKE CONCAT('%', ?, '%') or 
+        gameAlternateName like CONCAT('%', ?, '%')
+        ORDER BY gameName DESC
+        LIMIT 15`,
+        [req.params["partialName"], req.params["partialName"]],
+        handleQueryOutput(200, res)
+    )
+};
+
+export async function listForumsMatching(req: Request, res: Response) {
+    connection.execute(
+        `SELECT gameId, gameName, gameSmallBannerBin, gameSmallBannerName
+        FROM games
+        WHERE gameName LIKE CONCAT('%', ?, '%') or 
+        gameAlternateName like CONCAT('%', ?, '%')
+        ORDER BY gameName DESC`,
+        [req.params["partialName"], req.params["partialName"]],
         handleQueryOutput(200, res)
     )
 };
 
 export async function listCommentsOfGame(req: Request, res: Response) {
     connection.execute(
-        `SELECT commentBody, commentTimeStamp, commentWasEdited, userUsername, userIconBin, userIconName FROM comments as c join users as u ON c.userId = u.userId WHERE gameId = ?`,
+        `SELECT commentBody, commentTimeStamp, commentWasEdited, userUsername, userIconBin, userIconName 
+        FROM comments as c join users as u ON c.userId = u.userId WHERE gameId = ? ORDER BY commentTimeStamp DESC`,
         [req.params['gameId']],
         handleQueryOutput(200, res)
     )
