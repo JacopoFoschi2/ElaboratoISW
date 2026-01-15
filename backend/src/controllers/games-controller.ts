@@ -12,7 +12,7 @@ export async function createGame(req: Request, res: Response) {
 
 export async function listGamesOfGenre(req: Request, res: Response) {
     connection.execute(
-        `SELECT gameId, gameName, gameCoverBin, gameCoverName FROM games as g
+        `SELECT c.gameId, gameName, gameCoverBin, gameCoverName FROM games as g
          JOIN game_categories as c ON g.gameId = c.gameId
          WHERE c.categoryId = ?`,
         [req.params["genreId"]],
