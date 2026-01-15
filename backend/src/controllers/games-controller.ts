@@ -40,7 +40,7 @@ export async function listGamesOrderedByRelease(req: Request, res: Response) {
 
 export async function getGame(req: Request, res: Response) {
     connection.execute(
-        `SELECT gameName, gameDesc, gameSteamLink, gameGoGLink, gameEpicLink, gameReleaseDate, gameCoverBin, gameCoverName,  FROM games WHERE gameId = ?`,
+        `SELECT gameName, gameDesc, gameSteamLink, gameGoGLink, gameEpicLink, gameReleaseDate, gameCoverBin, gameCoverName  FROM games WHERE gameId = ?`,
         [req.params["gameId"]],
         handleQueryOutput(200, res)
     )
