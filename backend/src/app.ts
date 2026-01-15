@@ -1,7 +1,7 @@
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import express, { type Express } from "express";
-import authRouter from "./routes/auth-router";
+import authRouter from "./routes/authentication-router";
 import forumRouter from "./routes/forum-router";
 import gamesRouter from "./routes/games-router";
 import gameCategoriesRouter from "./routes/game-categories-router";
