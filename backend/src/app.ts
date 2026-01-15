@@ -1,4 +1,7 @@
+import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 import express, { type Express } from "express";
+import authRouter from "./routes/auth-router";
 import forumRouter from "./routes/forum-router";
 import gamesRouter from "./routes/games-router";
 import gameCategoriesRouter from "./routes/game-categories-router";
@@ -11,6 +14,9 @@ import categoriesRouter from "./routes/categories-router";
 const app: Express = express();
 const port: number = 3000;
 
+app.use(bodyParser.json());
+app.use(cookieParser());
+app.use(authRouter);
 app.use(forumRouter);
 app.use(gamesRouter);
 app.use(gameCategoriesRouter);
