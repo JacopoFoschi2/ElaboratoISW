@@ -11,7 +11,7 @@ const COOKIE_NAME = "vuepost-access-token"
  * Codifica l'utente in un access token e lo imposta come cookie.
  * Usato in fase di registrazione e login.
  */
-export const setUser = (req: Request, res: Response, user: User) => {
+export const setUser = (req: Request, res: Response, user: any) => {
   // Crea l'access token con JWT
   const accessToken = jwt.sign(user, JWT_SECRET, { expiresIn: "1 day" })
   // Imposta l'access token come cookie
