@@ -19,16 +19,16 @@ const router: Router = createRouter({
         {
             path: "/game/:id",
             name: "GameDetail",
-            component: () => import("./pages/GameDetail.vue"),
-            props: true
+            component: () => import('./pages/GameDetail.vue'),
+            props: route => ({ id: Number(route.params.id) })
         },
         { 
             path: "/profile/:id", 
-            component: () => import("./pages/Profile.vue")
+            component: () => import('./pages/Profile.vue')
         },
         { path: "/privacy-policy", component: PrivacyPolicy },
         {path: "/terms-of-service", component: TermsOfService},
-        {path: "/Community-Guidelines", component: CommunityGuidelines},
+        {path: "/community-guidelines", component: CommunityGuidelines},
         { path: "/cookie-policy", component: CookiePolicy },
         { path: "/:pathMatch(.*)*", component: NotFound }
     ]

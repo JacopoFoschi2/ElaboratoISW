@@ -2,22 +2,34 @@
 import { ref, onMounted } from 'vue';
 
 const categories = ref([]);
-const loading = ref(true);
+
+const getImageUrl = (game) => {
+    try {
+        if (game.gameCoverBin && game.gameCoverBin.data) {
+            const arrayBuffer = new Uint8Array(game.gameCoverBin.data);
+            let binary = '';
+            arrayBuffer.forEach((byte) => {
+                binary += String.fromCharCode(byte);
+            });
+            return `data:image/jpg;base64,${window.btoa(binary)}`;
+        }
+    }
+    catch (error) {
+        console.error('Error processing image:', error);
+    }
+    return '';
+};
 
 const fetchCategories = async () => {
     try {
         const response = await fetch('/api/categories');
         const catData = await response.json();
-        categories.value = catData.map(cat => ({
-            ...cat,
-            games: []
-        }))
+        categories.value = catData.map(cat => ({ ...cat, games: [] }));
 
         for (const category of categories.value) {
             try {
                 const gamesResponse = await fetch(`/api/games/${category.categoryId}`);
                 const gamesData = await gamesResponse.json();
-                
                 category.games = gamesData.slice(0, 5); //only 5 per category
             }
             catch (error) {
@@ -46,24 +58,14 @@ onMounted(() => {
                 </button>
 
             </div>
-            <div v-if="loading">Loading categories...</div>
             <div v-for="category in categories" :key="category.categoryId">
                 <template v-if="category.games?.length > 0">
                     <h2 class="section-title">{{ category.categoryName }}</h2>
                     <div class="game-section">
-                        <router-link
-                            v-for="game in category.games"
-                            :key="game.gameId"
-                            :to="`/api/game/${game.gameId}`"
-                            class="game-card"
-                        >
-                            <img
-                                v-if="game.gameCoverBin && game.gameCoverBin.data"
-                                :src="game.gameCoverName"
-                                :alt="game.gameName"
-                                class="game-cover-image"
-                            />
-                            <div v-else class="placeholder-img">No Image Available</div>
+                        <router-link v-for="game in category.games" :key="game.gameId"
+                            :to="{ name: 'GameDetail', params: { id: game.gameId } }" 
+                            class="game-card">
+                            <img :src="getImageUrl(game)" :alt="game.gameName" class="game-cover-image" />
                         </router-link>
                     </div>
                 </template>
@@ -159,7 +161,7 @@ onMounted(() => {
         object-fit: cover;
     }
 
-    .placeholder-img{
+    .placeholder-img {
         text-align: center;
         background-color: style-variables.$default-text-color;
     }
@@ -169,7 +171,7 @@ onMounted(() => {
     transform: scale(1.05);
 }
 
-.loader{
+.loader {
     text-align: center;
     font-size: 1.5rem;
 }

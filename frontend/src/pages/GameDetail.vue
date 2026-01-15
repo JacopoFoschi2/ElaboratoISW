@@ -1,4 +1,4 @@
-<script>
+<script setup>
 import { ref, onMounted } from 'vue';
 import StarRating from '../components/StarRating.vue';
 
@@ -42,22 +42,22 @@ onMounted(async () => {
 
             <p class="game-description">{{ game.gameDesc }}</p>
 
-            <div class="avaible-container">
-                <h3>Avaible on:</h3>
+            <div class="available-container">
+                <h3>Available on:</h3>
                 <ul>
                     <li v-if="game.gameSteamLink">
                         <a :href="game.gameSteamLink" target="_blank">
-                            <img src='../assets/avaibleIcons/SteamLogo.svg' alt="Steam Logo" />
+                            <img src='../assets/availableIcons/SteamLogo.svg' alt="Steam Logo" />
                         </a>
                     </li>
                     <li v-if="game.gameGogLink">
                         <a :href="game.gameGogLink" target="_blank">
-                            <img src='../assets/avaibleIcons/GogLogo.svg' alt="Gog Logo" />
+                            <img src='../assets/availableIcons/GogLogo.svg' alt="Gog Logo" />
                         </a>
                     </li>
                     <li v-if="game.gameEpicLink">
                         <a :href="game.gameEpicLink" target="_blank">
-                            <img src='../assets/avaibleIcons/EpicGamesLogo.svg' alt="Epic Games Logo" />
+                            <img src='../assets/availableIcons/EpicLogo.svg' alt="Epic Games Logo" />
                         </a>
                     </li>
                 </ul>
