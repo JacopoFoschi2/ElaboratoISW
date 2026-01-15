@@ -21,7 +21,7 @@ const getImageUrl = (imageBuffer) => {
 onMounted(async () => {
     try {
         const gameId = props.id;
-        const response = await fetch(`http://localhost:3000/api/game/${gameId}`);
+        const response = await fetch(`/api/game/${gameId}`);
         const data = await response.json();
         game.value = data[0];
     } catch (error) {

@@ -2,30 +2,31 @@
 import { ref, onMounted } from 'vue';
 
 const categories = ref([]);
+const loading = ref(true);
 
 const fetchCategories = async () => {
     try {
-        const response = await fetch('http://localhost:3000/api/categories');
-        const data = await response.json();
-        categories.value = data;
+        const response = await fetch('/api/categories');
+        const catData = await response.json();
+        categories.value = catData.map(cat => ({
+            ...cat,
+            games: []
+        }))
 
-        await Promise.all(categories.value.map(async (category) => {
+        for (const category of categories.value) {
             try {
-                const gamesResponse = await fetch(`http://localhost:3000/api/games?${category.name}`);
+                const gamesResponse = await fetch(`/api/games/${category.categoryId}`);
                 const gamesData = await gamesResponse.json();
-                category.games = gamesData;
-                category.games = category.games.slice(0, 5);
+                
+                category.games = gamesData.slice(0, 5); //only 5 per category
             }
             catch (error) {
-                console.error(`Error fetching games for category ${category.name}:`, error);
-                category.games = []; //fallback
+                console.error(`Error fetching games for category ${category.categoryId}:`, error);
             }
-
-
-        }));
+        }
     }
     catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error('Error fetching data:', error);
     }
 };
 
@@ -45,22 +46,24 @@ onMounted(() => {
                 </button>
 
             </div>
-
-            <div v-for="category in categories" :key="category.id">
-                <template v-if="category.games && category.games.length > 0">
-                    <h2 class="section-title">{{ category.name }}</h2>
+            <div v-if="loading">Loading categories...</div>
+            <div v-for="category in categories" :key="category.categoryId">
+                <template v-if="category.games?.length > 0">
+                    <h2 class="section-title">{{ category.categoryName }}</h2>
                     <div class="game-section">
                         <router-link
                             v-for="game in category.games"
-                            :key="game.id"
-                            :to="`/game/${game.id}`"
+                            :key="game.gameId"
+                            :to="`/api/game/${game.gameId}`"
                             class="game-card"
                         >
                             <img
-                                :src="`data:image/jpg;base64,${btoa(String.fromCharCode(...new Uint8Array(game.gameCoverBin.data)))}`"
+                                v-if="game.gameCoverBin && game.gameCoverBin.data"
+                                :src="game.gameCoverName"
                                 :alt="game.gameName"
                                 class="game-cover-image"
                             />
+                            <div v-else class="placeholder-img">No Image Available</div>
                         </router-link>
                     </div>
                 </template>
@@ -145,10 +148,9 @@ onMounted(() => {
     height: auto;
     aspect-ratio: 2/3;
     object-fit: cover;
-    background-color: style-variables.$default-text-color;
     overflow: hidden;
     transition: transform 0.3s;
-    min-width: 228px;
+    min-width: 200px;
     min-height: 342px;
 
     .game-cover-image {
@@ -156,9 +158,19 @@ onMounted(() => {
         height: 100%;
         object-fit: cover;
     }
+
+    .placeholder-img{
+        text-align: center;
+        background-color: style-variables.$default-text-color;
+    }
 }
 
 .game-card:hover {
     transform: scale(1.05);
+}
+
+.loader{
+    text-align: center;
+    font-size: 1.5rem;
 }
 </style>
