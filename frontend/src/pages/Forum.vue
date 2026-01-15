@@ -3,7 +3,7 @@
         <main class="content-wrapper">
             <h2>All Forums</h2>
             <div class="search-container">
-                <input type="text" placeholder="search your games..." class="search-input" />
+                <input type="text" placeholder="search your forums..." class="search-input" />
                 <button class="search-button">
                     <img src="../assets/search.svg" alt="search icon" />
                 </button>

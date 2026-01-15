@@ -9,17 +9,17 @@ export default {
         };
     },
     methods: {
-        toggleSignIn(){
+        toggleSignIn() {
             this.showSignIn = !this.showSignIn;
         },
-        handleClickpfp(){
-            if(this.isLoggedIn){
+        handleClickpfp() {
+            if (this.isLoggedIn) {
                 this.$router.push(`/profile/${this.currentUserId}`);
             } else {
                 this.toggleSignIn();
             }
         },
-        handleLogin(){
+        handleLogin() {
             // const mockUserId = 1;
             // this.currentUserId = mockUserId;
             this.isLoggedIn = true;
@@ -29,7 +29,7 @@ export default {
     }
 };
 
-    
+
 </script>
 
 <template>
@@ -39,7 +39,15 @@ export default {
             <li><router-link to="/forum">FORUM</router-link></li>
             <li><router-link to="/">BEST</router-link></li>
             <li><router-link to="/">RECENTLY RELEASED</router-link></li>
-            <li><router-link to="/">GENRE</router-link></li>
+
+            <li class="dropdown"><router-link class="dropdown-trigger" to="/">
+                    <img class="arrow-icon" src="./assets/arrowDown.svg" alt="arrow">GENRE</router-link>
+
+                <ul class="drop-menu">
+                    <li> <a>Action</a></li>
+                </ul>
+
+            </li>
             <li><img @click="toggleSignIn" class="pfp-" src="./assets/pfpIcon.svg" alt="User Icon"></img></li>
         </ul>
     </nav>
@@ -48,13 +56,14 @@ export default {
 
         <div v-if="showSignIn" class="sign-in-background">
             <div class="sign-in-container">
-                <img @click="toggleSignIn" class="close-icon" src="../src/assets/xIcon.svg"/>
+                <img @click="toggleSignIn" class="close-icon" src="../src/assets/xIcon.svg" />
                 <h2>SIGN IN</h2>
                 <form @submit.prevent="handleLogin">
-                    <input type="text" placeholder="insert your email..."/>
-                    <input type="password" placeholder="insert your password..."/>
+                    <input type="text" placeholder="insert your email..." />
+                    <input type="password" placeholder="insert your password..." />
                     <button type="submit">Enter</button>
-                    <p>Don't have an account? <router-link to="/registration" @click="toggleSignIn">Register</router-link></p>
+                    <p>Don't have an account? <router-link to="/registration"
+                            @click="toggleSignIn">Register</router-link></p>
                 </form>
             </div>
         </div>
@@ -83,10 +92,71 @@ export default {
 
     .nav-container {
         max-width: 1060px;
-        
         display: flex;
         align-items: center;
         gap: 50px;
+
+        .dropdown {
+            position: relative;
+            display: flex;
+            align-items: center;
+            height: 100%;
+
+            .dropdown-trigger {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+
+                .arrow-icon {
+                    vertical-align: middle;
+                }
+            }
+        }
+
+        .drop-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: style-variables.$default-navbar-color;
+            min-width: 200px;
+            flex-direction: column;
+            gap: 0;
+            padding: 10px 0;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            z-index: 1;
+
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+
+            li{
+                width: 100%;
+                a{
+                    color: black;
+                    padding: 10px 20px;
+                    display: block;
+                    text-decoration: none;
+                    font-size: 14px;
+
+                    &:hover {
+                        background-color: style-variables.$button-and-border-footer-color;
+                        color: style-variables.$default-text-color;
+                        text-decoration: none;
+                        cursor: pointer;
+                    }
+                }
+            }
+        }
+
+        &:hover {
+            .drop-menu {
+               opacity: 1;
+               visibility: visible;
+               transform: translateY(0);
+            }
+        }
+
     }
 }
 
@@ -109,6 +179,7 @@ ul {
         a {
             color: black;
         }
+
         a:hover {
             text-decoration: underline;
         }
@@ -121,11 +192,11 @@ body.sign-in-background {
 
 .sign-in-background {
     position: fixed;
-    top: 0; 
+    top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color:rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.7);
     z-index: 1;
     display: flex;
     align-items: center;
@@ -147,6 +218,7 @@ body.sign-in-background {
     margin-bottom: 2rem;
     font-size: 2rem;
 }
+
 .sign-in-container input {
     display: block;
     width: 100%;
@@ -181,13 +253,14 @@ body.sign-in-background {
     text-decoration: underline;
 }
 
-.close-icon{
+.close-icon {
     position: absolute;
     top: 10px;
     right: 20px;
     cursor: pointer;
 }
-.close-icon:hover{
+
+.close-icon:hover {
     border: 1px solid style-variables.$default-text-color;
 }
 
