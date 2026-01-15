@@ -1,5 +1,7 @@
 # PCMASTERRACEDB
 
+## [Desing in figma](https://www.figma.com/design/i4GJXy1o7o1REjxNKhDrOZ/Project-PcMasterRaceDB?node-id=0-1&t=7vQWqPAiKoI57x35-1)
+
 ## Crud naming convention
 
 - Create: create for new entities, add for new relations
