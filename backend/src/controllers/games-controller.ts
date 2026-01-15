@@ -38,6 +38,31 @@ export async function listGamesOrderedByRelease(req: Request, res: Response) {
     )
 };
 
+export async function listGamesAsYouType(req: Request, res: Response) {
+    connection.execute(
+        `SELECT gameId, gameName, gameSmallBannerBin, gameSmallBannerName
+        FROM games
+        WHERE gameName LIKE CONCAT('%', ?, '%') or 
+        gameAlternateName like CONCAT('%', ?, '%')
+        ORDER BY gameName DESC
+        LIMIT 4`,
+        [req.params["partialName"], req.params["partialName"]],
+        handleQueryOutput(200, res)
+    )
+}
+
+export async function listGamesMatching(req: Request, res: Response) {
+    connection.execute(
+        `SELECT gameId, gameName, gameCoverBin, gameCoverName
+        FROM games
+        WHERE gameName LIKE CONCAT('%', ?, '%') or 
+        gameAlternateName like CONCAT('%', ?, '%')
+        ORDER BY gameName DESC`,
+        [req.params["partialName"], req.params["partialName"]],
+        handleQueryOutput(200, res)
+    )
+}
+
 export async function getGame(req: Request, res: Response) {
     connection.execute(
         `SELECT gameName, gameDesc, gameSteamLink, gameGoGLink, gameEpicLink, gameReleaseDate, gameCoverBin, gameCoverName  FROM games WHERE gameId = ?`,
