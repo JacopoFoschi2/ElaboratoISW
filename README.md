@@ -1,50 +1,108 @@
-# ElaboratoISW
+# PCMASTERRACEDB
 
-Crud naming convention:
+## [Desing in figma](https://www.figma.com/design/i4GJXy1o7o1REjxNKhDrOZ/Project-PcMasterRaceDB?node-id=0-1&t=7vQWqPAiKoI57x35-1)
+
+## Crud naming convention
 
 - Create: create for new entities, add for new relations
 - Read: list for collections, get for single object
 - Update: update
 - Delete: delete
 
-API da produrre:
+## Backend Apis
 
-Utenti:
-lista di tutti gli utenti V
-aggiunta nuovo utente V
-rimozione utente V
-modifica limitata utente V
+### Games
 
-Giochi:
-lista di tutti i giochi per un dato genere V
-lista di tutti i giochi ordinati per rating V
-lista di tutti i giochi ordinati per novità V
-dettaglio di un gioco V
-aggiunta di un nuovo gioco V
-rimozione di un gioco V
-modifica di un gioco V
-lista wishlist V
-vedi se è in wishlist V
-aggiungi a wishlist V
-rimuovi da wishlist V
-lista posseduti V
-vedi se è posseduto V
-aggiungi a posseduti V
-rimuovi dai posseduti V
+- Create:
+  - /api/games
+- Read:
+  - /api/games/rating
+  - /api/games/release
+  - /api/games/:genreId
+- Update:
+  - /api/games/:gameId
+- Delete:
+  - /api/games/:gameId
 
-Forum:
-lista di tutti i forum (tutti i giochi esponendo il banner piccolo) V
-lista di tutti i commenti del forum di un gioco V
-aggiunta nuovo commento V
-modifica commento V
-rimozione commento V
+### User
 
-Recensioni:
-lista di tutti le recensioni di un gioco meno quella dell'utente V
-recensione dell'utente V
-    //queste due query coesistono permettendo di mettere in cima la
-    recensione dell'utente per poi aggiungere a seguito le altre ordinate
-    per data di pubblicazione
-aggiunta nuova recensione V
-modifica recensione V
-rimozione recensione V
+- Create:
+  - /api/users
+- Read:
+  - /api/users
+  - /api/users/:userId
+  - /api/users/exists/username/:username
+  - /api/users/exists/email/:email
+- Update:
+  - /api/users/:userId
+  - /api/users/:userId/password
+- Delete:
+  - /api/users/:userId
+
+### Categories
+
+- Create:
+  - /api/categories
+- Read:
+  - /api/categories
+- Update:
+  - /api/categories/:categoryId
+- Delete:
+  - /api/categories/:categoryId
+
+### Game Categories
+
+- Create:
+  - /api/game-categories
+- Read:
+  - /api/game-categories/:gameId
+- Update:
+  - /api/game-categories
+- Delete:
+  - /api/game-categories/:gameId/:categoryId
+
+### Owned
+
+- Create:
+  - /api/owned/:userId/:gameId
+- Read:
+  - /api/owned/:userId
+- Update:
+  - /api/owned/:userId/:gameId
+- Delete:
+  - /api/owned/:userId/:gameId
+
+### Reviews
+
+- Create:
+  - /api/reviews/:gameId/:userId
+- Read:
+  - /api/reviews/game/:gameId
+  - /api/reviews/user/:userId
+- Update:
+  - /api/reviews/:gameId/:userId
+- Delete:
+  - /api/reviews/:gameId/:userId
+
+### Forum
+
+- Create:
+  - /api/games/:gameId/comments
+- Read:
+  - /api/forums
+  - /api/games/:gameId/comments
+- Update:
+  - /api/comments/:commentId
+- Delete:
+  - /api/comments/:commentId
+
+### Wishlist
+
+- Create:
+  - /api/wishlist/:userId/:gameId
+- Read:
+  - /api/wishlist/:userId
+- Update:
+  - /api/wishlist/:userId/:gameId
+- Delete:
+  - /api/wishlist/:userId/:gameId
