@@ -12,7 +12,7 @@ export async function createReview(req: Request, res: Response) {
 
 export async function listReviewsOfGame(req: Request, res: Response) {
     connection.execute(
-        `SELECT * FROM reviews WHERE gameId = ?`,
+        `SELECT * FROM reviews WHERE gameId = ? ORDER BY reviewTimeStamp DESC`,
         [req.params['gameId']],
         handleQueryOutput(200, res)
     )
@@ -20,7 +20,7 @@ export async function listReviewsOfGame(req: Request, res: Response) {
 
 export async function listReviewsOfUser(req: Request, res: Response) {
     connection.execute(
-        `SELECT * FROM reviews WHERE userId = ?`,
+        `SELECT * FROM reviews WHERE userId = ? ORDER BY reviewTimeStamp DESC`,
         [req.params['userId']],
         handleQueryOutput(200, res)
     )

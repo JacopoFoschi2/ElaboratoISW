@@ -20,7 +20,8 @@ export async function listForums(req: Request, res: Response) {
 
 export async function listCommentsOfGame(req: Request, res: Response) {
     connection.execute(
-        `SELECT commentBody, commentTimeStamp, commentWasEdited, userUsername, userIconBin, userIconName FROM comments as c join users as u ON c.userId = u.userId WHERE gameId = ?`,
+        `SELECT commentBody, commentTimeStamp, commentWasEdited, userUsername, userIconBin, userIconName 
+        FROM comments as c join users as u ON c.userId = u.userId WHERE gameId = ? ORDER BY commentTimeStamp DESC`,
         [req.params['gameId']],
         handleQueryOutput(200, res)
     )
