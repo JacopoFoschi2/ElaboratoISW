@@ -1,23 +1,26 @@
 <script>
 import { ref, onMounted } from 'vue';
-import { routeLocationKey, useRoute } from 'vue-router';
 import StarRating from '../components/StarRating.vue';
 
-const route = useRoute();
+const props = defineProps({
+    id: {
+        type: Number,
+        required: true
+    }
+});
 const game = ref(null);
 const loading = ref(true);
 
 const getImageUrl = (imageBuffer) => {
     if (!imageBuffer || !imageBuffer.data) return '';
-
     const binary = String.fromCharCode(...imageBuffer.data);
     const base64String = window.btoa(binary);
-    return `data:image/png;base64,${base64String}`;
+    return `data:image/jpg;base64,${base64String}`;
 };
 
 onMounted(async () => {
     try {
-        const gameId = route.params.id;
+        const gameId = props.id;
         const response = await fetch(`http://localhost:3000/api/game/${gameId}`);
         const data = await response.json();
         game.value = data[0];

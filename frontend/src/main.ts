@@ -8,8 +8,6 @@ import Forum from "./pages/Forum.vue"
 import TermsOfService from "./pages/Terms-of-Service.vue"
 import CommunityGuidelines from "./pages/Community-Guidelines.vue"
 import CookiePolicy from "./pages/Cookie-Policy.vue"
-import GameDetail from "./components/GameDetail.vue"
-import Profile from "./pages/Profile.vue"
 
 
 
@@ -21,12 +19,12 @@ const router: Router = createRouter({
         {
             path: "/game/:id",
             name: "GameDetail",
-            component: GameDetail,
+            component: () => import("./pages/GameDetail.vue"),
             props: true
         },
         { 
             path: "/profile/:id", 
-            component: Profile 
+            component: () => import("./pages/Profile.vue")
         },
         { path: "/privacy-policy", component: PrivacyPolicy },
         {path: "/terms-of-service", component: TermsOfService},
