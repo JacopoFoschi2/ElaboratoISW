@@ -7,8 +7,9 @@
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "lib": ["esnext"],
-    "types": ["node"],
+    "target": "ESNext",
+    "module": "ESNext",
+    "lib": ["ESNext"],
 
     // Other Outputs
     "sourceMap": true,
@@ -32,6 +33,7 @@
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
+    "moduleResolution": "bundler",
     "skipLibCheck": true,
   },
   "exclude": [
