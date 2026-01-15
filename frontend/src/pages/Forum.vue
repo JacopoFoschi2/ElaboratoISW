@@ -3,7 +3,7 @@
         <main class="content-wrapper">
             <h2>All Forums</h2>
             <div class="search-container">
-                <input type="text" placeholder="search your games..." class="search-input" />
+                <input type="text" placeholder="search your forums..." class="search-input" />
                 <button class="search-button">
                     <img src="../assets/search.svg" alt="search icon" />
                 </button>
@@ -57,8 +57,7 @@ h2 {
     overflow: hidden;
     width: 60%;
     margin: 40px auto 20px auto;
-    background-color: style-variables.$button-and-border-footer-color;
-    border: 1px solid style-variables.$default-text-color;
+    background-color: style-variables.$default-navbar-color;
 
     .search-input {
         flex: 1;
@@ -69,6 +68,7 @@ h2 {
         padding: 10px 15px;
         color: style-variables.$default-text-color;
     }
+
 
     .search-button {
         padding: 0px 15px;
@@ -103,10 +103,13 @@ h2 {
     justify-content: center;
     width: 100%;
     height: 100%;
+    max-width: 231px;
+    max-height: 87px;
     object-fit: cover;
 }
 
 .game-title {
     font-size: 1.5rem;
+    padding-right: 10px;
 }
 </style>

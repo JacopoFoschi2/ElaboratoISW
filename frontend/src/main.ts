@@ -16,6 +16,16 @@ const router: Router = createRouter({
     routes: [
         { path: "/", component: Home },
         { path: "/forum", component: Forum },
+        {
+            path: "/game/:id",
+            name: "GameDetail",
+            component: () => import("./pages/GameDetail.vue"),
+            props: true
+        },
+        { 
+            path: "/profile/:id", 
+            component: () => import("./pages/Profile.vue")
+        },
         { path: "/privacy-policy", component: PrivacyPolicy },
         {path: "/terms-of-service", component: TermsOfService},
         {path: "/Community-Guidelines", component: CommunityGuidelines},
