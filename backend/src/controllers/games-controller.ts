@@ -38,10 +38,18 @@ export async function listGamesOrderedByRelease(req: Request, res: Response) {
     )
 };
 
+export async function getGame(req: Request, res: Response) {
+    connection.execute(
+        `SELECT gameName, gameDesc, gameSteamLink, gameGoGLink, gameEpicLink, gameReleaseDate, gameCoverBin, gameCoverName,  FROM games WHERE gameId = ?`,
+        [req.params["gameId"]],
+        handleQueryOutput(200, res)
+    )
+};
+
 export async function updateGame(req: Request, res: Response) {
     connection.execute(
         `UPDATE games SET gameName = ?, gameDesc = ?, gameSteamLink = ?, gameEpicLink = ?, gameGoGLink = ?, gameReleaseDate = ?, gameSmallBannerName = ?, gameSmallBannerBin = ?, gameCoverName = ?, gameCoverBin = ?, gameBigBannerName = ?, gameBigBannerBin = ? WHERE gameId = ?`,
-        [req.body["gameName"], req.body["gameDesc"], req.body["gameSteamLink"], req.body["gameEpicLink"], req.body["gameGoGLink"], req.body["gameReleaseDate"], req.body["gameSmallBannerName"], req.body["gameSmallBannerBin"], req.body["gameCoverName"], req.body["gameCoverBin"], req.body["gameBigBannerName"], req.body["gameBigBannerBin"], req.params["id"]],
+        [req.body["gameName"], req.body["gameDesc"], req.body["gameSteamLink"], req.body["gameEpicLink"], req.body["gameGoGLink"], req.body["gameReleaseDate"], req.body["gameSmallBannerName"], req.body["gameSmallBannerBin"], req.body["gameCoverName"], req.body["gameCoverBin"], req.body["gameBigBannerName"], req.body["gameBigBannerBin"], req.params["gameId"]],
         handleQueryOutput(200, res)
     )
 };
