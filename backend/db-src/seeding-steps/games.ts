@@ -18,6 +18,7 @@ const assetsPath = getBaseAssetsPath("db-src/assets");
 const query = `
   INSERT INTO games (
       gameName,
+      gameAlternateName,
       gameDesc,
       gameSteamLink,
       gameGoGLink,
@@ -30,7 +31,7 @@ const query = `
       gameBigBannerName,
       gameBigBannerBin
   )
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
 function insertGame(game: Game, connection: Connection): Promise<void> {
@@ -39,6 +40,7 @@ function insertGame(game: Game, connection: Connection): Promise<void> {
   const bigBannerBin = readImage(assetsPath, bigBanners, game.imagesName);
   const params = [
     game.gameName,
+    game.gameAlternateName,
     game.gameDesc,
     game.gameSteamLink,
     game.gameGoGLink,

@@ -21,6 +21,7 @@ CREATE TABLE games (
     the game with the longest title is currently 336 characters long, 
     so I wanted some leeway in case somebody wanted to use an even longer one
     */
+    gameAlternateName VARCHAR(512),
     gameDesc TEXT NOT NULL,
     gameSteamLink VARCHAR(255),
     gameGoGLink VARCHAR(255),
