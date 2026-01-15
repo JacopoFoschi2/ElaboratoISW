@@ -19,6 +19,7 @@
   - /api/games/rating
   - /api/games/release
   - /api/games/:genreId
+  - /api/game/:gameId
 - Update:
   - /api/games/:gameId
 - Delete:
