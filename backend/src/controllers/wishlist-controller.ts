@@ -58,7 +58,7 @@ const checkWishlist = async (
   gameId: number
 ): Promise<boolean> => {
   const [rows] = await connection.execute(
-    `SELECT * FROM wishlist WHERE userId = ? AND gameId = ?`,
+    `SELECT 1 FROM wishlist WHERE userId = ? AND gameId = ?`,
     [userId, gameId]
   );
   return Array.isArray(rows) && rows.length > 0;
