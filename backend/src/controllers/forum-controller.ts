@@ -57,6 +57,14 @@ export const listCommentsOfGame = async (req: Request, res: Response) => {
   res.status(200).json(comments);
 };
 
+export const getGameBanner = async (req: Request, res: Response) => {
+  const [bannerData] = await connection.execute(
+    `SELECT gameBannerBin, gameBannerName FROM games WHERE gameId = ?`,
+    [req.params["gameId"]]
+  );
+  res.status(200).json(bannerData);
+}
+
 export const updateComment = async (req: Request, res: Response) => {
   const user = await handleUser(req, res, ["user", "admin", "master"]);
   if (!user) {
