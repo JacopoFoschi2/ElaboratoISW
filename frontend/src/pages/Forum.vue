@@ -65,14 +65,11 @@ const getImageUrl = (game) => {
     try {
         if (game.gameSmallBannerBin && game.gameSmallBannerBin.data) {
             const arrayBuffer = new Uint8Array(game.gameSmallBannerBin.data);
-            let binary = '';
-            const bytes = new Uint8Array(arrayBuffer);
-            const len = bytes.byteLength;
-
-            for (let i = 0; i < len; i++) {
-                binary += String.fromCharCode(bytes[i]);
-            }
-            return `data:image/jpg;base64,${window.btoa(binary)}`;
+            const blob = new Blob([arrayBuffer], { type: 'image/jpg' });
+            return URL.createObjectURL(blob);
+        }
+        else {
+            return '';
         }
     }
     catch (error) {

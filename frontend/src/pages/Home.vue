@@ -65,11 +65,11 @@ const getImageUrl = (game) => {
     try {
         if (game.gameCoverBin && game.gameCoverBin.data) {
             const arrayBuffer = new Uint8Array(game.gameCoverBin.data);
-            let binary = '';
-            arrayBuffer.forEach((byte) => {
-                binary += String.fromCharCode(byte);
-            });
-            return `data:image/jpg;base64,${window.btoa(binary)}`;
+            const blob = new Blob([arrayBuffer], { type: 'image/jpg' });
+            return URL.createObjectURL(blob);
+        }
+        else {
+            return '';
         }
     }
     catch (error) {

@@ -30,6 +30,7 @@ const router: Router = createRouter({
             path: "/forum/game/:id",
             name: "ForumDetail",
             component: () => import('./pages/ForumDetail.vue'),
+            props: route => ({ id: Number(route.params.id) })
         },
         { path: "/privacy-policy", component: PrivacyPolicy },
         {path: "/terms-of-service", component: TermsOfService},
