@@ -1,6 +1,6 @@
-import mysql, { type Connection } from 'mysql2/promise'
+import mysql, { Pool } from 'mysql2/promise'
 
-export const connection: Connection = await mysql.createConnection({
+export const connection: Pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
   password: '',
