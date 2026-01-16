@@ -136,7 +136,6 @@ onMounted(() => {
 
 .game-section {
     display: flex;
-    justify-content: space-between;
     padding-bottom: 2%;
     gap: 15px;
     width: 100%;

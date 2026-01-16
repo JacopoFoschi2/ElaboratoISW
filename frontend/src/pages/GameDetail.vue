@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import StarRating from '../components/StarRating.vue';
+import moment from 'moment';
 
 const props = defineProps({
     id: {
@@ -37,16 +38,11 @@ onMounted(async () => {
         <main class="content-wrapper">
             <aside class="left-column">
                 <img :src="getImageUrl(game.gameCoverBin)" :alt="game.gameName" class="game-cover" />
-            </aside>
-
-            <div class="right-column">
-                <h2 class="game-title">{{ game.gameName }}</h2>
 
                 <div class="rating-container">
                     <p class="rating-label">Rating: {{ game.gameRating }} / 5</p>
                     <StarRating :rating="game.gameRating" :size="10" />
                 </div>
-                <p class="game-description">{{ game.gameDesc }}</p>
 
                 <h3>Available on:</h3>
                 <div class="available-container">
@@ -56,8 +52,8 @@ onMounted(async () => {
                                 <img src='../assets/availableIcons/SteamLogo.svg' alt="Steam Logo" />
                             </a>
                         </li>
-                        <li v-if="game.gameGogLink">
-                            <a :href="game.gameGogLink" target="_blank">
+                        <li v-if="game.gameGoGLink">
+                            <a :href="game.gameGoGLink" target="_blank">
                                 <img src='../assets/availableIcons/GogLogo.svg' alt="Gog Logo" />
                             </a>
                         </li>
@@ -68,6 +64,16 @@ onMounted(async () => {
                         </li>
                     </ul>
                 </div>
+            </aside>
+
+            <div class="right-column">
+                <h2 class="game-title">{{ game.gameName }}</h2>
+
+
+                <p class="game-release-date">{{ moment(game.gameReleaseDate).format('DD/MM/YYYY') }}</p>
+                <p class="game-description">{{ game.gameDesc }}</p>
+
+
             </div>
 
         </main>
@@ -124,16 +130,13 @@ onMounted(async () => {
 }
 
 
-// display: flex;
-//     align-items: center;
-//     gap: 40px;
-//     margin: 10px 0;
 .rating-container {
     display: flex;
     align-items: center;
     gap: 10px;
     font-size: 1.5rem;
     color: style-variables.$default-text-color;
+
     .rating-label {
         font-weight: bold;
     }
@@ -145,19 +148,19 @@ onMounted(async () => {
 }
 
 h3 {
-        font-size: 2rem;
-        color: style-variables.$default-text-color;
-        margin-bottom: 10px;
-    }
+    font-size: 2rem;
+    color: style-variables.$default-text-color;
+    margin-bottom: 10px;
+}
 
 .available-container {
     display: flex;
     align-items: center;
     gap: 20px;
-    padding: 5px 20px;
+    padding: 20px 30px;
     background-color: style-variables.$default-navbar-color;
     max-width: fit-content;
-    
+
 
     ul {
         list-style: none;
@@ -199,10 +202,6 @@ h3 {
         color: style-variables.$default-text-color;
         cursor: pointer;
         transition: background-color 0.3s;
-
-        // &:hover {
-        //     background-color: style-variables.$default-button-hover-color;
-        // }
     }
 }
 </style>
