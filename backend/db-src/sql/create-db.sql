@@ -92,3 +92,13 @@ CREATE TABLE game_categories (
     FOREIGN KEY (gameId) REFERENCES games(gameId) ON DELETE CASCADE,
     FOREIGN KEY (categoryId) REFERENCES categories(categoryId) ON DELETE CASCADE
 );
+
+CREATE VIEW games_with_rating AS
+SELECT 
+  g.*,
+  COALESCE(AVG(r.reviewRating), 0) AS gameRating
+FROM games as g
+LEFT JOIN reviews as r ON g.gameId = r.gameId
+GROUP BY g.gameId;
+/* For quicker averages retrieval */
+CREATE INDEX idx_reviews_gameId ON reviews(gameId);

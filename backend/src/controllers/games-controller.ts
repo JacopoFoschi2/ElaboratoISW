@@ -90,7 +90,7 @@ export const listGamesMatching = async (req: Request, res: Response) => {
 export const getGame = async (req: Request, res: Response) => {
   const [game] = await connection.execute(
     `SELECT gameName, gameDesc, gameSteamLink, gameGoGLink, gameEpicLink, 
-    gameReleaseDate, gameCoverBin, gameCoverName  FROM games WHERE gameId = ?`,
+    gameReleaseDate, gameCoverBin, gameCoverName, gameRating FROM games_with_rating WHERE gameId = ?`,
     [req.params["gameId"]]
   );
   res.status(200).json(game);
