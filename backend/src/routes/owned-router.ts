@@ -3,9 +3,9 @@ import * as ownedController from '../controllers/owned-controller';
 
 const router: Router = Router();
 
-router.post('/api/owned/:userId/:gameId', ownedController.addToOwned);
-router.get('/api/owned/:userId', ownedController.listOwnedOfUser);
-router.delete('/api/owned/:userId/:gameId', ownedController.deleteFromOwned);
-router.get('/api/owned/:userId/:gameId', ownedController.isOwned);
+router.post('/api/owned/:gameId', ownedController.addToOwned);
+router.get('/api/owned', ownedController.listOwnedOfUser);
+router.get('/api/owned/:gameId', ownedController.isOwned);
+router.delete('/api/owned/:gameId', ownedController.deleteFromOwned);
 
 export default router;
