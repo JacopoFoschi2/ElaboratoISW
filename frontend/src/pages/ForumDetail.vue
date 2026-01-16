@@ -29,7 +29,13 @@ const fetchForumDetails = async () => {
         isLoading.value = true;
 
         const gameRes = await fetch(`/api/game/${props.id}`);
-        gameInfo.value = await gameRes.json();
+        const gameData = await gameRes.json();
+
+        if (gameData.length > 0) {
+            gameInfo.value = gameData[0];
+        }else {
+            gameInfo.value = {};
+        }
 
         const [bannerRes, dataRes] = await Promise.all([
             fetch(`/api/games/${props.id}/banner`),
@@ -111,19 +117,28 @@ onUnmounted(() => {
 
 .game-banner {
     height: 300px;
+    width: 100%;
     background-size: cover;
     background-position: center;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 20px;
 
     .game-title {
+        margin: 0;
         color: style-variables.$default-text-color;
         background-color: rgba(0, 0, 0, 0.5);
-        padding: 10px 20px;
-        border-radius: 5px;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        text-align: center;
+        align-items: center;
+        justify-content: center;
+        padding: 0 20px;        
         font-size: 2.5rem;
+        z-index: 1;
     }
 }
 
