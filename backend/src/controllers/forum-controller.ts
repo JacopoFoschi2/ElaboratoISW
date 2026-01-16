@@ -63,7 +63,7 @@ export const getGameBanner = async (req: Request, res: Response) => {
     [req.params["gameId"]]
   );
   res.status(200).json(bannerData);
-}
+};
 
 export const updateComment = async (req: Request, res: Response) => {
   const user = await handleUser(req, res, ["user", "admin", "master"]);
