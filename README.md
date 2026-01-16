@@ -11,6 +11,20 @@
 
 ## Backend Apis
 
+### Authentication
+
+- Create:
+  - /api/auth/register
+- Read:
+  - /api/auth/profile
+  - /api/users/exists/username/:username
+  - /api/users/exists/email/:email
+- Update:
+  - /api/auth/change-password
+
+- /api/auth/login
+- /api/auth/logout
+
 ### Games
 
 - Create:
@@ -29,18 +43,13 @@
 
 ### User
 
-- Create:
-  - /api/users
 - Read:
   - /api/users
-  - /api/users/:userId
-  - /api/users/exists/username/:username
-  - /api/users/exists/email/:email
+  - /api/user
 - Update:
-  - /api/users/:userId
-  - /api/users/:userId/password
+  - /api/user
 - Delete:
-  - /api/users/:userId
+  - /api/user/:userId
 
 ### Categories
 
@@ -67,25 +76,24 @@
 ### Owned
 
 - Create:
-  - /api/owned/:userId/:gameId
+  - /api/owned/:gameId
 - Read:
-  - /api/owned/:userId
-- Update:
-  - /api/owned/:userId/:gameId
+  - /api/owned
+  - /api/owned/:gameId
 - Delete:
-  - /api/owned/:userId/:gameId
+  - /api/owned/:gameId
 
 ### Reviews
 
 - Create:
-  - /api/reviews/:gameId/:userId
+  - /api/reviews/:gameId
 - Read:
   - /api/reviews/game/:gameId
-  - /api/reviews/user/:userId
+  - /api/reviews/user
 - Update:
-  - /api/reviews/:gameId/:userId
+  - /api/reviews/:gameId
 - Delete:
-  - /api/reviews/:gameId/:userId
+  - /api/reviews/:gameId
 
 ### Forum
 
@@ -96,6 +104,7 @@
   - /api/forums/as-you-type/:partialName
   - /api/forums/matching/:partialName
   - /api/games/:gameId/comments
+  - /api/games/:gameId/banner
 - Update:
   - /api/comments/:commentId
 - Delete:
@@ -104,10 +113,10 @@
 ### Wishlist
 
 - Create:
-  - /api/wishlist/:userId/:gameId
+  - /api/wishlist/:gameId
 - Read:
-  - /api/wishlist/:userId
+  - /api/wishlist
 - Update:
-  - /api/wishlist/:userId/:gameId
+  - /api/wishlist/:gameId
 - Delete:
-  - /api/wishlist/:userId/:gameId
+  - /api/wishlist/:gameId
