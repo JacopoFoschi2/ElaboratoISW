@@ -10,6 +10,7 @@ import reviewsRouter from "./routes/reviews-router";
 import ownedRouter from "./routes/owned-router";
 import wishlistRouter from "./routes/wishlist-router";
 import categoriesRouter from "./routes/categories-router";
+import history from "connect-history-api-fallback";
 
 const app: Express = express();
 const port: number = 3000;
@@ -25,6 +26,7 @@ app.use(reviewsRouter);
 app.use(ownedRouter);
 app.use(wishlistRouter);
 app.use(categoriesRouter);
+app.use(history());
 
 app.use(function (req, res, next) {
   res.setHeader("Content-Type", "text/plain");
