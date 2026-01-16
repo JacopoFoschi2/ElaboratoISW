@@ -3,7 +3,7 @@ import { connection } from "../utils/db-connection"
 import { handleUser } from "../utils/query-handling";
 
 export const createCategory = async(req: Request, res: Response) => {
-    const user =  await handleUser(req, res);
+    const user =  await handleUser(req, res, ["admin", "master"]);
     if (!user) {
         return;
     }
