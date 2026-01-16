@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
-import { getUser, setUser, unsetUser } from "../utils/auth";
+import { getUser, handleUser, handleUserProfileAccess, setUser, unsetUser } from "../utils/auth";
 import { User } from "../types/user";
 import { connection } from "../utils/db-connection";
 import { handleExists } from "../utils/query-handling";
@@ -131,6 +131,26 @@ export const logout = async (req: Request, res: Response) => {
   unsetUser(req, res);
 
   res.json({ message: "Logout successful" });
+};
+
+export const updateUserPassword = async (req: Request, res: Response) => {
+    const user = await handleUser(req, res, ["user", "admin", "master"]);
+    if (!user) return;
+
+    if(!handleUserProfileAccess(res, user, user.userId, false)) return;
+
+    const newPassword = req.body["password"];
+    const newPasswordHash = await bcrypt.hash(newPassword, 10);
+
+    await connection.execute(
+        `UPDATE users SET userPassword = ? WHERE userId = ?`,
+        [newPasswordHash, req.params["userId"]]
+    )
+    unsetUser(req, res);
+    const updatedUser: User | null = getUser(req, res);
+    setUser(req, res, updatedUser);
+
+    res.status(200).send("Password updated successfully");
 };
 
 export const getProfile = async (req: Request, res: Response) => {

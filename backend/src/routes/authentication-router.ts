@@ -9,5 +9,6 @@ router.get("/api/auth/username-exists/:username", authController.isUsernameTaken
 router.get("/api/auth/email-exists/:email", authController.isEmailRegistered)
 router.post("/api/auth/login", authController.login)
 router.post("/api/auth/logout", authController.logout)
+router.put('/api/auth/change-password', authController.updateUserPassword);
 
 export default router
