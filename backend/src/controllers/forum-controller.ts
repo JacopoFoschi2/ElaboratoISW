@@ -59,7 +59,7 @@ export const listCommentsOfGame = async (req: Request, res: Response) => {
 
 export const getGameBanner = async (req: Request, res: Response) => {
   const [bannerData] = await connection.execute(
-    `SELECT gameBannerBin, gameBannerName FROM games WHERE gameId = ?`,
+    `SELECT gameBigBannerBin, gameBigBannerName FROM games WHERE gameId = ?`,
     [req.params["gameId"]]
   );
   res.status(200).json(bannerData);
