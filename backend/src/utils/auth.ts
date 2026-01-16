@@ -95,7 +95,7 @@ export const handleUser = async (
  * @param errorMessage - The error message to send if authorization fails.
  * @returns A boolean indicating whether the user is authorized to operate on the resource.
  */
-export const handleOwnershipAuthorization = (
+const handleOwnershipAuthorization = (
   res: Response,
   user: User,
   ownerId: number,
