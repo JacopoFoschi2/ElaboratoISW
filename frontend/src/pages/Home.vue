@@ -82,7 +82,6 @@ onMounted(() => {
 
 <style scoped lang="scss">
 @use "../styles/style-variables.scss" as style-variables;
-
 .homepage {
     margin: 0;
     min-height: 100vh;
@@ -93,8 +92,9 @@ onMounted(() => {
 }
 
 .content-wrapper {
+    flex-direction: column;
+    display: flex;
     margin: 0 auto;
-    max-width: 1200px;
     padding: 0 20px;
     padding-bottom: 3%;
 }

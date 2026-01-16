@@ -35,36 +35,45 @@ onMounted(async () => {
 <template>
     <div v-if="!loading && game" class="game-detail-page">
         <main class="content-wrapper">
-            <img :src="getImageUrl(game.gameCoverBin)" :alt="game.gameName" class="game-cover" />
-            <h2 class="game-title">{{ game.gameName }}</h2>
+            <aside class="left-column">
+                <img :src="getImageUrl(game.gameCoverBin)" :alt="game.gameName" class="game-cover" />
+            </aside>
 
-            <StarRating :rating="game.rating" :size="30" /> <!-- this is only an example-->
+            <div class="right-column">
+                <h2 class="game-title">{{ game.gameName }}</h2>
 
-            <p class="game-description">{{ game.gameDesc }}</p>
+                <div class="rating-container">
+                    <p class="rating-label">Rating: {{ game.gameRating }} / 5</p>
+                    <StarRating :rating="game.gameRating" :size="10" />
+                </div>
+                <p class="game-description">{{ game.gameDesc }}</p>
 
-            <div class="available-container">
                 <h3>Available on:</h3>
-                <ul>
-                    <li v-if="game.gameSteamLink">
-                        <a :href="game.gameSteamLink" target="_blank">
-                            <img src='../assets/availableIcons/SteamLogo.svg' alt="Steam Logo" />
-                        </a>
-                    </li>
-                    <li v-if="game.gameGogLink">
-                        <a :href="game.gameGogLink" target="_blank">
-                            <img src='../assets/availableIcons/GogLogo.svg' alt="Gog Logo" />
-                        </a>
-                    </li>
-                    <li v-if="game.gameEpicLink">
-                        <a :href="game.gameEpicLink" target="_blank">
-                            <img src='../assets/availableIcons/EpicLogo.svg' alt="Epic Games Logo" />
-                        </a>
-                    </li>
-                </ul>
+                <div class="available-container">
+                    <ul>
+                        <li v-if="game.gameSteamLink">
+                            <a :href="game.gameSteamLink" target="_blank">
+                                <img src='../assets/availableIcons/SteamLogo.svg' alt="Steam Logo" />
+                            </a>
+                        </li>
+                        <li v-if="game.gameGogLink">
+                            <a :href="game.gameGogLink" target="_blank">
+                                <img src='../assets/availableIcons/GogLogo.svg' alt="Gog Logo" />
+                            </a>
+                        </li>
+                        <li v-if="game.gameEpicLink">
+                            <a :href="game.gameEpicLink" target="_blank">
+                                <img src='../assets/availableIcons/EpicLogo.svg' alt="Epic Games Logo" />
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
         </main>
-
+        <section class="review-section">
+            <button class="review-btn">Write your review</button>
+        </section>
     </div>
     <div v-else>
         <p>Loading...</p>
@@ -77,15 +86,57 @@ onMounted(async () => {
 .game-detail-page {
     margin: 0;
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
     background-color: style-variables.$default-background-color;
+    padding: 60px 20px;
     overflow-y: auto;
 }
 
+.content-wrapper {
+    margin: 0 auto;
+    max-width: 1200px;
+    display: flex;
+    padding-bottom: 3%;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+.left-column {
+    flex: 0 0 400px;
+
+    .game-cover {
+        width: 100%;
+        height: auto;
+    }
+}
+
+.right-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
 .game-title {
-    font-size: 3rem;
+    font-size: 3.5rem;
+    font-weight: 500;
     color: style-variables.$default-text-color;
+    margin: 0;
+}
+
+
+// display: flex;
+//     align-items: center;
+//     gap: 40px;
+//     margin: 10px 0;
+.rating-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.5rem;
+    color: style-variables.$default-text-color;
+    .rating-label {
+        font-weight: bold;
+    }
 }
 
 .game-description {
@@ -93,10 +144,65 @@ onMounted(async () => {
     color: style-variables.$default-text-color;
 }
 
-.content-wrapper {
-    margin: 0 auto;
+h3 {
+        font-size: 2rem;
+        color: style-variables.$default-text-color;
+        margin-bottom: 10px;
+    }
+
+.available-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 5px 20px;
+    background-color: style-variables.$default-navbar-color;
+    max-width: fit-content;
+    
+
+    ul {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        gap: 20px;
+
+        li img {
+            width: 50px;
+            height: auto;
+            transition: transform 0.3s;
+
+            &:hover {
+                transform: scale(1.1);
+            }
+        }
+    }
+}
+
+.game-description {
+    font-size: 1.5rem;
+    color: style-variables.$default-text-color;
+    max-width: 800px;
+    line-height: 1.5;
+}
+
+.review-section {
     max-width: 1200px;
-    padding: 0 20px;
-    padding-bottom: 3%;
+    margin: 40px auto;
+    text-align: center;
+    background-color: style-variables.$button-and-border-footer-color;
+    border: 1px solid style-variables.$default-text-color;
+
+    .review-btn {
+        width: 100%;
+        padding: 10px;
+        font-size: 1.5rem;
+        background: transparent;
+        color: style-variables.$default-text-color;
+        cursor: pointer;
+        transition: background-color 0.3s;
+
+        // &:hover {
+        //     background-color: style-variables.$default-button-hover-color;
+        // }
+    }
 }
 </style>
