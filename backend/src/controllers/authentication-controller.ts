@@ -1,6 +1,12 @@
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
-import { getUser, handleUser, handleUserProfileAccess, setUser, unsetUser } from "../utils/auth";
+import {
+  getUser,
+  handleUser,
+  handleUserProfileAccess,
+  setUser,
+  unsetUser,
+} from "../utils/auth";
 import { User } from "../types/user";
 import { connection } from "../utils/db-connection";
 import { handleExists } from "../utils/query-handling";
@@ -134,23 +140,40 @@ export const logout = async (req: Request, res: Response) => {
 };
 
 export const updateUserPassword = async (req: Request, res: Response) => {
-    const user = await handleUser(req, res, ["user", "admin", "master"]);
-    if (!user) return;
+  const user = await handleUser(req, res, ["user", "admin", "master"]);
+  if (!user) return;
 
-    if(!handleUserProfileAccess(res, user, user.userId, false)) return;
+  if (!handleUserProfileAccess(res, user, user.userId, false)) return;
 
-    const newPassword = req.body["password"];
-    const newPasswordHash = await bcrypt.hash(newPassword, 10);
+  const [passwordData] = await connection.execute(
+    "SELECT userPassword FROM users WHERE userUsername=?",
+    [user.userUsername]
+  );
+  const currentPasswordHash = (passwordData as any)[0].userPassword;
 
-    await connection.execute(
-        `UPDATE users SET userPassword = ? WHERE userId = ?`,
-        [newPasswordHash, req.params["userId"]]
-    )
-    unsetUser(req, res);
-    const updatedUser: User | null = getUser(req, res);
-    setUser(req, res, updatedUser);
+  const currentPassword = req.body["currentPassword"];
+  const passwordMatches = await bcrypt.compare(
+    currentPassword,
+    currentPasswordHash
+  );
 
-    res.status(200).send("Password updated successfully");
+  if (!passwordMatches) {
+    res.status(400).send("Current password is incorrect");
+    return;
+  }
+
+  const newPassword = req.body["password"];
+  const newPasswordHash = await bcrypt.hash(newPassword, 10);
+
+  await connection.execute(
+    `UPDATE users SET userPassword = ? WHERE userId = ?`,
+    [newPasswordHash, req.params["userId"]]
+  );
+  unsetUser(req, res);
+  const updatedUser: User | null = getUser(req, res);
+  setUser(req, res, updatedUser);
+
+  res.status(200).send("Password updated successfully");
 };
 
 export const getProfile = async (req: Request, res: Response) => {
