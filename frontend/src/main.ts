@@ -26,6 +26,11 @@ const router: Router = createRouter({
             path: "/profile/:id", 
             component: () => import('./pages/Profile.vue')
         },
+        {
+            path: "/forum/game/:id",
+            name: "ForumDetail",
+            component: () => import('./pages/ForumDetail.vue'),
+        },
         { path: "/privacy-policy", component: PrivacyPolicy },
         {path: "/terms-of-service", component: TermsOfService},
         {path: "/community-guidelines", component: CommunityGuidelines},
