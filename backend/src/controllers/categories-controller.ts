@@ -8,6 +8,10 @@ export const createCategory = async(req: Request, res: Response) => {
         return;
     }
 
+    await connection.execute(
+        `INSERT INTO categories (categoryName) VALUES (?)`,
+        [req.body["categoryName"]]
+    )
     res.sendStatus(201);
 };
 
