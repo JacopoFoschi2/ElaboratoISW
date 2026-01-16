@@ -2,16 +2,16 @@ import type { Request, Response } from "express"
 import { connection } from "../utils/db-connection"
 import { handleQueryOutput } from "../utils/query-handling"
 
-export async function createGame(req: Request, res: Response) {
-    connection.execute(
+export const createGame = async (req: Request, res: Response) => {
+    await connection.execute(
         `INSERT INTO games (gameName, gameDesc, gameSteamLink, gameEpicLink, gameGoGLink, gameReleaseDate, gameSmallBannerName, gameSmallBannerBin, gameCoverName, gameCoverBin, gameBigBannerName, gameBigBannerBin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [req.body["gameName"], req.body["gameDesc"], req.body["gameSteamLink"], req.body["gameEpicLink"], req.body["gameGoGLink"], req.body["gameReleaseDate"], req.body["gameSmallBannerName"], req.body["gameSmallBannerBin"], req.body["gameCoverName"], req.body["gameCoverBin"], req.body["gameBigBannerName"], req.body["gameBigBannerBin"]],
         handleQueryOutput(201, res)
     )
 };
 
-export async function listGamesOfGenre(req: Request, res: Response) {
-    connection.execute(
+export const listGamesOfGenre = async (req: Request, res: Response) => {
+    await connection.execute(
         `SELECT c.gameId, gameName, gameCoverBin, gameCoverName FROM games as g
          JOIN game_categories as c ON g.gameId = c.gameId
          WHERE c.categoryId = ?`,
@@ -20,8 +20,8 @@ export async function listGamesOfGenre(req: Request, res: Response) {
     )
 };
 
-export async function listGamesOrderedByRating(req: Request, res: Response) {
-    connection.execute(
+export const listGamesOrderedByRating = async (req: Request, res: Response) => {
+    await connection.execute(
         `SELECT gameId, gameName, gameCoverBin, gameCoverName FROM games
          ORDER BY (SELECT AVG(reviewRating) FROM reviews WHERE reviews.gameId = games.gameId) DESC`,
         [],
@@ -29,8 +29,8 @@ export async function listGamesOrderedByRating(req: Request, res: Response) {
     )
 };
 
-export async function listGamesOrderedByRelease(req: Request, res: Response) {
-    connection.execute(
+export const listGamesOrderedByRelease = async (req: Request, res: Response) => {
+    await connection.execute(
         `SELECT gameId, gameName, gameCoverBin, gameCoverName FROM games
          ORDER BY gameReleaseDate DESC`,
         [],
@@ -38,8 +38,8 @@ export async function listGamesOrderedByRelease(req: Request, res: Response) {
     )
 };
 
-export async function listGamesAsYouType(req: Request, res: Response) {
-    connection.execute(
+export const listGamesAsYouType = async (req: Request, res: Response) => {
+    await connection.execute(
         `SELECT gameId, gameName, gameSmallBannerBin, gameSmallBannerName
         FROM games
         WHERE gameName LIKE CONCAT('%', ?, '%') or 
@@ -51,8 +51,8 @@ export async function listGamesAsYouType(req: Request, res: Response) {
     )
 }
 
-export async function listGamesMatching(req: Request, res: Response) {
-    connection.execute(
+export const listGamesMatching = async (req: Request, res: Response) => {
+    await connection.execute(
         `SELECT gameId, gameName, gameCoverBin, gameCoverName
         FROM games
         WHERE gameName LIKE CONCAT('%', ?, '%') or 
@@ -63,24 +63,24 @@ export async function listGamesMatching(req: Request, res: Response) {
     )
 }
 
-export async function getGame(req: Request, res: Response) {
-    connection.execute(
+export const getGame = async (req: Request, res: Response) => {
+    await connection.execute(
         `SELECT gameName, gameDesc, gameSteamLink, gameGoGLink, gameEpicLink, gameReleaseDate, gameCoverBin, gameCoverName  FROM games WHERE gameId = ?`,
         [req.params["gameId"]],
         handleQueryOutput(200, res)
     )
 };
 
-export async function updateGame(req: Request, res: Response) {
-    connection.execute(
+export const updateGame = async (req: Request, res: Response) => {
+    await connection.execute(
         `UPDATE games SET gameName = ?, gameDesc = ?, gameSteamLink = ?, gameEpicLink = ?, gameGoGLink = ?, gameReleaseDate = ?, gameSmallBannerName = ?, gameSmallBannerBin = ?, gameCoverName = ?, gameCoverBin = ?, gameBigBannerName = ?, gameBigBannerBin = ? WHERE gameId = ?`,
         [req.body["gameName"], req.body["gameDesc"], req.body["gameSteamLink"], req.body["gameEpicLink"], req.body["gameGoGLink"], req.body["gameReleaseDate"], req.body["gameSmallBannerName"], req.body["gameSmallBannerBin"], req.body["gameCoverName"], req.body["gameCoverBin"], req.body["gameBigBannerName"], req.body["gameBigBannerBin"], req.params["gameId"]],
         handleQueryOutput(200, res)
     )
 };
 
-export async function deleteGame(req: Request, res: Response) {
-    connection.execute(
+export const deleteGame = async (req: Request, res: Response) => {
+    await connection.execute(
         `DELETE FROM games WHERE gameId = ?`,
         [req.params["gameId"]],
         handleQueryOutput(200, res)
