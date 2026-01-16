@@ -43,7 +43,6 @@ defineProps({
     }
     .star-icon{
         fill: transparent;
-        stroke: style-variables.$color-star-rating;
         width: 30px;
         height: 30px;
         stroke-width: 4px;
@@ -51,7 +50,6 @@ defineProps({
     }
 
     .star-icon.is-active{
-        fill: style-variables.$color-star-rating;
-        stroke: none;
+        color: style-variables.$color-star-rating;
     }
 </style>

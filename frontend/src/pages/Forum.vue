@@ -1,7 +1,64 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 
+
 const forums = ref([]);
+
+const searchQuery = ref('');
+const suggestions = ref([]);
+const showSuggestions = ref(false);
+
+let debounceTimer = null;
+
+const fetchSuggestions = async () => {
+    clearTimeout(debounceTimer);
+
+    const term = searchQuery.value.trim();
+
+    if (term.length < 3) {
+        suggestions.value = [];
+        return;
+    }
+
+    debounceTimer = setTimeout(async () => {
+        try {
+            const response = await fetch(`/api/forums/as-you-type/${encodeURIComponent(term)}`);
+
+            if (!response.ok) {
+                console.error('Network response was not ok:', response.statusText);
+                suggestions.value = [];
+                return;
+            }
+
+            const data = await response.json();
+
+            if (Array.isArray(data)) {
+                suggestions.value = data.slice(0, 3);
+            } else {
+                console.error('Unexpected data format:', data);
+                suggestions.value = [];
+            }
+        }
+        catch (error) {
+            console.error('Error fetching search suggestions:', error);
+            suggestions.value = [];
+        }
+    }, 300);
+
+
+};
+
+const goToForumDetail = (gameId) => {
+    showSuggestions.value = false;
+    searchQuery.value = '';
+    router.push({ name: 'ForumDetail', params: { id: gameId } });
+};
+
+const handleSearchButton = () => {
+    if (suggestions.value.length > 0) {
+        goToForumDetail(suggestions.value[0].gameId);
+    }
+};
 
 const getImageUrl = (game) => {
     try {
@@ -36,6 +93,13 @@ const fetchForums = async () => {
 
 onMounted(() => {
     fetchForums();
+
+    window.addEventListener('click', (event) => {
+        const searchContainer = document.querySelector('.search-container');
+        if (searchContainer && !searchContainer.contains(event.target)) {
+            showSuggestions.value = false;
+        }
+    });
 });
 </script>
 
@@ -43,20 +107,34 @@ onMounted(() => {
     <div class="forum-page">
         <main class="content-wrapper">
             <h2>All Forums</h2>
-            <div class="search-container">
-                <input type="text" placeholder="search your forums..." class="search-input" />
-                <button class="search-button">
-                    <img src="../assets/search.svg" alt="search icon" />
-                </button>
-            </div>
-            
-            <div v-if="forums.length" class="forum-list">
-                <div v-for="forum in forums" :key="forum.gameId" class="forum-card">
-                    <img class="image-forum" :src="getImageUrl(forum)" :alt="forum.gameName" />
-                    <p class="game-title">{{ forum.gameName }}</p>
+
+            <div class="search-wrapper">
+                <div class="search-container">
+                    <input type="text" placeholder="search your forums..." class="search-input" v-model="searchQuery"
+                        @input="fetchSuggestions" @focus="showSuggestions = true" />
+                    <button class="search-button" @click="handleSearchButton">
+                        <img src="../assets/search.svg" alt="search icon" />
+                    </button>
+                </div>
+
+                <div v-if="showSuggestions && suggestions.length" class="suggestions-dropdown">
+                    <ul>
+                        <li v-for="suggestion in suggestions" :key="suggestion.gameId"
+                            @click="goToForumDetail(suggestion.gameId)">
+                            {{ suggestion.gameName }}
+                        </li>
+                    </ul>
                 </div>
             </div>
-            <p v-else>Loading forums...</p>
+
+                <div v-if="forums.length" class="forum-list">
+                    <div v-for="forum in forums" :key="forum.gameId" class="forum-card"
+                        @click="goToForumDetail(forum.gameId)">
+                        <img class="image-forum" :src="getImageUrl(forum)" :alt="forum.gameName" />
+                        <p class="game-title">{{ forum.gameName }}</p>
+                    </div>
+                </div>
+                <p v-else>Loading forums...</p>
         </main>
 
     </div>
@@ -82,7 +160,7 @@ onMounted(() => {
     padding-bottom: 3%;
     align-items: center;
 
-    p{
+    p {
         color: style-variables.$default-text-color;
         font-size: 3rem;
     }
@@ -130,6 +208,9 @@ h2 {
     gap: 30px;
 
     .forum-card {
+        min-width: 600px;
+        max-width: 600px;
+        max-height: 87px;
         display: flex;
         align-items: center;
         border: 1px solid style-variables.$default-text-color;

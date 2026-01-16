@@ -40,8 +40,8 @@ onMounted(async () => {
                 <img :src="getImageUrl(game.gameCoverBin)" :alt="game.gameName" class="game-cover" />
 
                 <div class="rating-container">
-                    <p class="rating-label">Rating: {{ game.gameRating }} / 5</p>
-                    <StarRating :rating="game.gameRating" :size="10" />
+                    <p class="rating-label">Rating: {{ Math.floor(game.gameRating) }} / 5</p>
+                    <StarRating :rating=" Math.floor(game.gameRating)" :size="10" />
                 </div>
 
                 <h3>Available on:</h3>
@@ -196,10 +196,10 @@ h3 {
 
 .review-section {
     max-width: 1200px;
-    margin: 40px auto;
     text-align: center;
     background-color: style-variables.$button-and-border-footer-color;
     border: 1px solid style-variables.$default-text-color;
+    margin: 0 auto 40px auto;
 
     .review-btn {
         width: 100%;
