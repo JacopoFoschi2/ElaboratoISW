@@ -49,13 +49,14 @@ onMounted(() => {
                     <img src="../assets/search.svg" alt="search icon" />
                 </button>
             </div>
-
-            <div class="forum-list">
+            
+            <div v-if="forums.length" class="forum-list">
                 <div v-for="forum in forums" :key="forum.gameId" class="forum-card">
                     <img class="image-forum" :src="getImageUrl(forum)" :alt="forum.gameName" />
                     <p class="game-title">{{ forum.gameName }}</p>
                 </div>
             </div>
+            <p v-else>Loading forums...</p>
         </main>
 
     </div>
@@ -80,6 +81,11 @@ onMounted(() => {
     padding: 0 20px;
     padding-bottom: 3%;
     align-items: center;
+
+    p{
+        color: style-variables.$default-text-color;
+        font-size: 3rem;
+    }
 }
 
 h2 {
