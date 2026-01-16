@@ -7,8 +7,10 @@
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "lib": ["esnext"],
-    "types": ["node"],
+    "target": "ESNext",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "lib": ["ESNext"],
 
     // Other Outputs
     "sourceMap": true,

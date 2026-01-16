@@ -1,35 +1,50 @@
 import type { Request, Response } from "express";
 import { connection } from "../utils/db-connection";
-import { handleQueryOutput } from "../utils/query-handling";
+import { handleUser } from "../utils/auth";
 
-export async function addCategoryToGame(req: Request, res: Response) {
-  connection.execute(
+export const addCategoryToGame = async (req: Request, res: Response) => {
+  const user = await handleUser(req, res, ["master"]);
+  if (!user) {
+    return;
+  }
+
+  await connection.execute(
     "INSERT INTO game_categories (gameId, categoryId) VALUES (?, ?)",
-    [req.body["gameId"], req.body["categoryId"]],
-    handleQueryOutput(201, res)
+    [req.body["gameId"], req.body["categoryId"]]
   );
-}
+  res.status(201).send("Category added to game successfully");
+};
 
-export async function listCategoriesOfGame(req: Request, res: Response) {
-  connection.execute(
+export const listCategoriesOfGame = async (req: Request, res: Response) => {
+  const [categories] = await connection.execute(
     "SELECT categoryId FROM game_categories WHERE gameId = ?",
-    [req.params["gameId"]],
-    handleQueryOutput(200, res)
+    [req.params["gameId"]]
   );
-}
+  res.status(200).json(categories);
+};
 
-export async function updateCategoryOfGame(req: Request, res: Response) {
-  connection.execute(
+export const updateCategoryOfGame = async (req: Request, res: Response) => {
+  const user = await handleUser(req, res, ["master"]);
+  if (!user) {
+    return;
+  }
+
+  await connection.execute(
     "UPDATE game_categories SET categoryId = ? WHERE gameId = ? AND categoryId = ?",
-    [req.body["newCategoryId"], req.body["gameId"], req.body["oldCategoryId"]],
-    handleQueryOutput(200, res)
+    [req.body["newCategoryId"], req.body["gameId"], req.body["oldCategoryId"]]
   );
-}
+  res.status(200).send("Category updated for game successfully");
+};
 
-export async function removeCategoryFromGame(req: Request, res: Response) {
-  connection.execute(
+export const removeCategoryFromGame = async (req: Request, res: Response) => {
+  const user = await handleUser(req, res, ["master"]);
+  if (!user) {
+    return;
+  }
+
+  await connection.execute(
     "DELETE FROM game_categories WHERE gameId = ? AND categoryId = ?",
-    [req.params["gameId"], req.params["categoryId"]],
-    handleQueryOutput(200, res)
+    [req.params["gameId"], req.params["categoryId"]]
   );
-}
+  res.status(200).send("Category removed from game successfully");
+};

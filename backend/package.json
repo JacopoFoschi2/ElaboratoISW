@@ -1,16 +1,17 @@
 {
   "name": "backend",
-  "version": "0.7.0",
+  "version": "1.0.0",
   "description": "",
   "main": "app.js",
   "scripts": {
-    "backend:build": "tsc -p tsconfig.json",
-    "backend:start": "node dist/app.js",
-    "backend:dev": "npx ts-node-dev src/app.ts",
-    "backend": "npm run backend:build && npm run backend:start",
     "seed:build": "tsc -p tsconfig.seed.json",
     "seed:run": "node dist-db/seed.js",
-    "seed": "npm run seed:build && npm run seed:run"
+    "seed": "npm run seed:build && npm run seed:run",
+    "backend:build": "tsc -p tsconfig.json",
+    "backend:start": "node dist/app.js",
+    "backend": "npm run backend:build && npm run backend:start",
+    "dev": "npx ts-node-dev src/app.ts",
+    "all": "npm run seed && npm run backend"
   },
   "author": "Jacopo Foschi",
   "license": "ISC",

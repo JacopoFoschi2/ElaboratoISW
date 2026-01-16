@@ -6,6 +6,7 @@ import {
   readJson,
   seedData,
 } from "../utils/seeding-utils";
+import bcrypt from "bcrypt";
 import { Connection } from "mysql2";
 
 const users: User[] = readJson("db-src/data/users.json");
@@ -27,10 +28,11 @@ const query = `
 
 function insertUser(user: User, connection: Connection): Promise<void> {
   const userIconBin = readImage(assetsPath, userImages, user.userIconName);
+  const passwordHash = bcrypt.hashSync(user.userPassword, 10);
   const params = [
     user.userEmail,
     user.userUsername,
-    user.userPassword,
+    passwordHash,
     userIconBin,
     user.userIconName,
     user.userRole,
