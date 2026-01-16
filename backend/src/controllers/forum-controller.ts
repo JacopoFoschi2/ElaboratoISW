@@ -10,7 +10,7 @@ export const addComment = async (req: Request, res: Response) => {
 
     await connection.execute(
         `INSERT INTO comments (gameId, userId, commentBody, commentTimeStamp) VALUES (?, ?, ?, NOW())`,
-        [req.body["gameId"], req.body["userId"], req.body["commentBody"]]
+        [req.body["gameId"], user.userId, req.body["commentBody"]]
     )
     res.status(201).send("Comment added successfully");
 };
