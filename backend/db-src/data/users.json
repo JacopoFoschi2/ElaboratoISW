@@ -2,28 +2,28 @@
     {
         "userEmail": "alessandro.zani@gmail.com",
         "userUsername": "a.zani",
-        "userPassword": "TODO",
+        "userPassword": "password",
         "userIconName": "user2.jpg",
         "userRole": "master"
     },
     {
         "userEmail": "gianpaolo.bernardini@gmail.com",
         "userUsername": "g.bernardini",
-        "userPassword": "TODO",
+        "userPassword": "password",
         "userIconName": "user4.jpg",
         "userRole": "admin"
     },
     {
         "userEmail": "marika.graziani@gmail.com",
         "userUsername": "m.graziani",
-        "userPassword": "TODO",
+        "userPassword": "password",
         "userIconName": "user1.jpg",
         "userRole": "user"
     },
     {
         "userEmail": "bernardo.panfili@gmail.com",
         "userUsername": "b.panfili",
-        "userPassword": "TODO",
+        "userPassword": "password",
         "userIconName": "user3.jpg",
         "userRole": "user"
     }
