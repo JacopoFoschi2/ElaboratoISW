@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { connection } from "../utils/db-connection";
-import { handleAuthorization, handleUser } from "../utils/auth";
+import { handleResourceAuthorization, handleUser } from "../utils/auth";
 
 export const createReview = async (req: Request, res: Response) => {
   const user = await handleUser(req, res, ["user", "admin", "master"]);
@@ -47,7 +47,7 @@ export const updateReview = async (req: Request, res: Response) => {
     return;
   }
 
-  const authorized = handleAuthorization(res, user, user.userId, false);
+  const authorized = handleResourceAuthorization(res, user, user.userId, false);
   if (!authorized) {
     return;
   }
@@ -70,7 +70,7 @@ export const deleteReview = async (req: Request, res: Response) => {
     return;
   }
 
-  const authorized = handleAuthorization(res, user, user?.userId, true);
+  const authorized = handleResourceAuthorization(res, user, user?.userId, true);
   if (!authorized) {
     return;
   }

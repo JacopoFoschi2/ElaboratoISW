@@ -83,7 +83,7 @@ export const handleUser = async (
  * @param canAdminsOperate - A boolean indicating whether admin users are allowed to operate on the resource.
  * @returns A boolean indicating whether the user is authorized to operate on the resource.
  */
-export const handleAuthorization = (res: Response, user: User, ownerOfResource: number, canAdminsOperate: boolean) => {
+export const handleResourceAuthorization = (res: Response, user: User, ownerOfResource: number, canAdminsOperate: boolean) => {
   if (user.userId === ownerOfResource) {
     return true;
   }

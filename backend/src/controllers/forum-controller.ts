@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { connection } from "../utils/db-connection";
-import { handleAuthorization, handleUser } from "../utils/auth";
+import { handleResourceAuthorization, handleUser } from "../utils/auth";
 
 export const addComment = async (req: Request, res: Response) => {
   const user = await handleUser(req, res, ["user", "admin", "master"]);
@@ -62,7 +62,7 @@ export const updateComment = async (req: Request, res: Response) => {
   if (!user) {
     return;
   }
-  if (!handleAuthorization(res, user, req.body["userId"], false)) {
+  if (!handleResourceAuthorization(res, user, req.body["userId"], false)) {
     return;
   }
 
@@ -78,7 +78,7 @@ export const deleteComment = async (req: Request, res: Response) => {
   if (!user) {
     return;
   }
-  if (!handleAuthorization(res, user, req.body["userId"], true)) {
+  if (!handleResourceAuthorization(res, user, req.body["userId"], true)) {
     return;
   }
 
