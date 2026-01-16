@@ -92,7 +92,7 @@ onUnmounted(() => {
                         </div>
                     </div>
                 </div>
-                <p v-else>No comments available.</p>
+                <p v-else class="non-available">No comments available.</p>
         </main>
     </div>
 </template>
@@ -106,6 +106,12 @@ onUnmounted(() => {
     display: flex;
     margin: 0 auto;
     padding: 0 20px;
+
+    .non-available {
+        font-size: 3.2rem;
+        color: style-variables.$default-text-color;
+        text-align: center;
+    }
 }
 
 .loader {
