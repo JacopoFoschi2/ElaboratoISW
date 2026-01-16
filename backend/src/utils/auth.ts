@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { User } from "../types/user";
+import { User, UserRole } from "../types/user";
 
 // Utilizzare una variabile d'ambiente per il secret in progetti reali!
 // E anche un secret più complesso.
@@ -60,7 +60,7 @@ export const unsetUser = (req: Request, res: Response) => {
 export const handleUser = async (
   req: Request,
   res: Response,
-  requiredRoles: string[]
+  requiredRoles: UserRole[]
 ): Promise<User | undefined> => {
   const user = getUser(req, res);
   if (!user) {
@@ -94,7 +94,7 @@ export const handleAuthorization = (res: Response, user: User, ownerOfResource: 
   return false;
 };
 
-const handleRole = (res: Response, role: string, requiredRoles: string[]) => {
+const handleRole = (res: Response, role: UserRole, requiredRoles: UserRole[]) => {
   if (!requiredRoles.includes(role)) {
     res.status(403).send("Forbidden");
     return false;
