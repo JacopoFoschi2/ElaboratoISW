@@ -49,6 +49,18 @@ export const unsetUser = (req: Request, res: Response) => {
   res.clearCookie(COOKIE_NAME);
 };
 
+const handleRole = (
+  res: Response,
+  role: UserRole,
+  requiredRoles: UserRole[]
+) => {
+  if (!requiredRoles.includes(role)) {
+    res.status(403).send("Forbidden");
+    return false;
+  }
+  return true;
+};
+
 /**
  * Handles user authentication and role verification.
  *
@@ -75,6 +87,32 @@ export const handleUser = async (
 };
 
 /**
+ * Handles authorization by checking if the user is the owner of a resource or has an allowed role.
+ * @param res - The Express Response object used to send the HTTP response.
+ * @param user - The authenticated User object.
+ * @param ownerId - The ID of the user who owns the resource.
+ * @param allowedRoles - An array of roles that are permitted to operate on the resource.
+ * @param errorMessage - The error message to send if authorization fails.
+ * @returns A boolean indicating whether the user is authorized to operate on the resource.
+ */
+export const handleOwnershipAuthorization = (
+  res: Response,
+  user: User,
+  ownerId: number,
+  allowedRoles: UserRole[],
+  errorMessage: string
+): boolean => {
+  if (user.userId === ownerId) {
+    return true;
+  }
+  if (allowedRoles.includes(user.userRole)) {
+    return true;
+  }
+  res.status(403).send(errorMessage);
+  return false;
+};
+
+/**
  * Handles authorization by checking if the user is allowed to operate on a resource.
  *
  * @param res - The Express Response object used to send the HTTP response.
@@ -83,21 +121,42 @@ export const handleUser = async (
  * @param canAdminsOperate - A boolean indicating whether admin users are allowed to operate on the resource.
  * @returns A boolean indicating whether the user is authorized to operate on the resource.
  */
-export const handleResourceAuthorization = (res: Response, user: User, ownerOfResource: number, canAdminsOperate: boolean) => {
-  if (user.userId === ownerOfResource) {
-    return true;
-  }
-  if (canAdminsOperate && (user.userRole === "admin" || user.userRole === "master")) {
-    return true;
-  }
-  res.status(403).send("You are not allowed to operate on this resource");
-  return false;
+export const handleResourceAuthorization = (
+  res: Response,
+  user: User,
+  ownerOfResource: number,
+  canAdminsOperate: boolean
+): boolean => {
+  const rolesAllowed: UserRole[] = canAdminsOperate ? ["admin", "master"] : [];
+  return handleOwnershipAuthorization(
+    res,
+    user,
+    ownerOfResource,
+    rolesAllowed,
+    "You are not allowed to operate on this resource"
+  );
 };
 
-const handleRole = (res: Response, role: UserRole, requiredRoles: UserRole[]) => {
-  if (!requiredRoles.includes(role)) {
-    res.status(403).send("Forbidden");
-    return false;
-  }
-  return true;
+/**
+ * Handles authorization for accessing user profiles.
+ * @param res - The Express Response object used to send the HTTP response.
+ * @param user - The authenticated User object.
+ * @param profileUserId - The ID of the user whose profile is being accessed.
+ * @param canMastersOperate - A boolean indicating whether master users are allowed to access the profile.
+ * @returns A boolean indicating whether the user is authorized to access the profile.
+ */
+export const handleUserProfileAccess = (
+  res: Response,
+  user: User,
+  profileUserId: number,
+  canMastersOperate: boolean
+): boolean => {
+  const rolesAllowed: UserRole[] = canMastersOperate ? ["master"] : [];
+  return handleOwnershipAuthorization(
+    res,
+    user,
+    profileUserId,
+    rolesAllowed,
+    "You are not allowed to access this user profile"
+  );
 };
