@@ -8,15 +8,15 @@ const JWT_SECRET = "foo"
 const COOKIE_NAME = "site-access-token"
 
 /**
- * Codifica l'utente in un access token e lo imposta come cookie.
- * Usato in fase di registrazione e login.
+ * Codifies the user in an access token and sets it as a cookie.
+ * Used during registration and login.
  */
 export const setUser = (req: Request, res: Response, user: any) => {
-  // Crea l'access token con JWT
+  // Create the access token with JWT
   const accessToken = jwt.sign(user, JWT_SECRET, { expiresIn: "1 day" })
-  // Imposta l'access token come cookie
+  // Set the access token as a cookie
   res.cookie(COOKIE_NAME, accessToken, {
-    maxAge: 86400000, // 1 giorno in millisecondi
+    maxAge: 86400000, // 1 day in milliseconds
     httpOnly: true,
     sameSite: true,
     // secure: true
@@ -24,13 +24,13 @@ export const setUser = (req: Request, res: Response, user: any) => {
 }
 
 /**
- * Decodifica e verifica l'access token, restituendo l'utente.
- * Usato per verificare se l'utente ha effettuato il login.
+ * Decodes and verifies the access token, returning the user.
+ * Used to check if the user is logged in.
  */
 export const getUser = (req: Request, res: Response) => {
-  // Ottiene il cookie dell'access token
+  // Get the access token cookie
   const accessToken = req.cookies[COOKIE_NAME]
-  // Restituisce i dati dell'utente contenuti nell'access token, oppure null se il token è mancante o invalido
+  // Return the user data contained in the access token, or null if the token is missing or invalid
   if (!accessToken) return null
   try {
     const user = jwt.verify(accessToken, JWT_SECRET) as User
@@ -41,10 +41,10 @@ export const getUser = (req: Request, res: Response) => {
 }
 
 /**
- * Cancella il cookie contente l'access token.
- * Usato per effettuare il logout.
+ * Deletes the cookie containing the access token.
+ * Used to perform logout.
  */
 export const unsetUser = (req: Request, res: Response) => {
-  // Cancella il cookie dell'access token
+  // Delete the access token cookie
   res.clearCookie(COOKIE_NAME)
 }
