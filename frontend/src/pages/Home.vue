@@ -1,7 +1,56 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const categories = ref([]);
+
+const searchQuery = ref('');
+const suggestions = ref([]);
+const showSuggestions = ref(false);
+
+const fetchSuggestions = async () => {
+    if (searchQuery.value.trim().length < 3) {
+        suggestions.value = [];
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/games/as-you-type/${encodeURIComponent(searchQuery.value)}`);
+        
+        if (!response.ok) {
+            console.error('Network response was not ok:', response.statusText);
+            suggestions.value = [];
+            return;
+        }
+
+        const data = await response.json();
+
+        if (Array.isArray(data)) {
+            suggestions.value = data.slice(0, 3);
+        } else {
+            console.error('Unexpected data format:', data);
+            suggestions.value = [];
+        }
+
+        suggestions.value = data.slice(0, 3);
+    }
+    catch (error) {
+        console.error('Error fetching search suggestions:', error);
+    }
+};
+
+const goToGameDetail = (gameId) => {
+    showSuggestions.value = false;
+    searchQuery.value = '';
+    router.push({ name: 'GameDetail', params: { id: gameId } });
+};
+
+const handleSearchButton = () => {
+    if (suggestions.value.length > 0) {
+        goToGameDetail(suggestions.value[0].gameId);
+    }
+};
 
 const getImageUrl = (game) => {
     try {
@@ -44,6 +93,13 @@ const fetchCategories = async () => {
 
 onMounted(() => {
     fetchCategories();
+
+    window.addEventListener('click', (event) => {
+        const searchContainer = document.querySelector('.search-container');
+        if (searchContainer && !searchContainer.contains(event.target)) {
+            showSuggestions.value = false;
+        }
+    });
 });
 </script>
 
@@ -51,20 +107,29 @@ onMounted(() => {
 <template>
     <div class="homepage">
         <main class="content-wrapper">
-            <div class="search-container">
-                <input type="text" placeholder="search your games..." class="search-input" />
-                <button class="search-button">
-                    <img src="../assets/search.svg" alt="search icon" />
-                </button>
-
+            <div class="search-wrapper">
+                <div class="search-container">
+                    <input type="text" placeholder="search your games..." class="search-input" v-model="searchQuery"
+                        @input="fetchSuggestions" @focus="showSuggestions = true" />
+                    <button class="search-button" @click="handleSearchButton">
+                        <img src="../assets/search.svg" alt="search icon" />
+                    </button>
+                </div>
+                <div v-if="showSuggestions && suggestions.length" class="suggestions-list">
+                    <ul>
+                        <li v-for="suggestion in suggestions" :key="suggestion.gameId"
+                            @click="goToGameDetail(suggestion.gameId)" class="suggestion-item">
+                            {{ suggestion.gameName }}
+                        </li>
+                    </ul>
+                </div>
             </div>
             <div v-for="category in categories" :key="category.categoryId">
                 <template v-if="category.games?.length > 0">
                     <h2 class="section-title">{{ category.categoryName }}</h2>
                     <div class="game-section">
                         <router-link v-for="game in category.games" :key="game.gameId"
-                            :to="{ name: 'GameDetail', params: { id: game.gameId } }" 
-                            class="game-card">
+                            :to="{ name: 'GameDetail', params: { id: game.gameId } }" class="game-card">
                             <img :src="getImageUrl(game)" :alt="game.gameName" class="game-cover-image" />
                         </router-link>
                     </div>
@@ -82,6 +147,7 @@ onMounted(() => {
 
 <style scoped lang="scss">
 @use "../styles/style-variables.scss" as style-variables;
+
 .homepage {
     margin: 0;
     min-height: 100vh;
@@ -99,13 +165,17 @@ onMounted(() => {
     padding-bottom: 3%;
 }
 
+.search-wrapper {
+    position: relative;
+    width: 60%;
+    margin: 40px auto 20px auto;
+}
+
 .search-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
-    width: 60%;
-    margin: 40px auto 20px auto;
+    width: 100%;
     background-color: style-variables.$default-navbar-color;
 
     .search-input {
@@ -125,6 +195,37 @@ onMounted(() => {
         align-items: center;
         display: flex;
         cursor: pointer;
+    }
+}
+
+.suggestions-list {
+    position: absolute;
+    background-color: style-variables.$default-navbar-color;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 200px;
+    border: 1px solid style-variables.$button-and-border-footer-color;
+    margin-top: 5px;
+    z-index: 1;
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .suggestion-item {
+        padding: 10px 15px;
+        cursor: pointer;
+        text-align: left;
+        color: black;
+        
+
+        &:hover {
+            background-color: style-variables.$button-and-border-footer-color;
+            color: style-variables.$default-text-color;
+        }
     }
 }
 
