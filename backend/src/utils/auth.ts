@@ -74,6 +74,26 @@ export const handleUser = async (
   return user;
 };
 
+/**
+ * Handles authorization by checking if the user is allowed to operate on a resource.
+ *
+ * @param res - The Express Response object used to send the HTTP response.
+ * @param user - The authenticated User object.
+ * @param ownerOfResource - The ID of the user who owns the resource.
+ * @param canAdminsOperate - A boolean indicating whether admin users are allowed to operate on the resource.
+ * @returns A boolean indicating whether the user is authorized to operate on the resource.
+ */
+export const handleAuthorization = (res: Response, user: User, ownerOfResource: number, canAdminsOperate: boolean) => {
+  if (user.userId === ownerOfResource) {
+    return true;
+  }
+  if (canAdminsOperate && (user.userRole === "admin" || user.userRole === "master")) {
+    return true;
+  }
+  res.status(403).send("You are not allowed to operate on this resource");
+  return false;
+};
+
 const handleRole = (res: Response, role: string, requiredRoles: string[]) => {
   if (!requiredRoles.includes(role)) {
     res.status(403).send("Forbidden");
