@@ -43,8 +43,8 @@ export const listGamesOfGenre = async (req: Request, res: Response) => {
 
 export const listGamesOrderedByRating = async (req: Request, res: Response) => {
   const [games] = await connection.execute(
-    `SELECT gameId, gameName, gameCoverBin, gameCoverName FROM games
-         ORDER BY (SELECT AVG(reviewRating) FROM reviews WHERE reviews.gameId = games.gameId) DESC`,
+    `SELECT gameId, gameName, gameCoverBin, gameCoverName FROM games_with_rating
+         ORDER BY gameRating DESC`,
     []
   );
   res.status(200).json(games);
