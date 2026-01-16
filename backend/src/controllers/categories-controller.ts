@@ -1,6 +1,6 @@
 import type { Request, Response } from "express"
 import { connection } from "../utils/db-connection"
-import { handleUser } from "../utils/query-handling";
+import { handleUser } from "../utils/auth";
 
 export const createCategory = async(req: Request, res: Response) => {
     const user =  await handleUser(req, res, ["admin", "master"]);
