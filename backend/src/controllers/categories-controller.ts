@@ -24,7 +24,7 @@ export const listCategories = async(req: Request, res: Response) => {
 };
 
 export const updateCategory = async(req: Request, res: Response) => {
-    const user = await handleUser(req, res);
+    const user = await handleUser(req, res, ["admin", "master"]);
     if (!user) {
         return;
     }
@@ -37,7 +37,7 @@ export const updateCategory = async(req: Request, res: Response) => {
 };
 
 export const deleteCategory = async(req: Request, res: Response) => {
-    const user = await handleUser(req, res);
+    const user = await handleUser(req, res, ["admin", "master"]);
     if (!user) {
         return;
     }
