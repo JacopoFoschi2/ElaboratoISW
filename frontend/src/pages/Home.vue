@@ -4,40 +4,49 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const categories = ref([]);
-
 const searchQuery = ref('');
 const suggestions = ref([]);
 const showSuggestions = ref(false);
 
+let debounceTimer = null;
+
 const fetchSuggestions = async () => {
-    if (searchQuery.value.trim().length < 3) {
+
+    clearTimeout(debounceTimer);
+
+    const term = searchQuery.value.trim();
+
+    if (term.length < 3) {
         suggestions.value = [];
         return;
     }
+    debounceTimer = setTimeout(async () => {
+        try {
+            const response = await fetch(`/api/games/as-you-type/${encodeURIComponent(term)}`);
 
-    try {
-        const response = await fetch(`/api/games/as-you-type/${encodeURIComponent(searchQuery.value)}`);
-        
-        if (!response.ok) {
-            console.error('Network response was not ok:', response.statusText);
-            suggestions.value = [];
-            return;
-        }
+            if (!response.ok) {
+                console.error('Network response was not ok:', response.statusText);
+                suggestions.value = [];
+                return;
+            }
 
-        const data = await response.json();
+            const data = await response.json();
 
-        if (Array.isArray(data)) {
+            if (Array.isArray(data)) {
+                suggestions.value = data.slice(0, 3);
+            } else {
+                console.error('Unexpected data format:', data);
+                suggestions.value = [];
+            }
+
             suggestions.value = data.slice(0, 3);
-        } else {
-            console.error('Unexpected data format:', data);
+        }
+        catch (error) {
+            console.error('Error fetching search suggestions:', error);
             suggestions.value = [];
         }
+    }, 300);
 
-        suggestions.value = data.slice(0, 3);
-    }
-    catch (error) {
-        console.error('Error fetching search suggestions:', error);
-    }
 };
 
 const goToGameDetail = (gameId) => {
@@ -220,7 +229,7 @@ onMounted(() => {
         cursor: pointer;
         text-align: left;
         color: black;
-        
+
 
         &:hover {
             background-color: style-variables.$button-and-border-footer-color;
