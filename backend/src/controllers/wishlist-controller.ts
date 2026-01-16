@@ -1,35 +1,65 @@
-import type { Request, Response } from "express"
-import { connection } from "../utils/db-connection"
-import { handleExists, handleQueryOutput } from "../utils/query-handling"
+import type { Request, Response } from "express";
+import { connection } from "../utils/db-connection";
+import { handleUser } from "../utils/auth";
+import { handleExists } from "../utils/query-handling";
 
-export async function addToWishlist(req: Request, res: Response) {
-    connection.execute(
-        `INSERT INTO wishlist (userId, gameId) VALUES (?, ?)`,
-        [req.params["userId"], req.params["gameId"]],
-        handleQueryOutput(201, res)
-    )
+export const addToWishlist = async (req: Request, res: Response) => {
+  const user = await handleUser(req, res, ["user", "admin", "master"]);
+  if (!user) {
+    return;
+  }
+
+  await connection.execute(
+    `INSERT INTO wishlist (userId, gameId) VALUES (?, ?)`,
+    [user.userId, req.params["gameId"]]
+  );
+  res.status(201).send("Game added to wishlist");
 };
 
-export async function listWishlistOfUser(req: Request, res: Response) {
-    connection.execute(
-        `SELECT gameId FROM wishlist WHERE userId = ?`,
-        [req.params["userId"]],
-        handleQueryOutput(200, res)
-    )
+export const listWishlistOfUser = async (req: Request, res: Response) => {
+  const user = await handleUser(req, res, ["user", "admin", "master"]);
+  if (!user) {
+    return;
+  }
+
+  const [wishlist] = await connection.execute(
+    `SELECT gameId FROM wishlist WHERE userId = ?`,
+    [user.userId]
+  );
+  res.status(200).json(wishlist);
 };
 
-export async function deleteFromWishlist(req: Request, res: Response) {
-    connection.execute(
-        `DELETE FROM wishlist WHERE userId = ? AND gameId = ?`,
-        [req.params["userId"], req.params["gameId"]],
-        handleQueryOutput(200, res)
-    )
+export const deleteFromWishlist = async (req: Request, res: Response) => {
+  const user = await handleUser(req, res, ["user", "admin", "master"]);
+  if (!user) {
+    return;
+  }
+
+  await connection.execute(
+    `DELETE FROM wishlist WHERE userId = ? AND gameId = ?`,
+    [user.userId, req.params["gameId"]]
+  );
+  res.status(200).send("Game removed from wishlist");
 };
 
-export async function isGameInWishlist(req: Request, res: Response) {
-    connection.execute(
-        `SELECT * FROM wishlist WHERE userId = ? AND gameId = ?`,
-        [req.params["userId"], req.params["gameId"]],
-        handleExists(res)
-    )
+export const isGameInWishlist = async (req: Request, res: Response) => {
+  const user = await handleUser(req, res, ["user", "admin", "master"]);
+  if (!user) {
+    return;
+  }
+
+  handleExists(res, () =>
+    checkWishlist(user.userId, Number(req.params["gameId"]))
+  );
+};
+
+const checkWishlist = async (
+  userId: number,
+  gameId: number
+): Promise<boolean> => {
+  const [rows] = await connection.execute(
+    `SELECT 1 FROM wishlist WHERE userId = ? AND gameId = ?`,
+    [userId, gameId]
+  );
+  return Array.isArray(rows) && rows.length > 0;
 };

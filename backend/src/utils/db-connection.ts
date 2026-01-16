@@ -1,8 +1,8 @@
-import mysql, { type Connection } from 'mysql2'
+import mysql, { Pool } from "mysql2/promise";
 
-export const connection: Connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'pcmasterracedb'
-})
+export const connection: Pool = mysql.createPool({
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "pcmasterracedb",
+});

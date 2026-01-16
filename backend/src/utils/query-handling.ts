@@ -1,21 +1,19 @@
 import { Response } from "express";
 
-export function handleQueryOutput(code: number, res: Response) {
-    return function (err: any, results: any, fields: any) {
-    if (err) {
-        res.status(500).json({ error: err.message });
-        return;
-    }
-    res.status(code).json(results);
-    };
-}
-
-export function handleExists(res: Response) {
-  return function (err: any, results: any, fields: any) {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.status(200).json({ "exists": results.length > 0 });
-  };
-}
+/**
+ * Handles existence check queries and sends appropriate HTTP responses.
+ *
+ * @param res - The Express Response object used to send the HTTP response.
+ * @param f - An asynchronous function that returns a Promise resolving to a boolean indicating existence.
+ */
+export const handleExists = async (
+  res: Response,
+  f: () => Promise<boolean>
+) => {
+  try {
+    const isTaken = await f();
+    res.status(200).json({ exists: isTaken });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+};

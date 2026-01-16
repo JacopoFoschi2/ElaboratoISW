@@ -8,6 +8,7 @@ router.get('/api/forums', forumController.listForums);
 router.get('/api/forums/as-you-type/:partialName', forumController.listForumsAsYouType);
 router.get('/api/forums/matching/:partialName', forumController.listForumsMatching);
 router.get('/api/games/:gameId/comments', forumController.listCommentsOfGame);
+router.get('/api/games/:gameId/banner', forumController.getGameBanner);
 router.put('/api/comments/:commentId', forumController.updateComment);
 router.delete('/api/comments/:commentId', forumController.deleteComment);
 

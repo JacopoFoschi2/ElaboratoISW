@@ -1,69 +1,97 @@
-import type { Request, Response } from "express"
-import { connection } from "../utils/db-connection"
-import { handleQueryOutput } from "../utils/query-handling"
+import type { Request, Response } from "express";
+import { connection } from "../utils/db-connection";
+import { handleResourceAuthorization, handleUser } from "../utils/auth";
 
-export async function addComment(req: Request, res: Response) {
-    connection.execute(
-        `INSERT INTO comments (gameId, userId, commentBody, commentTimeStamp) VALUES (?, ?, ?, NOW())`,
-        [req.body["gameId"], req.body["userId"], req.body["commentBody"]],
-        handleQueryOutput(201, res)
-    )
+export const addComment = async (req: Request, res: Response) => {
+  const user = await handleUser(req, res, ["user", "admin", "master"]);
+  if (!user) {
+    return;
+  }
+
+  await connection.execute(
+    `INSERT INTO comments (gameId, userId, commentBody, commentTimeStamp) VALUES (?, ?, ?, NOW())`,
+    [req.body["gameId"], user.userId, req.body["commentBody"]]
+  );
+  res.status(201).send("Comment added successfully");
 };
 
-export async function listForums(req: Request, res: Response) {
-    connection.execute(
-        `SELECT gameId, gameName, gameSmallBannerName, gameSmallBannerBin FROM games`,
-        [],
-        handleQueryOutput(200, res)
-    )
+export const listForums = async (req: Request, res: Response) => {
+  const [forums] = await connection.execute(
+    `SELECT gameId, gameName, gameSmallBannerName, gameSmallBannerBin FROM games`,
+    []
+  );
+  res.status(200).json(forums);
 };
 
-export async function listForumsAsYouType(req: Request, res: Response) {
-    connection.execute(
-        `SELECT gameId, gameName, gameSmallBannerBin, gameSmallBannerName
+export const listForumsAsYouType = async (req: Request, res: Response) => {
+  const [forums] = await connection.execute(
+    `SELECT gameId, gameName, gameSmallBannerBin, gameSmallBannerName
         FROM games
         WHERE gameName LIKE CONCAT('%', ?, '%') or 
         gameAlternateName like CONCAT('%', ?, '%')
         ORDER BY gameName DESC
         LIMIT 15`,
-        [req.params["partialName"], req.params["partialName"]],
-        handleQueryOutput(200, res)
-    )
+    [req.params["partialName"], req.params["partialName"]]
+  );
+  res.status(200).json(forums);
 };
 
-export async function listForumsMatching(req: Request, res: Response) {
-    connection.execute(
-        `SELECT gameId, gameName, gameSmallBannerBin, gameSmallBannerName
+export const listForumsMatching = async (req: Request, res: Response) => {
+  const [forums] = await connection.execute(
+    `SELECT gameId, gameName, gameSmallBannerBin, gameSmallBannerName
         FROM games
         WHERE gameName LIKE CONCAT('%', ?, '%') or 
         gameAlternateName like CONCAT('%', ?, '%')
         ORDER BY gameName DESC`,
-        [req.params["partialName"], req.params["partialName"]],
-        handleQueryOutput(200, res)
-    )
+    [req.params["partialName"], req.params["partialName"]]
+  );
+  res.status(200).json(forums);
 };
 
-export async function listCommentsOfGame(req: Request, res: Response) {
-    connection.execute(
-        `SELECT commentBody, commentTimeStamp, commentWasEdited, userUsername, userIconBin, userIconName 
+export const listCommentsOfGame = async (req: Request, res: Response) => {
+  const [comments] = await connection.execute(
+    `SELECT commentBody, commentTimeStamp, commentWasEdited, userUsername, userIconBin, userIconName 
         FROM comments as c join users as u ON c.userId = u.userId WHERE gameId = ? ORDER BY commentTimeStamp DESC`,
-        [req.params['gameId']],
-        handleQueryOutput(200, res)
-    )
+    [req.params["gameId"]]
+  );
+  res.status(200).json(comments);
 };
 
-export async function updateComment(req: Request, res: Response) {
-    connection.execute(
-        `INSERT INTO comments (commentBody, commentWasEdited) VALUES (?, true) WHERE commentId = ?`,
-        [req.body["commentBody"], req.params["commentId"]],
-        handleQueryOutput(200, res)
-    )
+export const getGameBanner = async (req: Request, res: Response) => {
+  const [bannerData] = await connection.execute(
+    `SELECT gameBigBannerBin, gameBigBannerName FROM games WHERE gameId = ?`,
+    [req.params["gameId"]]
+  );
+  res.status(200).json(bannerData);
 };
 
-export async function deleteComment(req: Request, res: Response) {
-    connection.execute(
-        `DELETE FROM comments WHERE commentId = ?`,
-        [req.params['commentId']],
-        handleQueryOutput(200, res)
-    )
+export const updateComment = async (req: Request, res: Response) => {
+  const user = await handleUser(req, res, ["user", "admin", "master"]);
+  if (!user) {
+    return;
+  }
+  if (!handleResourceAuthorization(res, user, req.body["userId"], false)) {
+    return;
+  }
+
+  await connection.execute(
+    `INSERT INTO comments (commentBody, commentWasEdited) VALUES (?, true) WHERE commentId = ?`,
+    [req.body["commentBody"], req.params["commentId"]]
+  );
+  res.status(200).send("Comment updated successfully");
+};
+
+export const deleteComment = async (req: Request, res: Response) => {
+  const user = await handleUser(req, res, ["user", "admin", "master"]);
+  if (!user) {
+    return;
+  }
+  if (!handleResourceAuthorization(res, user, req.body["userId"], true)) {
+    return;
+  }
+
+  await connection.execute(`DELETE FROM comments WHERE commentId = ?`, [
+    req.params["commentId"],
+  ]);
+  res.status(200).send("Comment deleted successfully");
 };
