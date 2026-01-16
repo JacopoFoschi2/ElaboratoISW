@@ -1,7 +1,8 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
-
+const router = useRouter();
 const forums = ref([]);
 
 const searchQuery = ref('');
@@ -117,10 +118,11 @@ onMounted(() => {
                     </button>
                 </div>
 
-                <div v-if="showSuggestions && suggestions.length" class="suggestions-dropdown">
+                <div v-if="showSuggestions && suggestions.length" class="suggestions-list">
                     <ul>
                         <li v-for="suggestion in suggestions" :key="suggestion.gameId"
-                            @click="goToForumDetail(suggestion.gameId)">
+                            @click="goToForumDetail(suggestion.gameId)"
+                            class="suggestion-item">
                             {{ suggestion.gameName }}
                         </li>
                     </ul>
@@ -171,13 +173,17 @@ h2 {
     padding-top: 10%;
 }
 
+.search-wrapper {
+    position: relative;
+    width: 60%;
+    margin: 40px auto 20px auto;
+}
+
 .search-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
-    width: 60%;
-    margin: 40px auto 20px auto;
+    width: 100%;
     background-color: style-variables.$default-navbar-color;
 
     .search-input {
@@ -189,7 +195,6 @@ h2 {
         padding: 10px 15px;
     }
 
-
     .search-button {
         padding: 0px 15px;
         border: none;
@@ -198,6 +203,37 @@ h2 {
         align-items: center;
         display: flex;
         cursor: pointer;
+    }
+}
+
+.suggestions-list {
+    position: absolute;
+    background-color: style-variables.$default-navbar-color;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 200px;
+    border: 1px solid style-variables.$button-and-border-footer-color;
+    margin-top: 5px;
+    z-index: 1;
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .suggestion-item {
+        padding: 10px 15px;
+        cursor: pointer;
+        text-align: left;
+        color: black;
+
+
+        &:hover {
+            background-color: style-variables.$button-and-border-footer-color;
+            color: style-variables.$default-text-color;
+        }
     }
 }
 
