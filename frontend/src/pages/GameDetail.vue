@@ -142,6 +142,13 @@ onMounted(async () => {
     }
 }
 
+.game-release-date {
+    font-size: 1.8rem;
+    color: style-variables.$default-text-color;
+    padding: 0;
+    margin: 0;
+}
+
 .game-description {
     font-size: 1.5rem;
     color: style-variables.$default-text-color;

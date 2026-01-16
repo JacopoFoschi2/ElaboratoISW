@@ -1,3 +1,44 @@
+<script setup>
+import { ref, onMounted } from 'vue';
+
+const forums = ref([]);
+
+const getImageUrl = (game) => {
+    try {
+        if (game.gameSmallBannerBin && game.gameSmallBannerBin.data) {
+            const arrayBuffer = new Uint8Array(game.gameSmallBannerBin.data);
+            let binary = '';
+            const bytes = new Uint8Array(arrayBuffer);
+            const len = bytes.byteLength;
+
+            for (let i = 0; i < len; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return `data:image/jpg;base64,${window.btoa(binary)}`;
+        }
+    }
+    catch (error) {
+        console.error('Error processing image:', error);
+    }
+    return '';
+};
+
+const fetchForums = async () => {
+    try {
+        const response = await fetch('/api/forums');
+        const data = await response.json();
+        forums.value = data;
+    }
+    catch (error) {
+        console.error('Error fetching data:', error);
+    }
+};
+
+onMounted(() => {
+    fetchForums();
+});
+</script>
+
 <template>
     <div class="forum-page">
         <main class="content-wrapper">
@@ -10,9 +51,9 @@
             </div>
 
             <div class="forum-list">
-                <div class="forum-card">
-                    <img class="image-forum" src="../assets/dragon-age-forum.jpg"></img>
-                    <p class="game-title">Dragon Age™: Origins - Ultimate Edition</p>
+                <div v-for="forum in forums" :key="forum.gameId" class="forum-card">
+                    <img class="image-forum" :src="getImageUrl(forum)" :alt="forum.gameName" />
+                    <p class="game-title">{{ forum.gameName }}</p>
                 </div>
             </div>
         </main>
@@ -20,10 +61,6 @@
     </div>
 
 </template>
-<script>
-
-
-</script>
 
 <style scoped lang="scss">
 @use "../styles/style-variables.scss" as style-variables;
@@ -66,7 +103,6 @@ h2 {
         font-size: 1rem;
         outline: none;
         padding: 10px 15px;
-        color: style-variables.$default-text-color;
     }
 
 
@@ -85,31 +121,31 @@ h2 {
     display: flex;
     align-items: center;
     flex-direction: column;
-    gap: 2%;
-}
+    gap: 30px;
 
-.forum-card {
-    display: flex;
-    align-items: center;
-    border: 1px solid style-variables.$default-text-color;
-    background-color: transparent;
-    cursor: pointer;
-}
+    .forum-card {
+        display: flex;
+        align-items: center;
+        border: 1px solid style-variables.$default-text-color;
+        background-color: transparent;
+        cursor: pointer;
+    }
 
-.image-forum {
-    margin-right: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    max-width: 231px;
-    max-height: 87px;
-    object-fit: cover;
-}
+    .image-forum {
+        margin-right: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        max-width: 231px;
+        max-height: 87px;
+        object-fit: cover;
+    }
 
-.game-title {
-    font-size: 1.5rem;
-    padding-right: 10px;
+    .game-title {
+        font-size: 1.5rem;
+        padding-right: 10px;
+    }
 }
 </style>

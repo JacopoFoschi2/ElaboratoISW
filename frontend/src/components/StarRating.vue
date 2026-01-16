@@ -45,6 +45,7 @@ defineProps({
         fill: transparent;
         stroke: style-variables.$color-star-rating;
         width: 30px;
+        height: 30px;
         stroke-width: 4px;
         stroke-linejoin: round;
     }
