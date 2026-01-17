@@ -1,6 +1,6 @@
 {
   "name": "backend",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "app.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "backend:start": "node dist/app.js",
     "backend": "npm run backend:build && npm run backend:start",
     "dev": "npx ts-node-dev src/app.ts",
-    "all": "npm run seed && npm run backend"
+    "all": "npm i && npm run seed && npm run backend"
   },
   "author": "Jacopo Foschi",
   "license": "ISC",

@@ -21,22 +21,41 @@ export const createReview = async (req: Request, res: Response) => {
 };
 
 export const listReviewsOfGame = async (req: Request, res: Response) => {
-  const [reviews] = await connection.execute(
-    `SELECT * FROM reviews WHERE gameId = ? ORDER BY reviewTimeStamp DESC`,
-    [req.params["gameId"]]
-  );
+  const user = await handleUser(req, res, ["user", "admin", "master"]);
+
+  let query = `
+    SELECT *
+    FROM reviews
+    WHERE gameId = ?
+  `;
+
+  const params: any[] = [req.params["gameId"]];
+
+  if (user) {
+    query += `
+      ORDER BY (userId = ?) DESC, reviewTimeStamp DESC
+    `;
+    params.push(user.userId);
+  } else {
+    query += `
+      ORDER BY reviewTimeStamp DESC
+    `;
+  }
+
+  const [reviews] = await connection.execute(query, params);
+
   res.status(200).json(reviews);
 };
 
-export const listReviewsOfUser = async (req: Request, res: Response) => {
+export const getReviewOfUserForGame = async (req: Request, res: Response) => {
   const user = await handleUser(req, res, ["user", "admin", "master"]);
   if (!user) {
     return;
   }
 
   const [reviews] = await connection.execute(
-    `SELECT * FROM reviews WHERE userId = ? ORDER BY reviewTimeStamp DESC`,
-    [user.userId]
+    `SELECT * FROM reviews WHERE userId = ? AND gameId = ?`,
+    [user.userId, req.params["gameId"]]
   );
   res.status(200).json(reviews);
 };
