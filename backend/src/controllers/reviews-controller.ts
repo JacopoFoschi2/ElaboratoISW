@@ -41,6 +41,19 @@ export const listReviewsOfUser = async (req: Request, res: Response) => {
   res.status(200).json(reviews);
 };
 
+export const getReviewOfUserForGame = async (req: Request, res: Response) => {
+  const user = await handleUser(req, res, ["user", "admin", "master"]);
+  if (!user) {
+    return;
+  }
+
+  const [reviews] = await connection.execute(
+    `SELECT * FROM reviews WHERE userId = ? AND gameId = ?`,
+    [user.userId, req.params["gameId"]]
+  );
+  res.status(200).json(reviews);
+};
+
 export const updateReview = async (req: Request, res: Response) => {
   const user = await handleUser(req, res, ["user", "admin", "master"]);
   if (!user) {
