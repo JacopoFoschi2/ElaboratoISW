@@ -139,6 +139,7 @@ onMounted(async () => {
 
     .rating-label {
         font-weight: bold;
+        font-size: 2rem;
     }
 }
 
