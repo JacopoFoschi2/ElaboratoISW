@@ -12,7 +12,7 @@ const props = defineProps({
 });
 const game = ref(null);
 const loading = ref(true);
-
+const reviews = ref([]);
 const showReviewModal = ref(false);
 
 const auth = useAuthStore();
@@ -30,16 +30,21 @@ const submitReview = async () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 gameId: props.id,
-                userId: authStore.user.id, // ID preso dallo store
+                userId: auth.user.id, 
                 ...reviewData.value
             })
         });
 
         if (response.ok) {
-            alert("Recensione inviata!");
             showModal.value = false;
-            // Reset form
             reviewData.value = { title: '', rating: 5, comment: '' };
+
+            const reviewsResponse = await fetch(`/api/reviews/game/${props.id}`);
+            if (reviewsResponse.ok) {
+                reviews.value = await reviewsResponse.json();
+            } else {
+                console.error('Failed to fetch reviews:', reviewsResponse.statusText);
+            }
         }
     } catch (error) {
         console.error('Error submitting review:', error);
@@ -61,6 +66,13 @@ onMounted(async () => {
         const response = await fetch(`/api/game/${gameId}`);
         const data = await response.json();
         game.value = data[0];
+
+        const reviewsResponse = await fetch(`/api/reviews/game/${gameId}`);
+        if (reviewsResponse.ok) {
+            reviews.value = await reviewsResponse.json();
+        } else {
+            console.error('Failed to fetch reviews:', reviewsResponse.statusText);
+        }
     } catch (error) {
         console.error('There was a problem with the loading of the game:', error);
     } finally {
@@ -116,6 +128,21 @@ onMounted(async () => {
         <section class="review-section" v-if="isLoggedIn">
             <button class="review-btn" @click="showReviewModal = true">Write your review</button>
         </section>
+
+        <section class="reviews-list-section" v-if="reviews.length > 0">
+            <h2>User Reviews</h2>
+            <div v-for="(review, index) in reviews" :key="index" class="review-card">
+                <h2 class="review-title">{{ review.title }}</h2>
+                <img :src="review.getImageUrl(userIconUrl)" alt="User Icon" class="user-icon" />
+                <div class="rating-container">
+                    <p class="rating-label">Rating: {{ review.rating }} / 5</p>
+                    <StarRating :rating="review.rating" :size="10" />
+                </div>
+                <p class="review-date">{{ moment(review.reviewDate).format('MMMM Do YYYY, h:mm:ss a') }}</p>
+                <p class="review-content">{{ review.content }}</p>
+            </div>
+        </section>
+
         <p v-else class="login-prompt">Please log in from the navigation bar to add a review.</p>
 
         <div v-if="showReviewModal" class="modal-overlay" @click="showReviewModal = false">
@@ -168,6 +195,47 @@ onMounted(async () => {
         text-align: center;
         border: 1px solid style-variables.$button-and-border-footer-color;
         padding: 15px;
+    }
+
+    .review-list-section{
+        max-width: 1200px;
+        margin: 20px auto;
+        color: style-variables.$default-text-color;
+
+        h2{
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+    }
+    .review-card{
+        background-color: style-variables.$default-background-color;
+        border: 1px solid style-variables.$default-text-color;
+        
+        .rating-container{
+            display: flex;
+            align-items: center;
+        }
+
+        .review-title{
+            font-size: 2rem;
+            margin: 10px 0;
+        }
+        .user-icon{
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .review-date{
+            font-size: 1.2rem;
+            color: style-variables.$default-text-color;
+        }
+        .review-content{
+            font-size: 1.5rem;
+            margin-top: 10px;
+            color: style-variables.$default-text-color;
+        }
     }
 }
 

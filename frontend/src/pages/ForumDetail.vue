@@ -74,16 +74,6 @@ const fetchForumDetails = async () => {
 
 
 const submitComment = async () => {
-    if (!auth.isLoggedIn) {
-        alert('You need to be logged in to post a comment.');
-        return;
-    }
-
-    if (newComment.value.trim() === '') {
-        alert('Comment cannot be empty.');
-        return;
-    }
-
     isSubmitting.value = true;
 
     try {
