@@ -61,7 +61,8 @@ const fetchForumDetails = async () => {
             userIconUrl: bufferToUrl(comment.userIconBin),
             displayName: comment.userUsername,
             commentDate: comment.commentTimeStamp,
-            commentText: comment.commentBody
+            commentText: comment.commentBody,
+            isEdited: comment.commentWasEdited
         }));
     } catch (error) {
         console.error('Error fetching forum details:', error);
@@ -138,6 +139,7 @@ onUnmounted(() => {
                         <p class="username">{{ comment.displayName }}</p>
                         <p class="comment-date">{{ moment(comment.commentDate).format('MMMM Do YYYY, h:mm:ss a') }}</p>
                         <p class="comment-text">{{ comment.commentText }}</p>
+                        <p v-if="comment.isEdited === 1" class="edited-label">(Edited)</p>
                     </div>
                 </div>
             </div>
@@ -273,6 +275,7 @@ h2 {
             }
 
             .comment-date {
+                font-style: italic;
                 margin-top: 0;
                 font-size: 1rem;
                 color: style-variables.$default-text-color;
@@ -282,6 +285,12 @@ h2 {
             .comment-text {
                 font-size: 1.5rem;
                 color: style-variables.$default-text-color;
+                margin-bottom: 5px;
+            }
+            .edited-label {
+                font-size: 1rem;
+                color: rgb(255, 255, 255, 0.7);
+                margin: 0;
             }
         }
     }
