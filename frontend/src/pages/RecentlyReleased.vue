@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-const bestGames = ref([]);
+
+const recentlyReleasedGames = ref([]);
 const isLoading = ref(true);
 
 const getImageUrl = (game) => {
@@ -20,16 +21,16 @@ const getImageUrl = (game) => {
     return '';
 };
 
-const fetchBestGames = async () => {
+const fetchRecentlyReleasedGames = async () => {
     try {
         isLoading.value = true;
-        const response = await fetch('/api/games/rating');
+        const response = await fetch('/api/games/release');
         const allGames = await response.json();
 
-        bestGames.value = allGames;
+        recentlyReleasedGames.value = allGames;
     }
     catch (error) {
-        console.error('Error fetching best games:', error);
+        console.error('Error fetching recently released games:', error);
     }
     finally {
         isLoading.value = false;
@@ -38,39 +39,37 @@ const fetchBestGames = async () => {
 }
 
 onMounted(() => {
-    fetchBestGames();
+    fetchRecentlyReleasedGames();
 });
+
 </script>
 
 <template>
-    <div class="best-games-page">
+    <div class="recently-released-page">
         <main class="content-wrapper">
-            <h2 class="page-title">The Best of the Best</h2>
+            <h2 class="page-title">Recently Released Games</h2>
 
             <div v-if="isLoading" class="loader">
-                <p>Loading best games...</p>
+                <p>Loading recently released games...</p>
             </div>
-
-            <div v-else-if="bestGames.length > 0" class="games-grid">
-                <router-link v-for="game in bestGames" :key="game.gameId" class="game-card"
+            <div v-else-if="recentlyReleasedGames.length > 0" class="games-grid">
+                <router-link v-for="game in recentlyReleasedGames" :key="game.gameId" class="game-card"
                     :to="{ name: 'GameDetail', params: { id: game.gameId } }">
                     <img :src="getImageUrl(game)" :alt="game.gameName" class="game-cover" />
                 </router-link>
-            </div>
 
+            </div>
             <div v-else class="no-games-message">
-                <p>No 5 star games found.</p>
+                <p>No recently released games found.</p>
             </div>
-
         </main>
-
     </div>
 </template>
 
 <style scoped lang="scss">
 @use "../styles/style-variables.scss" as style-variables;
 
-.best-games-page {
+.recently-released-page {
     margin: 0;
     min-height: 100vh;
     display: flex;
@@ -127,5 +126,4 @@ onMounted(() => {
     color: style-variables.$default-text-color;
     margin-top: 50px;
 }
-
 </style>

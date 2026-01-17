@@ -35,6 +35,11 @@ const router: Router = createRouter({
             component: () => import('./pages/BestGames.vue')
         },
         {
+            path: "/recently-released",
+            name: "RecentlyReleased",
+            component: () => import('./pages/RecentlyReleased.vue')
+        },
+        {
             path: "/profile/:id",
             component: () => import('./pages/Profile.vue'),
             props: route => ({ id: Number(route.params.id) })

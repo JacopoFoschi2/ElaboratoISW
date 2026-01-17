@@ -112,7 +112,8 @@ watch(() => props.id, () => {
     text-transform: uppercase;
     color: style-variables.$default-text-color;
     text-align: center;
-    padding-bottom: 20px;
+    padding-bottom: 30px;
+    padding-top: 60px;
 }
 
 .games-grid {
