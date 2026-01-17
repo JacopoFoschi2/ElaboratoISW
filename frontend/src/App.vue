@@ -61,7 +61,7 @@ export default {
         <ul class="nav-container">
             <li><router-link to="/"><img src="./assets/logo.svg" alt="Logo"></router-link></li>
             <li><router-link to="/forum">FORUM</router-link></li>
-            <li><router-link to="/">BEST</router-link></li>
+            <li><router-link to="/best-games">BEST</router-link></li>
             <li><router-link to="/">RECENTLY RELEASED</router-link></li>
 
             <li class="dropdown"><router-link class="dropdown-trigger" to="/">

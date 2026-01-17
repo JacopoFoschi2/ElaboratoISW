@@ -8,7 +8,7 @@ import Forum from "./pages/Forum.vue"
 import TermsOfService from "./pages/Terms-of-Service.vue"
 import CommunityGuidelines from "./pages/Community-Guidelines.vue"
 import CookiePolicy from "./pages/Cookie-Policy.vue"
-import CategoryGames from"./pages/CategoryGames.vue"
+import CategoryGames from "./pages/CategoryGames.vue"
 
 
 
@@ -18,7 +18,7 @@ const router: Router = createRouter({
         { path: "/", component: Home },
         { path: "/forum", component: Forum },
         {
-         path: "/category/:id",
+            path: "/category/:id",
             name: "CategoryGames",
             component: () => import('./pages/CategoryGames.vue'),
             props: route => ({ id: Number(route.params.id) })
@@ -29,8 +29,13 @@ const router: Router = createRouter({
             component: () => import('./pages/GameDetail.vue'),
             props: route => ({ id: Number(route.params.id) })
         },
-        { 
-            path: "/profile/:id", 
+        {
+            path: "/best-games",
+            name: "BestGames",
+            component: () => import('./pages/BestGames.vue')
+        },
+        {
+            path: "/profile/:id",
             component: () => import('./pages/Profile.vue'),
             props: route => ({ id: Number(route.params.id) })
         },
@@ -41,8 +46,8 @@ const router: Router = createRouter({
             props: route => ({ id: Number(route.params.id) })
         },
         { path: "/privacy-policy", component: PrivacyPolicy },
-        {path: "/terms-of-service", component: TermsOfService},
-        {path: "/community-guidelines", component: CommunityGuidelines},
+        { path: "/terms-of-service", component: TermsOfService },
+        { path: "/community-guidelines", component: CommunityGuidelines },
         { path: "/cookie-policy", component: CookiePolicy },
         { path: "/:pathMatch(.*)*", component: NotFound }
     ]
