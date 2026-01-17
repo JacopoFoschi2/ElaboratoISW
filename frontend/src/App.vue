@@ -186,6 +186,7 @@ export default {
                     opacity: 1;
                     visibility: visible;
                     transform: translateY(0);
+                    z-index: 2;
                 }
             }
 
@@ -217,6 +218,7 @@ export default {
                     opacity: 1;
                     visibility: visible;
                     transform: translateY(0);
+                    z-index: 2;
                 }
             }
 
