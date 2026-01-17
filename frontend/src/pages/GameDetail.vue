@@ -12,6 +12,19 @@ const props = defineProps({
 const game = ref(null);
 const loading = ref(true);
 
+const showReviewModal = ref(false);
+const reviewTitle = ref('');
+const reviewContent = ref('');
+const reviewRating = ref(0);
+const submittingReview = ref(false);
+const errorMessage = ref('');
+
+const isloggedIn = ref(false);
+// const auth = useAuthStore();
+// const isLoggedIn = computed(() => auth.isLoggedIn);
+
+
+
 const getImageUrl = (imageBuffer) => {
     if (!imageBuffer || !imageBuffer.data) return '';
     const binary = String.fromCharCode(...imageBuffer.data);
@@ -78,7 +91,7 @@ onMounted(async () => {
 
         </main>
         <section class="review-section">
-            <button class="review-btn">Write your review</button>
+            <button class="review-btn" @click="showReviewModal = true">Write your review</button>
         </section>
     </div>
     <div v-else>
