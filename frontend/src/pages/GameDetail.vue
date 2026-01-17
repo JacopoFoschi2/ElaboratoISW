@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useAuthStore } from '../stores/auth';
 import StarRating from '../components/StarRating.vue';
 import moment from 'moment';
 
@@ -13,15 +14,37 @@ const game = ref(null);
 const loading = ref(true);
 
 const showReviewModal = ref(false);
-const reviewTitle = ref('');
-const reviewContent = ref('');
-const reviewRating = ref(0);
-const submittingReview = ref(false);
-const errorMessage = ref('');
 
-const isloggedIn = ref(false);
-// const auth = useAuthStore();
-// const isLoggedIn = computed(() => auth.isLoggedIn);
+const auth = useAuthStore();
+const isLoggedIn = auth.isLoggedIn;
+const reviewData = ref({
+    title: '',
+    content: '',
+    rating: 0
+});
+
+const submitReview = async () => {
+    try {
+        const response = await fetch(`/api/game/${props.id}/reviews`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                gameId: props.id,
+                userId: authStore.user.id, // ID preso dallo store
+                ...reviewData.value
+            })
+        });
+
+        if (response.ok) {
+            alert("Recensione inviata!");
+            showModal.value = false;
+            // Reset form
+            reviewData.value = { title: '', rating: 5, comment: '' };
+        }
+    } catch (error) {
+        console.error('Error submitting review:', error);
+    }
+};
 
 
 
@@ -54,7 +77,7 @@ onMounted(async () => {
 
                 <div class="rating-container">
                     <p class="rating-label">Rating: {{ Math.floor(game.gameRating) }} / 5</p>
-                    <StarRating :rating=" Math.floor(game.gameRating)" :size="10" />
+                    <StarRating :rating="Math.floor(game.gameRating)" :size="10" />
                 </div>
 
                 <h3>Available on:</h3>
@@ -90,9 +113,38 @@ onMounted(async () => {
             </div>
 
         </main>
-        <section class="review-section">
+        <section class="review-section" v-if="isLoggedIn">
             <button class="review-btn" @click="showReviewModal = true">Write your review</button>
         </section>
+
+        <div v-if="showReviewModal" class="modal-overlay" @click="showReviewModal = false">
+            <div class="review-modal" @click.stop>
+                <h2>Write your review</h2>
+                <form @submit.prevent="submitReview">
+                    <input v-model="reviewData.title" id="review-title" type="text" placeholder="Review Title"
+                        required />
+
+                    <div class="rating-input">
+                        <label for="review-rating">Rating(1-5):</label>
+                        <select id="review-rating" v-model.number="reviewData.rating" type="number" min="1" max="5"
+                            required>
+                            <option v-for="n in 5" :key="n" :value="n">{{ n }}</option>
+                        </select>
+                    </div>
+
+                    <label for="review-content">Content:</label>
+                    <textarea id="review-content" v-model="reviewData.content" placeholder="Your review..." rows="5"
+                        required></textarea>
+
+                    <div class="modal-actions">
+                        <button @click="submitReview">Submit Review</button>
+                        <button @click="showReviewModal = false">Cancel</button>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
     </div>
     <div v-else>
         <p>Loading...</p>
@@ -223,6 +275,101 @@ h3 {
         color: style-variables.$default-text-color;
         cursor: pointer;
         transition: background-color 0.3s;
+    }
+}
+
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+}
+
+.review-modal {
+    background-color: style-variables.$default-background-color;
+    border: 1px solid style-variables.$default-text-color;
+    padding: 30px;
+    width: 80%;
+    color: style-variables.$default-text-color;
+
+    h2 {
+        margin-top: 0;
+        color: style-variables.$default-text-color;
+        padding-bottom: 15px;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    input,
+    textarea {
+        font-size: 1rem;
+        border: 1px solid style-variables.$default-text-color;
+        background-color: style-variables.$default-background-color;
+        color: style-variables.$default-text-color;
+        padding: 10px;
+    }
+
+    .rating-input {
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+
+        label {
+            margin-bottom: 5px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid style-variables.$button-and-border-footer-color;
+            font-size: 1rem;
+            color: style-variables.$default-text-color;
+            background-color: style-variables.$default-background-color;
+        }
+    }
+
+    input,
+    select,
+    textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid style-variables.$button-and-border-footer-color;
+        font-size: 1rem;
+        color: style-variables.$default-text-color;
+        background-color: style-variables.$default-background-color;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+
+        button {
+            padding: 10px 15px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: style-variables.$button-and-border-footer-color;
+            color: style-variables.$default-text-color;
+
+            &:hover {
+                background-color: style-variables.$default-text-color;
+                color: style-variables.$default-background-color;
+            }
+        }
     }
 }
 </style>

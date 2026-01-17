@@ -1,4 +1,5 @@
 import { createApp } from "vue"
+import { createPinia } from "pinia"
 import { createRouter, createWebHistory, Router } from "vue-router"
 import App from "./App.vue"
 import Home from "./pages/Home.vue"
@@ -10,6 +11,8 @@ import CommunityGuidelines from "./pages/Community-Guidelines.vue"
 import CookiePolicy from "./pages/Cookie-Policy.vue"
 import CategoryGames from "./pages/CategoryGames.vue"
 
+const app = createApp(App)
+const pinia = createPinia()
 
 
 const router: Router = createRouter({
@@ -58,6 +61,8 @@ const router: Router = createRouter({
     ]
 })
 
-createApp(App)
-    .use(router)
-    .mount("#app")
+app.use(pinia)
+app.use(router)
+
+
+app.mount("#app")
