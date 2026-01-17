@@ -3,7 +3,7 @@ import { ref } from 'vue';
 
 export const useAuthStore = defineStore('auth',{
     state: () => ({
-        isLoggedIn: ref(true),
+        isLoggedIn: ref(false),
         user: ref(null),
     }),
     actions: {

@@ -116,6 +116,7 @@ onMounted(async () => {
         <section class="review-section" v-if="isLoggedIn">
             <button class="review-btn" @click="showReviewModal = true">Write your review</button>
         </section>
+        <p v-else class="login-prompt">Please log in from the navigation bar to add a review.</p>
 
         <div v-if="showReviewModal" class="modal-overlay" @click="showReviewModal = false">
             <div class="review-modal" @click.stop>
@@ -160,6 +161,14 @@ onMounted(async () => {
     background-color: style-variables.$default-background-color;
     padding: 60px 20px;
     overflow-y: auto;
+
+    .login-prompt {
+        font-size: 1.5rem;
+        color: style-variables.$default-text-color;
+        text-align: center;
+        border: 1px solid style-variables.$button-and-border-footer-color;
+        padding: 15px;
+    }
 }
 
 .content-wrapper {
