@@ -53,6 +53,14 @@ const router: Router = createRouter({
             component: () => import('./pages/ForumDetail.vue'),
             props: route => ({ id: Number(route.params.id) })
         },
+        {
+            path: "/registration", 
+            component: () => import('./pages/Registration.vue')
+        },
+        {
+            path: "/reset-password", 
+            component: () => import('./pages/ResetPassword.vue')
+        },
         { path: "/privacy-policy", component: PrivacyPolicy },
         { path: "/terms-of-service", component: TermsOfService },
         { path: "/community-guidelines", component: CommunityGuidelines },
