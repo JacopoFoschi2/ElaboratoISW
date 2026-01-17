@@ -29,12 +29,7 @@ const fetchBestGames = async () => {
         const response = await fetch('/api/games/rating');
         const allGames = await response.json();
 
-        bestGames.value = allGames.filter(game => 
-        {
-            const ratingValue = game.gameRating;
-            const numericRating = Number(ratingValue);
-            return !isNaN(numericRating) && Math.floor(numericRating) >= 4.0; 
-        });
+        bestGames.value = allGames;
     }
     catch (error) {
         console.error('Error fetching best games:', error);
@@ -90,10 +85,11 @@ onMounted(() => {
 .content-wrapper {
     flex-direction: column;
     display: flex;
-    margin: 0 auto;
+    margin: 0;
     padding: 0 20px;
     padding-bottom: 3%;
-    max-width: 1200px;
+    text-align: center;
+    justify-content: center;
 }
 
 .page-title {
@@ -101,12 +97,13 @@ onMounted(() => {
     text-align: center;
     margin: 40px 0 20px 0;
     font-size: 3rem;
+    padding-bottom: 50px;
 }
 
 .games-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 30px;
 }
 
 .game-card{
