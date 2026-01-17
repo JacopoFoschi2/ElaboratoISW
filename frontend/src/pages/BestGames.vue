@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const bestGames = ref([]);
@@ -24,25 +25,16 @@ const getImageUrl = (game) => {
 
 const fetchBestGames = async () => {
     try {
-        const response = await fetch('/api/categories');
-        const categories = await response.json();
+        isLoading.value = true;
+        const response = await fetch('/api/games/rating');
+        const allGames = await response.json();
 
-        let allGames = [];
-
-        for (const category of categories) {
-            try {
-                const gamesResponse = await fetch(`/api/games/${category.categoryId}`);
-                const gamesData = await gamesResponse.json();
-                allGames.push(...gamesData);
-            }
-            catch (error) {
-                console.error(`Error fetching games for category ${category.categoryId}:`, error);
-            }
-        }
-
-        bestGames.value = allGames.filter(game => Math.floor(game.gameRating) === 5);
-
-        bestGames.value = [...new Map(bestGames.value.map(item => [item['gameId'], item])).values()]; // Remove duplicates
+        bestGames.value = allGames.filter(game => 
+        {
+            const ratingValue = game.gameRating;
+            const numericRating = Number(ratingValue);
+            return !isNaN(numericRating) && Math.floor(numericRating) >= 4.0; 
+        });
     }
     catch (error) {
         console.error('Error fetching best games:', error);
@@ -53,10 +45,6 @@ const fetchBestGames = async () => {
 
 }
 
-const goToGameDetail = (gameId) => {
-    router.push({ name: 'GameDetail', params: { id: gameId } });
-};
-
 onMounted(() => {
     fetchBestGames();
 });
@@ -65,7 +53,7 @@ onMounted(() => {
 <template>
     <div class="best-games-page">
         <main class="content-wrapper">
-            <h2>The Best of the Best</h2>
+            <h2 class="page-title">The Best of the Best</h2>
 
             <div v-if="isLoading" class="loader">
                 <p>Loading best games...</p>
@@ -73,7 +61,7 @@ onMounted(() => {
 
             <div v-else-if="bestGames.length > 0" class="games-grid">
                 <router-link v-for="game in bestGames" :key="game.gameId" class="game-card"
-                    @click="goToGameDetail(game.gameId)">
+                    :to="{ name: 'GameDetail', params: { id: game.gameId } }">
                     <img :src="getImageUrl(game)" :alt="game.gameName" class="game-cover" />
                 </router-link>
             </div>
@@ -106,6 +94,13 @@ onMounted(() => {
     padding: 0 20px;
     padding-bottom: 3%;
     max-width: 1200px;
+}
+
+.page-title {
+    color: style-variables.$default-text-color;
+    text-align: center;
+    margin: 40px 0 20px 0;
+    font-size: 3rem;
 }
 
 .games-grid {
