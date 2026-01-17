@@ -6,6 +6,7 @@ export default {
             showSignIn: false,
             isLoggedIn: false,
             currentUserId: null,
+            categories: []
         };
     },
     methods: {
@@ -25,10 +26,33 @@ export default {
             this.isLoggedIn = true;
             this.showSignIn = false;
             this.$router.push(`/profile/${this.currentUserId}`);
-        }
+        },
+        async fetchCategories() {
+            try {
+                const response = await fetch('/api/categories');
+                const catData = await response.json();
+                this.categories = catData.map(cat => ({ ...cat, games: [] }));
+
+                for (const category of this.categories) {
+                    try {
+                        const gamesResponse = await fetch(`/api/games/${category.categoryId}`);
+                        const gamesData = await gamesResponse.json();
+                        category.games = gamesData.slice(0, 5); //only 5 per category
+                    }
+                    catch (error) {
+                        console.error(`Error fetching games for category ${category.categoryId}:`, error);
+                    }
+                }
+            }
+            catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        },
+    },
+    mounted() {
+        this.fetchCategories();
     }
 };
-
 
 </script>
 
@@ -44,7 +68,11 @@ export default {
                     <img class="arrow-icon" src="./assets/arrowDown.svg" alt="arrow">GENRE</router-link>
 
                 <ul class="drop-menu">
-                    <li> <a>Action</a></li>
+                    <li v-for="category in categories" :key="category.categoryId">
+                        <router-link :to="`/category/${category.categoryId}`">
+                            {{ category.categoryName }}
+                        </router-link>
+                    </li>
                 </ul>
 
             </li>
@@ -64,6 +92,8 @@ export default {
                     <button type="submit">Enter</button>
                     <p>Don't have an account? <router-link to="/registration"
                             @click="toggleSignIn">Register</router-link></p>
+                    <p>Forgot your password? <router-link to="/reset-password" @click="toggleSignIn">Reset
+                            Password</router-link></p>
                 </form>
             </div>
         </div>
@@ -102,6 +132,14 @@ export default {
             align-items: center;
             height: 100%;
 
+            &:hover {
+                .drop-menu {
+                    opacity: 1;
+                    visibility: visible;
+                    transform: translateY(0);
+                }
+            }
+
             .dropdown-trigger {
                 display: flex;
                 align-items: center;
@@ -121,7 +159,6 @@ export default {
             min-width: 200px;
             flex-direction: column;
             gap: 0;
-            padding: 10px 0;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
             z-index: 1;
 
@@ -130,9 +167,10 @@ export default {
             transform: translateY(10px);
             transition: all 0.3s ease;
 
-            li{
+            li {
                 width: 100%;
-                a{
+
+                a {
                     color: black;
                     padding: 10px 20px;
                     display: block;
@@ -146,14 +184,6 @@ export default {
                         cursor: pointer;
                     }
                 }
-            }
-        }
-
-        &:hover {
-            .drop-menu {
-               opacity: 1;
-               visibility: visible;
-               transform: translateY(0);
             }
         }
 

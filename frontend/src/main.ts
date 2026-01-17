@@ -8,6 +8,7 @@ import Forum from "./pages/Forum.vue"
 import TermsOfService from "./pages/Terms-of-Service.vue"
 import CommunityGuidelines from "./pages/Community-Guidelines.vue"
 import CookiePolicy from "./pages/Cookie-Policy.vue"
+import CategoryGames from"./pages/CategoryGames.vue"
 
 
 
@@ -17,6 +18,12 @@ const router: Router = createRouter({
         { path: "/", component: Home },
         { path: "/forum", component: Forum },
         {
+         path: "/category/:id",
+            name: "CategoryGames",
+            component: () => import('./pages/CategoryGames.vue'),
+            props: route => ({ id: Number(route.params.id) })
+        },
+        {
             path: "/game/:id",
             name: "GameDetail",
             component: () => import('./pages/GameDetail.vue'),
@@ -24,7 +31,8 @@ const router: Router = createRouter({
         },
         { 
             path: "/profile/:id", 
-            component: () => import('./pages/Profile.vue')
+            component: () => import('./pages/Profile.vue'),
+            props: route => ({ id: Number(route.params.id) })
         },
         {
             path: "/forum/game/:id",
