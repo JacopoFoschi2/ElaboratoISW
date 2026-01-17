@@ -1,31 +1,49 @@
 <script>
+import { useAuthStore } from './stores/auth';
+import { mapState, mapActions } from 'pinia';
 export default {
     name: 'App',
     data() {
         return {
             showSignIn: false,
-            isLoggedIn: false,
-            currentUserId: null,
+            // isLoggedIn: false,
+            // currentUserId: null,
             categories: []
         };
     },
+    computed: {
+        ...mapState(useAuthStore, ['isLoggedIn', 'currentUserId']),
+
+        currentUserId() {
+            return this.currentUserId ? this.currentUserId : null;
+        }
+    },
     methods: {
+        ...mapActions(useAuthStore, ['setCurrentUser', 'setIsLoggedIn']),
+
         toggleSignIn() {
             this.showSignIn = !this.showSignIn;
         },
         handleClickpfp() {
-            if (this.isLoggedIn) {
-                this.$router.push(`/profile/${this.currentUserId}`);
+            const auth = useAuthStore();
+            if (auth.isLoggedIn) {
+                this.$router.push(`/api/user`);
             } else {
                 this.toggleSignIn();
             }
         },
         handleLogin() {
-            // const mockUserId = 1;
-            // this.currentUserId = mockUserId;
-            this.isLoggedIn = true;
+            const auth = useAuthStore();
+            auth.login();
+            this.toggleSignIn();
+
             this.showSignIn = false;
-            this.$router.push(`/profile/${this.currentUserId}`);
+            this.$router.push('/api/user');
+        },
+        handleLogout() {
+            const auth = useAuthStore();
+            auth.logout();
+            this.$router.push('/');
         },
         async fetchCategories() {
             try {
@@ -76,7 +94,24 @@ export default {
                 </ul>
 
             </li>
-            <li><img @click="toggleSignIn" class="pfp-" src="./assets/pfpIcon.svg" alt="User Icon"></img></li>
+            <li v-if="!isLoggedIn">
+                <img @click="handleClickpfp" class="pfp-icon" src="./assets/pfpIcon.svg" alt="User Icon"></img>
+            </li>
+
+            <li v-else class="dropdown-user">
+                <div class="dropdown-trigger">
+                    <img class="pfp-icon" src="./assets/pfpIcon.svg" alt="User Icon"></img>
+                </div>
+
+                <ul class="drop-menu">
+                    <li><router-link :to="`#`">PROFILE</router-link></li>
+                    <li><router-link :to="`#`">WISHLIST</router-link></li>
+                    <li><router-link :to="`#`">OWNED</router-link></li>
+                    <div class="menu-divider"></div>
+                    <li><a @click="handleLogout" class="logout-btn">LOGOUT</a>
+                    </li>
+                </ul>
+            </li>
         </ul>
     </nav>
     <main>
@@ -97,6 +132,8 @@ export default {
                 </form>
             </div>
         </div>
+
+
     </main>
     <nav class="footer-everywhere">
         <ul>
@@ -125,6 +162,49 @@ export default {
         display: flex;
         align-items: center;
         gap: 50px;
+
+        .menu-divider {
+            height: 1px;
+            width: 90%;
+            background-color: style-variables.$default-text-color;
+            margin: 5px 0;
+        }
+
+        .logout-btn {
+            color: style-variables.$default-text-color;
+            cursor: pointer;
+        }
+
+        .dropdown-user {
+            position: relative;
+            display: flex;
+            align-items: center;
+            height: 100%;
+
+            &:hover {
+                .drop-menu {
+                    opacity: 1;
+                    visibility: visible;
+                    transform: translateY(0);
+                }
+            }
+
+            .dropdown-trigger {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+
+                .arrow-icon {
+                    vertical-align: middle;
+                }
+            }
+        }
+
+        .pfp-icon {
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+        }
 
         .dropdown {
             position: relative;
