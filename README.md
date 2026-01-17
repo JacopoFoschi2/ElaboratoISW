@@ -99,9 +99,8 @@
 - Create:
   - /api/reviews/:gameId
 - Read:
-  - /api/reviews/game/:gameId    Lists all reviews of game
+  - /api/reviews/game/:gameId    Lists all reviews of game and tries to put review of user on top if logged
   - /api/reviews/user    Lists all reviews of user
-  - /api/reviews/user/:gameId   Gets review of game by logged user if present
 - Update:
   - /api/reviews/:gameId    Updates review of logged user of said game, admins cannot modify reviews of others
 - Delete:
