@@ -1,11 +1,11 @@
 import type { Request, Response } from "express";
 import { connection } from "../utils/db-connection";
-import { handleUser, handleUserProfileAccess, unsetUser } from "../utils/auth";
+import { unsetUser } from "../utils/auth";
+import { requireProfileAccess, requireUser } from "../utils/query-handling";
 
 export const listUsers = async (req: Request, res: Response) => {
-  const user = await handleUser(req, ["master"]);
-  if (!user) {
-    res.status(401).send("This operation requires authentication.");
+  const user = await requireUser(req, res, ["master"]);
+    if (!user) {
     return;
   }
 
@@ -17,9 +17,8 @@ export const listUsers = async (req: Request, res: Response) => {
 };
 
 export const getUser = async (req: Request, res: Response) => {
-  const user = await handleUser(req, ["user", "admin", "master"]);
+  const user = await requireUser(req, res, ["user", "admin", "master"]);
   if (!user) {
-    res.status(401).send("This operation requires authentication.");
     return;
   }
 
@@ -32,14 +31,13 @@ export const getUser = async (req: Request, res: Response) => {
 };
 
 export const updateUserInfo = async (req: Request, res: Response) => {
-  const user = await handleUser(req, ["user", "admin", "master"]);
+  const user = await requireUser(req, res, ["user", "admin", "master"]);
   if (!user) {
-    res.status(401).send("This operation requires authentication.");
     return;
   }
 
-  if (!handleUserProfileAccess(user, user.userId, false)) {
-    res.status(403).send("Forbidden");
+  const hasAccess = requireProfileAccess(res, user, user.userId, false);
+  if (!hasAccess) {
     return;
   }
 
@@ -57,14 +55,13 @@ export const updateUserInfo = async (req: Request, res: Response) => {
 };
 
 export const deleteUser = async (req: Request, res: Response) => {
-  const user = await handleUser(req, ["user", "admin", "master"]);
+  const user = await requireUser(req, res, ["user", "admin", "master"]);
   if (!user) {
-    res.status(401).send("This operation requires authentication.");
     return;
   }
 
-  if (!handleUserProfileAccess(user, Number(req.params["userId"]), true)) {
-    res.status(403).send("Forbidden");
+  const hasAccess = requireProfileAccess(res, user, Number(req.params["userId"]), true);
+  if (!hasAccess) {
     return;
   }
 

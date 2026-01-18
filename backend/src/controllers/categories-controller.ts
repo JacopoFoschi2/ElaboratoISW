@@ -1,11 +1,10 @@
 import type { Request, Response } from "express";
 import { connection } from "../utils/db-connection";
-import { handleUser } from "../utils/auth";
+import { requireUser } from "../utils/query-handling";
 
 export const createCategory = async (req: Request, res: Response) => {
-  const user = await handleUser(req, ["master"]);
+  const user = await requireUser(req, res, ["master"]);
   if (!user) {
-    res.status(401).send("This operation requires authentication with correct privileges.");
     return;
   }
 
@@ -21,9 +20,8 @@ export const listCategories = async (req: Request, res: Response) => {
 };
 
 export const updateCategory = async (req: Request, res: Response) => {
-  const user = await handleUser(req, ["master"]);
+  const user = await requireUser(req, res, ["master"]);
   if (!user) {
-    res.status(401).send("This operation requires authentication with correct privileges.");
     return;
   }
 
@@ -35,9 +33,8 @@ export const updateCategory = async (req: Request, res: Response) => {
 };
 
 export const deleteCategory = async (req: Request, res: Response) => {
-  const user = await handleUser(req, ["master"]);
+  const user = await requireUser(req, res, ["master"]);
   if (!user) {
-    res.status(401).send("This operation requires authentication with correct privileges.");
     return;
   }
 

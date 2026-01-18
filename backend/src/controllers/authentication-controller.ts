@@ -2,14 +2,12 @@ import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import {
   getUser,
-  handleUser,
-  handleUserProfileAccess,
   setUser,
   unsetUser,
 } from "../utils/auth";
 import { User } from "../types/user";
 import { connection } from "../utils/db-connection";
-import { handleExists } from "../utils/query-handling";
+import { handleExists, requireUser, requireProfileAccess } from "../utils/query-handling";
 
 const checkUsername = async (username: string | undefined) => {
   const [users] = await connection.execute(
@@ -138,14 +136,12 @@ export const logout = async (req: Request, res: Response) => {
 };
 
 export const updateUserPassword = async (req: Request, res: Response) => {
-  const user = await handleUser(req, ["user", "admin", "master"]);
+  const user = await requireUser(req, res, ["user", "admin", "master"]);
   if (!user) {
-    res.status(401).send("This operation requires authentication.");
     return;
   }
 
-  if (!handleUserProfileAccess(user, user.userId, false)) {
-    res.status(403).send("Forbidden.");
+  if (!requireProfileAccess(res, user, user.userId, false)) {
     return;
   }
 

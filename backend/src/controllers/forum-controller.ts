@@ -1,11 +1,10 @@
 import type { Request, Response } from "express";
 import { connection } from "../utils/db-connection";
-import { handleResourceAuthorization, handleUser } from "../utils/auth";
+import { requireProfileAccess, requireUser } from "../utils/query-handling";
 
 export const addComment = async (req: Request, res: Response) => {
-  const user = await handleUser(req, ["user", "admin", "master"]);
+  const user = await requireUser(req, res, ["user", "admin", "master"]);
   if (!user) {
-    res.status(401).send("This operation requires authentication.");
     return;
   }
 
@@ -67,13 +66,11 @@ export const getGameBanner = async (req: Request, res: Response) => {
 };
 
 export const updateComment = async (req: Request, res: Response) => {
-  const user = await handleUser(req, ["user", "admin", "master"]);
+  const user = await requireUser(req, res, ["user", "admin", "master"]);
   if (!user) {
-    res.status(401).send("This operation requires authentication.");
     return;
   }
-  if (!handleResourceAuthorization(user, req.body["userId"], false)) {
-    res.status(403).send("Forbidden");
+  if (!requireProfileAccess(res, user, req.body["userId"], false)) {
     return;
   }
 
@@ -85,13 +82,11 @@ export const updateComment = async (req: Request, res: Response) => {
 };
 
 export const deleteComment = async (req: Request, res: Response) => {
-  const user = await handleUser(req, ["user", "admin", "master"]);
+  const user = await requireUser(req, res, ["user", "admin", "master"]);
   if (!user) {
-    res.status(401).send("This operation requires authentication.");
     return;
   }
-  if (!handleResourceAuthorization(user, req.body["userId"], true)) {
-    res.status(403).send("Forbidden");
+  if (!requireProfileAccess(res, user, req.body["userId"], true)) {
     return;
   }
 

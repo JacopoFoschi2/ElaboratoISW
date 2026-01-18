@@ -1,11 +1,10 @@
 import type { Request, Response } from "express";
 import { connection } from "../utils/db-connection";
-import { handleResourceAuthorization, handleUser } from "../utils/auth";
+import { requireProfileAccess, requireUser } from "../utils/query-handling";
 
 export const createReview = async (req: Request, res: Response) => {
-  const user = await handleUser(req, ["user", "admin", "master"]);
+  const user = await requireUser(req, res, ["user", "admin", "master"]);
   if (!user) {
-    res.status(401).send("This operation requires authentication.");
     return;
   }
 
@@ -22,7 +21,7 @@ export const createReview = async (req: Request, res: Response) => {
 };
 
 export const listReviewsOfGame = async (req: Request, res: Response) => {
-  const user = await handleUser(req, ["user", "admin", "master"]);
+  const user = await requireUser(req, res, ["user", "admin", "master"]);
 
   let query = `
     SELECT *
@@ -49,9 +48,8 @@ export const listReviewsOfGame = async (req: Request, res: Response) => {
 };
 
 export const getReviewsOfUser = async (req: Request, res: Response) => {
-  const user = await handleUser(req, ["user", "admin", "master"]);
+  const user = await requireUser(req, res, ["user", "admin", "master"]);
   if (!user) {
-    res.status(401).send("This operation requires authentication.");
     return;
   }
 
@@ -63,15 +61,13 @@ export const getReviewsOfUser = async (req: Request, res: Response) => {
 };
 
 export const updateReview = async (req: Request, res: Response) => {
-  const user = await handleUser(req, ["user", "admin", "master"]);
+  const user = await requireUser(req, res, ["user", "admin", "master"]);
   if (!user) {
-    res.status(401).send("This operation requires authentication.");
     return;
   }
 
-  const authorized = handleResourceAuthorization(user, user.userId, false);
+  const authorized = requireProfileAccess(res, user, user.userId, false);
   if (!authorized) {
-    res.status(403).send("Forbidden");
     return;
   }
 
@@ -87,16 +83,13 @@ export const updateReview = async (req: Request, res: Response) => {
 };
 
 export const deleteReview = async (req: Request, res: Response) => {
-  const user = await handleUser(req, ["user", "admin", "master"]);
-
+  const user = await requireUser(req, res, ["user", "admin", "master"]);
   if (!user) {
-    res.status(401).send("This operation requires authentication.");
     return;
   }
 
-  const authorized = handleResourceAuthorization(user, user.userId, true);
+  const authorized = requireProfileAccess(res, user, user.userId, true);
   if (!authorized) {
-    res.status(403).send("Forbidden");
     return;
   }
 
