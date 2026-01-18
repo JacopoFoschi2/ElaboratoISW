@@ -29,7 +29,7 @@ const checkEmail = async (email: string | undefined) => {
 
 export const createUser = async (req: Request, res: Response) => {
   // Block the request if the user is already logged in
-  const user = getUser(req, res);
+  const user = getUser(req);
   if (user) {
     res.status(401).send("This operation requires logout.");
     return;
@@ -66,7 +66,7 @@ export const createUser = async (req: Request, res: Response) => {
   const newUser = (results as User[])[0];
 
   // Create a JWT containing the user data and set it as a cookie
-  setUser(req, res, newUser);
+  setUser(res, newUser);
 
   res.json({ message: "Registration successful" });
 };
@@ -81,7 +81,7 @@ export const isEmailRegistered = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   // Block the request if the user is already logged in
-  const user = getUser(req, res);
+  const user = getUser(req);
   if (user) {
     res.status(401).send("This operation requires logout.");
     return;
@@ -117,30 +117,36 @@ export const login = async (req: Request, res: Response) => {
   delete userData.userPassword;
 
   // Create a JWT containing the user data and set it as a cookie
-  setUser(req, res, userData);
+  setUser(res, userData);
 
   res.json({ message: "Login successful" });
 };
 
 export const logout = async (req: Request, res: Response) => {
   // Block the request if the user is not logged in
-  const user = getUser(req, res);
+  const user = getUser(req);
   if (!user) {
     res.status(401).send("This operation requires authentication.");
     return;
   }
 
   // Delete the cookie containing the access token
-  unsetUser(req, res);
+  unsetUser(res);
 
   res.json({ message: "Logout successful" });
 };
 
 export const updateUserPassword = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["user", "admin", "master"]);
-  if (!user) return;
+  const user = await handleUser(req, ["user", "admin", "master"]);
+  if (!user) {
+    res.status(401).send("This operation requires authentication.");
+    return;
+  }
 
-  if (!handleUserProfileAccess(res, user, user.userId, false)) return;
+  if (!handleUserProfileAccess(user, user.userId, false)) {
+    res.status(403).send("Forbidden.");
+    return;
+  }
 
   const [passwordData] = await connection.execute(
     "SELECT userPassword FROM users WHERE userUsername=?",
@@ -166,15 +172,15 @@ export const updateUserPassword = async (req: Request, res: Response) => {
     `UPDATE users SET userPassword = ? WHERE userId = ?`,
     [newPasswordHash, req.params["userId"]]
   );
-  unsetUser(req, res);
-  const updatedUser: User | null = getUser(req, res);
-  setUser(req, res, updatedUser);
+  unsetUser(res);
+  const updatedUser: User | null = getUser(req);
+  setUser(res, updatedUser);
 
   res.status(200).send("Password updated successfully");
 };
 
 export const getProfile = async (req: Request, res: Response) => {
   // Decode the content of the access token, which contains the user data, and send it in the response
-  const user = getUser(req, res);
+  const user = getUser(req);
   res.json(user);
 };
