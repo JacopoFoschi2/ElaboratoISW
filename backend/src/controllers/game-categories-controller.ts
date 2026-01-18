@@ -18,7 +18,8 @@ export const addCategoryToGame = async (req: Request, res: Response) => {
 
 export const listCategoriesOfGame = async (req: Request, res: Response) => {
   const [categories] = await connection.execute(
-    "SELECT categoryId FROM game_categories WHERE gameId = ?",
+    `SELECT g.categoryId, categoryName 
+    FROM game_categories as g inner join categories as c on g.categoryId = c.categoryId WHERE gameId = ?`,
     [req.params["gameId"]]
   );
   res.status(200).json(categories);

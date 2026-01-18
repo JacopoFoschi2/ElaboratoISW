@@ -24,7 +24,7 @@ export const getUser = async (req: Request, res: Response) => {
   }
 
   const [userData] = await connection.execute(
-    `SELECT userId, userUsername, userEmail, userIconBin, userIconName, userRole FROM users WHERE userId = ?`,
+    `SELECT * FROM users WHERE userId = ?`,
     [user.userId]
   );
 
