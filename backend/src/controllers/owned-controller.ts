@@ -4,8 +4,11 @@ import { handleUser } from "../utils/auth";
 import { handleExists } from "../utils/query-handling";
 
 export const addToOwned = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["user", "admin", "master"]);
-  if (!user) return;
+  const user = await handleUser(req, ["user", "admin", "master"]);
+  if (!user) {
+    res.status(403).send("Forbidden");
+    return;
+  }
 
   await connection.execute(`INSERT INTO owned (userId, gameId) VALUES (?, ?)`, [
     user.userId,
@@ -15,8 +18,11 @@ export const addToOwned = async (req: Request, res: Response) => {
 };
 
 export const listOwnedOfUser = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["user", "admin", "master"]);
-  if (!user) return;
+  const user = await handleUser(req, ["user", "admin", "master"]);
+  if (!user) {
+    res.status(403).send("Forbidden");
+    return;
+  }
 
   const [owned] = await connection.execute(
     `SELECT o.gameId, gameName, gameCoverBin, gameCoverName 
@@ -28,8 +34,11 @@ export const listOwnedOfUser = async (req: Request, res: Response) => {
 };
 
 export const deleteFromOwned = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["user", "admin", "master"]);
-  if (!user) return;
+  const user = await handleUser(req, ["user", "admin", "master"]);
+  if (!user) {
+    res.status(403).send("Forbidden");
+    return;
+  }
 
   await connection.execute(
     `DELETE FROM owned WHERE userId = ? AND gameId = ?`,
@@ -39,8 +48,11 @@ export const deleteFromOwned = async (req: Request, res: Response) => {
 };
 
 export const isOwned = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["user", "admin", "master"]);
-  if (!user) return;
+  const user = await handleUser(req, ["user", "admin", "master"]);
+  if (!user) {
+    res.status(403).send("Forbidden");
+    return;
+  }
 
   handleExists(res, () =>
     checkOwned(user.userId, Number(req.params["gameId"])),
