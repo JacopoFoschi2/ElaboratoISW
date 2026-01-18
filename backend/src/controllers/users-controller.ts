@@ -3,8 +3,11 @@ import { connection } from "../utils/db-connection";
 import { handleUser, handleUserProfileAccess, unsetUser } from "../utils/auth";
 
 export const listUsers = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["master"]);
-  if (!user) return;
+  const user = await handleUser(req, ["master"]);
+  if (!user) {
+    res.status(403).send("Forbidden");
+    return;
+  }
 
   const [users] = await connection.execute(
     `SELECT userId, userUsername, userEmail, userRole FROM users`,
@@ -14,8 +17,11 @@ export const listUsers = async (req: Request, res: Response) => {
 };
 
 export const getUser = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["user", "admin", "master"]);
-  if (!user) return;
+  const user = await handleUser(req, ["user", "admin", "master"]);
+  if (!user) {
+    res.status(403).send("Forbidden");
+    return;
+  }
 
   const [userData] = await connection.execute(
     `SELECT userId, userUsername, userEmail, userIconBin, userIconName, userRole FROM users WHERE userId = ?`,
@@ -26,10 +32,16 @@ export const getUser = async (req: Request, res: Response) => {
 };
 
 export const updateUserInfo = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["user", "admin", "master"]);
-  if (!user) return;
+  const user = await handleUser(req, ["user", "admin", "master"]);
+  if (!user) {
+    res.status(403).send("Forbidden");
+    return;
+  }
 
-  if (!handleUserProfileAccess(res, user, user.userId, false)) return;
+  if (!handleUserProfileAccess(user, user.userId, false)) {
+    res.status(403).send("Forbidden");
+    return;
+  }
 
   await connection.execute(
     `UPDATE users SET userUsername = ?, userIconBin = ?, userIconName = ? WHERE userId = ?`,
@@ -45,18 +57,23 @@ export const updateUserInfo = async (req: Request, res: Response) => {
 };
 
 export const deleteUser = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["user", "admin", "master"]);
-  if (!user) return;
-
-  if (!handleUserProfileAccess(res, user, Number(req.params["userId"]), true))
+  const user = await handleUser(req, ["user", "admin", "master"]);
+  if (!user) {
+    res.status(403).send("Forbidden");
     return;
+  }
+
+  if (!handleUserProfileAccess(user, Number(req.params["userId"]), true)) {
+    res.status(403).send("Forbidden");
+    return;
+  }
 
   await connection.execute(`DELETE FROM users WHERE userId = ?`, [
     req.params["userId"],
   ]);
 
   if (user.userId === Number(req.params["userId"])) {
-    unsetUser(req, res);
+    unsetUser(res);
   }
 
   res.status(200).send("User deleted successfully.");
