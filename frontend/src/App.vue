@@ -51,7 +51,7 @@ export default {
         },
         async handleLogout() {
             try {
-                await AuthenticationService.logout(); 
+                await AuthenticationService.logout();
                 this.setLogout();
                 this.$router.push('/');
             } catch (error) {
@@ -80,8 +80,18 @@ export default {
             }
         },
     },
-    mounted() {
+    async mounted() {
         this.fetchCategories();
+
+        const auth = useAuthStore();
+        if (auth.token && !auth.user) {
+            try {
+                const response = await AuthenticationService.getProfile();
+                auth.setUser(response.data.user);
+            } catch (err) {
+                auth.setLogout(); 
+            }
+        }
     }
 };
 
