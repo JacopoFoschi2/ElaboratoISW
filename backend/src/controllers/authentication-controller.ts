@@ -49,15 +49,12 @@ export const createUser = async (req: Request, res: Response) => {
 
   // Insert the user into the database
   await connection.execute(
-    `INSERT INTO users (userUsername, userEmail, userPassword, userIconBin, userIconName, userRole) 
-    VALUES (?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO users (userUsername, userEmail, userPassword) 
+    VALUES (?, ?, ?)`,
     [
       username,
       req.body["email"],
       passwordHash,
-      req.body["iconBin"],
-      req.body["iconName"],
-      req.body["role"],
     ]
   );
 
