@@ -75,6 +75,7 @@ const fetchForumDetails = async () => {
 
 
 const submitComment = async () => {
+    if (!auth.isLoggedIn) return;
     isSubmitting.value = true;
 
     try {
@@ -86,7 +87,7 @@ const submitComment = async () => {
             },
             body: JSON.stringify({
                 gameId: props.id,
-                commentBody: auth.user.id,
+                userId: auth.user.id, 
                 commentText: newComment.value
             })
         });
@@ -94,8 +95,6 @@ const submitComment = async () => {
         if (response.ok) {
             newComment.value = '';
             await fetchForumDetails();
-        } else {
-            console.error('Failed to submit comment:', response.statusText);
         }
     } catch (error) {
         console.error('Error submitting comment:', error);

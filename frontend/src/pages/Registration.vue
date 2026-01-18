@@ -1,5 +1,8 @@
 <script setup>
 import { ref } from 'vue';
+import AuthenticationService from '../services/AuthenticationService';
+import { useAuthStore } from '../stores/auth';
+import { useRouter } from 'vue-router';
 const username = ref('');
 const email = ref('');
 const password = ref('');
@@ -8,7 +11,7 @@ const acceptTerms = ref(false);
 
 const message = ref('');
 const isError = ref(false);
-
+const authStore = useAuthStore();
 const handleRegister = async () => {
     // Reset status
     message.value = '';
@@ -33,24 +36,22 @@ const handleRegister = async () => {
     }
 
     try {
-        // Example API call logic:
-        // await axios.post('/api/register', { 
-        //    username: username.value, 
-        //    email: email.value, 
-        //    password: password.value 
-        // });
-
-        console.log("Registering user:", { 
-            username: username.value, 
-            email: email.value 
+        const response = await AuthenticationService.register({
+            username: username.value,
+            email: email.value,
+            password: password.value
+        });
+        authStore.setLogin({
+            token: response.data.token,
+            user: response.data.user
         });
 
-        message.value = "Account created successfully! Redirecting...";
-        isError.value = false;
+        message.value = "Account created successfully!";
+        setTimeout(() => router.push('/'), 2000);
         
     } catch (err) {
         isError.value = true;
-        message.value = "Registration failed. Please try again.";
+        message.value = err.response?.data?.error || "Registration failed.";
     }
 };
 </script>
@@ -189,7 +190,7 @@ button {
 }
 
 .success-msg {
-    color: green;
+    color: style-variables.$default-text-color;
     margin-top: 15px;
     font-weight: bold;
 }

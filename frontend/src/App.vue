@@ -1,18 +1,17 @@
 <script>
 import { useAuthStore } from './stores/auth';
+import AuthenticationSevice from './services/AuthenticationSevice';
 import { mapState, mapActions } from 'pinia';
 export default {
     name: 'App',
     data() {
         return {
             showSignIn: false,
-            // isLoggedIn: false,
-            // currentUserId: null,
             categories: []
         };
     },
     computed: {
-        ...mapState(useAuthStore, ['isLoggedIn', 'currentUserId']),
+        ...mapState(useAuthStore, ['setLogin', 'setLogout']),
 
         currentUserId() {
             return this.currentUserId ? this.currentUserId : null;
@@ -32,17 +31,25 @@ export default {
                 this.toggleSignIn();
             }
         },
-        handleLogin() {
-            const auth = useAuthStore();
-            auth.login();
-            this.toggleSignIn();
+        async handleLogin() {
+            try {
+                const response = await AuthenticationSevice.login({
+                    email: this.loginEmail, 
+                    password: this.loginPassword
+                });
+                this.setLogin({
+                    token: response.data.token,
+                    user: response.data.user
+                });
 
-            this.showSignIn = false;
-            this.$router.push('/api/user');
+                this.showSignIn = false;
+                this.$router.push('/api/user');
+            } catch (error) {
+                console.error('Login failed:', error);
+            }
         },
         handleLogout() {
-            const auth = useAuthStore();
-            auth.logout();
+            this.setLogout();
             this.$router.push('/');
         },
         async fetchCategories() {
@@ -122,8 +129,8 @@ export default {
                 <img @click="toggleSignIn" class="close-icon" src="../src/assets/xIcon.svg" />
                 <h2>SIGN IN</h2>
                 <form @submit.prevent="handleLogin">
-                    <input type="text" placeholder="insert your email..." />
-                    <input type="password" placeholder="insert your password..." />
+                    <input v-model="loginEmail" type="text" placeholder="insert your email..." required=""/>
+                    <input v-model="loginPassword" type="password" placeholder="insert your password..." required=""/>
                     <button type="submit">Enter</button>
                     <p>Don't have an account? <router-link to="/registration"
                             @click="toggleSignIn">Register</router-link></p>

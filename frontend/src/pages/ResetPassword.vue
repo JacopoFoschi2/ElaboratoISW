@@ -24,14 +24,18 @@ const handleResetPassword = async () => {
     }
 
     try {
-        //the API call to reset password would go here
-        
+        await AuthenticationService.resetPassword({
+            email: email.value,
+            password: password.value
+        });
+
         console.log("Data sent:", { email: email.value, password: password.value });
         message.value = "Password updated with success!";
         email.value = '';
         password.value = '';
         confirmPassword.value = '';
-    } catch (err) {
+    }
+    catch (err) {
         isError.value = true;
         message.value = "An error occurred during the reset.";
     }
@@ -44,27 +48,12 @@ const handleResetPassword = async () => {
 
         <div class="form-container">
             <h3>Enter your details</h3>
-            
-            <input 
-                v-model="email" 
-                type="email" 
-                placeholder="Your Email" 
-                required 
-            />
 
-            <input 
-                v-model="password" 
-                type="password" 
-                placeholder="New Password" 
-                required 
-            />
+            <input v-model="email" type="email" placeholder="Your Email" required />
 
-            <input 
-                v-model="confirmPassword" 
-                type="password" 
-                placeholder="Confirm New Password" 
-                required 
-            />
+            <input v-model="password" type="password" placeholder="New Password" required />
+
+            <input v-model="confirmPassword" type="password" placeholder="Confirm New Password" required />
 
             <button @click="handleResetPassword">Reset Password</button>
 
@@ -132,7 +121,7 @@ button {
 }
 
 .success-msg {
-    color: green;
+    color: style-variables.$default-text-color;
     margin-top: 15px;
     font-weight: bold;
 }
