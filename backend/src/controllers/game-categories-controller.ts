@@ -3,8 +3,9 @@ import { connection } from "../utils/db-connection";
 import { handleUser } from "../utils/auth";
 
 export const addCategoryToGame = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["master"]);
+  const user = await handleUser(req, ["master"]);
   if (!user) {
+    res.status(403).send("Forbidden");
     return;
   }
 
@@ -24,8 +25,9 @@ export const listCategoriesOfGame = async (req: Request, res: Response) => {
 };
 
 export const updateCategoryOfGame = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["master"]);
+  const user = await handleUser(req, ["master"]);
   if (!user) {
+    res.status(403).send("Forbidden");
     return;
   }
 
@@ -37,8 +39,9 @@ export const updateCategoryOfGame = async (req: Request, res: Response) => {
 };
 
 export const removeCategoryFromGame = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["master"]);
+  const user = await handleUser(req, ["master"]);
   if (!user) {
+    res.status(403).send("Forbidden");
     return;
   }
 
