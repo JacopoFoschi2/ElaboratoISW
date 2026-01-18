@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
-    "sass": "sass src/styles/style.scss dist/style.css"
+    "sass": "sass src/styles/style.scss dist/style.css",
+    "all": "npm i && npm run sass && npm run dev"
   },
   "dependencies": {
     "axios": "^1.13.2",
