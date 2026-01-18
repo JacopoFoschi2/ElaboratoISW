@@ -10,7 +10,7 @@ import { connection } from "./utils/connection";
 
 async function main() {
     await createDB();
-    const conn = connection;
+    const conn = connection();
     await seedGames(conn);
     await seedUsers(conn);
     await seedCategories(conn);
