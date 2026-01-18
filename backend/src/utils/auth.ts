@@ -76,7 +76,6 @@ export const handleUser = async (
 ): Promise<User | undefined> => {
   const user = getUser(req, res);
   if (!user) {
-    res.sendStatus(401);
     return undefined;
   }
 
