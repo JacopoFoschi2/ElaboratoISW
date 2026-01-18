@@ -133,7 +133,7 @@ onMounted(async () => {
             <h2>User Reviews</h2>
             <div v-for="(review, index) in reviews" :key="index" class="review-card">
                 <h2 class="review-title">{{ review.title }}</h2>
-                <img :src="review.getImageUrl(userIconUrl)" alt="User Icon" class="user-icon" />
+                <img :src="getImageUrl(review.userIconBin)" alt="User Icon" class="user-icon" />
                 <div class="rating-container">
                     <p class="rating-label">Rating: {{ review.rating }} / 5</p>
                     <StarRating :rating="review.rating" :size="10" />

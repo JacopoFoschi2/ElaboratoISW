@@ -1,91 +1,72 @@
 <template>
     <main class="content-wrapper">
-        <h2>Privacy and Policy</h2>
+        <h2>Terms of Service</h2>
         <p>
             Last updated: 19/12/2025
         </p>
         <p>
-            This policy describes how <strong> PCMASTERRACEDB </strong> collects, uses, and protects
-            the personal data of the users who visit our website
-            and participate in the forums or the review system.
+            These Terms of Service (“Terms”) govern your access to and use of <strong> PCMASTERRACEDB </strong> (“we”, “our”, “the Service”). By accessing or using the Service, you agree to be bound by these Terms. If you do not agree, you must not use the Service.
         </p>
+
+        <h2>1. Eligibility</h2>
         <p>
-            <strong>Note on User Access:</strong> Visitors may browse the PCMASTERRACEDB database and
-            read forum content without an account. However, to write reviews,
-            post in forums, or save your contribution history,
-            user registration and authentication are required.
+            You must be at least 16 years old to use this Service. By using the Service, you confirm that you meet this requirement.
         </p>
-        <h2>2. Types of Data Collected</h2>
-        <h3>2.1 Data Provided Voluntarily by the User</h3>
+
+        <h2>2. Account Registration</h2>
+        <p>To access certain features (including the forum), you may be required to create an account. You agree to:</p>
         <ul>
-            <li><strong>Account Details:</strong> Username and Email address.</li>
-            <li><strong>Security:</strong> Password (stored in hashed form only, never in plain text).</li>
-            <li><strong>User Content:</strong> Game reviews, forum posts, comments, and replies published within the
-                platform.</li>
-            <li><strong>Private Communications:</strong> Private messages exchanged with other users.</li>
+            <li>Provide accurate and complete information.</li>
+            <li>Keep your login credentials secure.</li>
+            <li>Be fully responsible for all activity under your account.</li>
+        </ul>
+        <p>We reserve the right to suspend or terminate accounts that violate these Terms.</p>
+
+        <h2>3. User Content</h2>
+        <p>Users may submit, post, or display content including text, images, and other materials (“User Content”). By submitting content, you confirm that:</p>
+        <ul>
+            <li>You own the content or have the legal right to post it.</li>
+            <li>Your content does not violate any law or third-party rights.</li>
+            <li>Your content is not abusive, illegal, misleading, or harmful.</li>
+        </ul>
+        <p>You grant us a non-exclusive, worldwide, royalty-free license to store, display, and distribute your content as part of operating the Service.</p>
+
+        <h2>4. Prohibited Conduct</h2>
+        <p>You agree <strong>NOT</strong> to:</p>
+        <ul>
+            <li>Post illegal, harmful, defamatory, or abusive content.</li>
+            <li>Harass, threaten, or impersonate others.</li>
+            <li>Share private or confidential information.</li>
+            <li>Distribute malware, spam, or phishing content.</li>
+            <li>Attempt to hack, scrape, or disrupt the Service.</li>
         </ul>
 
-        <h3>2.2 Data Collected Automatically</h3>
+        <h2>5. Moderation and Enforcement</h2>
+        <p>We reserve the right, but are not obligated, to monitor forum activity, edit, remove, or block any content, and suspend or terminate any account. Moderation decisions are final.</p>
+
+        <h2>6. Intellectual Property</h2>
+        <p>All content provided by the Service (excluding User Content), including logos, design, software, and trademarks, is the property of <strong> PCMASTERRACEDB </strong> and may not be copied or redistributed without permission.</p>
+
+        <h2>7. Service Availability</h2>
+        <p>We make no guarantees regarding uptime or error-free performance. We may modify, discontinue, or restrict access to parts of the platform at any time without prior notice.</p>
+
+        <h2>8. Disclaimer of Warranties</h2>
+        <p>The Service is provided “as is” and “as available”. Use the Service at your own risk. We do not guarantee that the Service will be uninterrupted, secure, or error-free.</p>
+
+        <h2>9. Limitation of Liability</h2>
+        <p>To the fullest extent permitted by law, <strong> PCMASTERRACEDB </strong> shall not be liable for any direct, indirect, or incidental damages arising from your use of the Service or loss of data.</p>
+
+        <h2>10. Changes to These Terms</h2>
+        <p>We may update these Terms at any time. Changes will be posted on this page. Continued use of the Service after changes constitutes acceptance of the updated Terms.</p>
+
+        <h2>11. Contact Information</h2>
+        <p>For any questions regarding these Terms, you may contact us at:</p>
         <ul>
-            <li>IP address and technical logs (date/time of access, user agent).</li>
-            <li>Cookies and session identifiers.</li>
-            <li>Third-party tools for CAPTCHA, analytics, and anti-spam protection.</li>
+            <li><strong>Email:</strong> legal@pcmasterracedb.com</li>
         </ul>
-
-        <h2>3. Purposes of Data Processing</h2>
-        <p>We process personal data for the following purposes:</p>
-        <ul>
-            <li>Managing user registration and maintaining your personal review/comment history.</li>
-            <li>Operating the gaming forums and allowing users to publish game reviews.</li>
-            <li>Preventing abuse, spam, and unauthorized activity.</li>
-            <li>Ensuring the stability and security of PCMASTERRACEDB.</li>
-            <li>Complying with legal obligations.</li>
-        </ul>
-
-        <h2>4. Legal Basis for Processing</h2>
-        <p>We process data based on:</p>
-        <ul>
-            <li><strong>User consent:</strong> For registration and profile creation.</li>
-            <li><strong>Performance of a contract:</strong> To provide the forum and review features you signed up for.
-            </li>
-            <li><strong>Legitimate interest:</strong> To maintain site security and moderate community content.</li>
-            <li><strong>Legal obligation:</strong> When required by law enforcement or authorities.</li>
-        </ul>
-
-        <h2>5. Data Retention</h2>
-        <p>Personal data is retained as long as your account is active. Please note that forum posts and game reviews
-            may remain visible to the public even after an account is closed to maintain the context of discussions,
-            unless a specific request for removal is made.</p>
-
-        <h2>6. Data Sharing and Transfers</h2>
-        <p>We do not sell your personal data. We only share data with:</p>
-        <ul>
-            <li>Technical providers (Hosting, CDN).</li>
-            <li>Anti-spam and bot-prevention services.</li>
-            <li>Legal authorities when strictly necessary.</li>
-        </ul>
-
-        <h2>7. Cookies</h2>
-        <p>PCMASTERRACEDB uses essential cookies to keep you logged in and functional cookies to remember your
-            preferences.
-            You can manage cookie settings through your browser, but some features (like posting reviews) may break
-            without them.</p>
-
-        <h2>8. User Rights</h2>
-        <p>Under the GDPR, you have the right to access, rectify, or delete your data, and the right to data
-            portability.
-            To exercise these rights, please contact us at the email provided in Section 1.</p>
-
-        <h2>9. Forum & Review Visibility</h2>
-        <p><strong>PCMASTERRACEDB is a public platform.</strong> Any information you post in reviews or forums is
-            visible to all visitors.
-            We advise against sharing sensitive personal information in your public posts.</p>
-
-        <h2>10. Changes to This Policy</h2>
-        <p>We may update this policy periodically. Continued use of PCMASTERRACEDB after
-            changes are posted constitutes acceptance of the new terms.</p>
     </main>
 </template>
+
 <style scoped lang="scss">
 @use "../styles/style-variables.scss" as style-variables;
 
@@ -99,9 +80,8 @@ p {
 }
 
 ul {
-
-     padding-bottom: 2%; 
-    li{
+    padding-bottom: 2%; 
+    li {
         font-size: 1.5rem;
         padding-top: 1%;
         padding-bottom: 2%; 

@@ -6,3 +6,10 @@ export interface Game {
     coverImage:string;
     stores: string[];
 }
+
+export interface User {
+  id: number
+  username: string
+    email: string
+  role: "admin" | "user"
+}
