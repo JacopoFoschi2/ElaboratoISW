@@ -2,9 +2,8 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { User, UserRole } from "../types/user";
 
-// Utilizzare una variabile d'ambiente per il secret in progetti reali!
-// E anche un secret più complesso.
-const JWT_SECRET = "foo";
+// Tries to get the JWT secret from environment variables, falls back to a default value if not set
+const JWT_SECRET = process.env["JWT_SECRET"] || "default_super_secret_key";
 const COOKIE_NAME = "site-access-token";
 
 /**
