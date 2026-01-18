@@ -4,8 +4,9 @@ import { handleUser } from "../utils/auth";
 import { handleExists } from "../utils/query-handling";
 
 export const addToWishlist = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["user", "admin", "master"]);
+  const user = await handleUser(req, ["user", "admin", "master"]);
   if (!user) {
+    res.status(403).send("Forbidden");
     return;
   }
 
@@ -17,8 +18,9 @@ export const addToWishlist = async (req: Request, res: Response) => {
 };
 
 export const listWishlistOfUser = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["user", "admin", "master"]);
+  const user = await handleUser(req, ["user", "admin", "master"]);
   if (!user) {
+    res.status(403).send("Forbidden");
     return;
   }
 
@@ -32,8 +34,9 @@ export const listWishlistOfUser = async (req: Request, res: Response) => {
 };
 
 export const deleteFromWishlist = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["user", "admin", "master"]);
+  const user = await handleUser(req, ["user", "admin", "master"]);
   if (!user) {
+    res.status(403).send("Forbidden");
     return;
   }
 
@@ -45,8 +48,9 @@ export const deleteFromWishlist = async (req: Request, res: Response) => {
 };
 
 export const isGameInWishlist = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["user", "admin", "master"]);
+  const user = await handleUser(req, ["user", "admin", "master"]);
   if (!user) {
+    res.status(403).send("Forbidden");
     return;
   }
 
