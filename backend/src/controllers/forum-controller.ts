@@ -26,7 +26,7 @@ export const listForums = async (req: Request, res: Response) => {
 
 export const listForumsAsYouType = async (req: Request, res: Response) => {
   const [forums] = await connection.execute(
-    `SELECT gameId, gameName, gameSmallBannerBin, gameSmallBannerName
+    `SELECT gameId, gameName
         FROM games
         WHERE gameName LIKE CONCAT('%', ?, '%') or 
         gameAlternateName like CONCAT('%', ?, '%')
