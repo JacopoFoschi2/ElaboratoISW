@@ -26,7 +26,7 @@ export const listReviewsOfGame = async (req: Request, res: Response) => {
 
   let query = `
     SELECT *
-    FROM reviews
+    FROM reviews as r inner join users as u on r.userId = u.userId
     WHERE gameId = ?
   `;
 
@@ -34,7 +34,7 @@ export const listReviewsOfGame = async (req: Request, res: Response) => {
 
   if (user) {
     query += `
-      ORDER BY (userId = ?) DESC, reviewTimeStamp DESC
+      ORDER BY (u.userId = ?) DESC, reviewTimeStamp DESC
     `;
     params.push(user.userId);
   } else {
@@ -48,7 +48,7 @@ export const listReviewsOfGame = async (req: Request, res: Response) => {
   res.status(200).json(reviews);
 };
 
-export const getReviewOfUserForGame = async (req: Request, res: Response) => {
+export const getReviewsOfUser = async (req: Request, res: Response) => {
   const user = await handleUser(req, ["user", "admin", "master"]);
   if (!user) {
     res.status(401).send("This operation requires authentication.");
@@ -56,8 +56,8 @@ export const getReviewOfUserForGame = async (req: Request, res: Response) => {
   }
 
   const [reviews] = await connection.execute(
-    `SELECT * FROM reviews WHERE userId = ? AND gameId = ?`,
-    [user.userId, req.params["gameId"]]
+    `SELECT * FROM reviews WHERE userId = ?`,
+    [user.userId]
   );
   res.status(200).json(reviews);
 };
