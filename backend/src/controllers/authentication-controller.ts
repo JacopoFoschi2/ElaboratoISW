@@ -36,7 +36,8 @@ export const createUser = async (req: Request, res: Response) => {
   }
 
   // Extract username and password from the request body
-  const { username, password } = req.body;
+  const username = req.body["username"];
+  const password = req.body["password"];
 
   // Check if the username is available
   if (await checkUsername(username)) {
