@@ -9,7 +9,8 @@
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "sass": "sass src/styles/style.scss dist/style.css",
-    "all": "npm i && npm run sass && npm run dev"
+    "frontend": "npm run build && npm run preview",
+    "all": "npm i && npm run sass && npm run frontend"
   },
   "dependencies": {
     "axios": "^1.13.2",
@@ -22,7 +23,7 @@
     "@vitejs/plugin-vue": "^6.0.1",
     "sass": "^1.97.1",
     "sass-embedded": "^1.97.1",
-    "typescript": "^5.6.3",
+    "typescript": "^5.9.3",
     "vite": "^7.2.2",
     "vue-tsc": "^2.1.8"
   },
