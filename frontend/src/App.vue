@@ -1,6 +1,6 @@
 <script>
 import { useAuthStore } from './stores/auth';
-import AuthenticationSevice from './services/AuthenticationSevice';
+import AuthenticationService from './services/AuthenticationService';
 import { mapState, mapActions } from 'pinia';
 export default {
     name: 'App',
@@ -33,10 +33,11 @@ export default {
         },
         async handleLogin() {
             try {
-                const response = await AuthenticationSevice.login({
-                    email: this.loginEmail, 
+                const response = await AuthenticationService.login({
+                    email: this.loginEmail,
                     password: this.loginPassword
                 });
+
                 this.setLogin({
                     token: response.data.token,
                     user: response.data.user
@@ -45,12 +46,17 @@ export default {
                 this.showSignIn = false;
                 this.$router.push('/api/user');
             } catch (error) {
-                console.error('Login failed:', error);
+                alert("Errore Login: " + (error.response?.data?.error || "Credentials not right"));
             }
         },
-        handleLogout() {
-            this.setLogout();
-            this.$router.push('/');
+        async handleLogout() {
+            try {
+                await AuthenticationService.logout(); 
+                this.setLogout();
+                this.$router.push('/');
+            } catch (error) {
+                console.error("Error during logout", error);
+            }
         },
         async fetchCategories() {
             try {
@@ -129,8 +135,8 @@ export default {
                 <img @click="toggleSignIn" class="close-icon" src="../src/assets/xIcon.svg" />
                 <h2>SIGN IN</h2>
                 <form @submit.prevent="handleLogin">
-                    <input v-model="loginEmail" type="text" placeholder="insert your email..." required=""/>
-                    <input v-model="loginPassword" type="password" placeholder="insert your password..." required=""/>
+                    <input v-model="loginEmail" type="text" placeholder="insert your email..." required="" />
+                    <input v-model="loginPassword" type="password" placeholder="insert your password..." required="" />
                     <button type="submit">Enter</button>
                     <p>Don't have an account? <router-link to="/registration"
                             @click="toggleSignIn">Register</router-link></p>
