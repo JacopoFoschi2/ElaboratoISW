@@ -3,8 +3,9 @@ import { connection } from "../utils/db-connection";
 import { handleResourceAuthorization, handleUser } from "../utils/auth";
 
 export const addComment = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["user", "admin", "master"]);
+  const user = await handleUser(req, ["user", "admin", "master"]);
   if (!user) {
+    res.status(403).send("Forbidden");
     return;
   }
 
@@ -66,11 +67,13 @@ export const getGameBanner = async (req: Request, res: Response) => {
 };
 
 export const updateComment = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["user", "admin", "master"]);
+  const user = await handleUser(req, ["user", "admin", "master"]);
   if (!user) {
+    res.status(403).send("Forbidden");
     return;
   }
-  if (!handleResourceAuthorization(res, user, req.body["userId"], false)) {
+  if (!handleResourceAuthorization(user, req.body["userId"], false)) {
+    res.status(403).send("Forbidden");
     return;
   }
 
@@ -82,11 +85,13 @@ export const updateComment = async (req: Request, res: Response) => {
 };
 
 export const deleteComment = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["user", "admin", "master"]);
+  const user = await handleUser(req, ["user", "admin", "master"]);
   if (!user) {
+    res.status(403).send("Forbidden");
     return;
   }
-  if (!handleResourceAuthorization(res, user, req.body["userId"], true)) {
+  if (!handleResourceAuthorization(user, req.body["userId"], true)) {
+    res.status(403).send("Forbidden");
     return;
   }
 
