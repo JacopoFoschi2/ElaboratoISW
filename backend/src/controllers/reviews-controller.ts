@@ -3,8 +3,9 @@ import { connection } from "../utils/db-connection";
 import { handleResourceAuthorization, handleUser } from "../utils/auth";
 
 export const createReview = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["user", "admin", "master"]);
+  const user = await handleUser(req, ["user", "admin", "master"]);
   if (!user) {
+    res.status(403).send("Forbidden");
     return;
   }
 
@@ -21,7 +22,7 @@ export const createReview = async (req: Request, res: Response) => {
 };
 
 export const listReviewsOfGame = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["user", "admin", "master"]);
+  const user = await handleUser(req, ["user", "admin", "master"]);
 
   let query = `
     SELECT *
@@ -48,8 +49,9 @@ export const listReviewsOfGame = async (req: Request, res: Response) => {
 };
 
 export const getReviewOfUserForGame = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["user", "admin", "master"]);
+  const user = await handleUser(req, ["user", "admin", "master"]);
   if (!user) {
+    res.status(403).send("Forbidden");
     return;
   }
 
@@ -61,13 +63,15 @@ export const getReviewOfUserForGame = async (req: Request, res: Response) => {
 };
 
 export const updateReview = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["user", "admin", "master"]);
+  const user = await handleUser(req, ["user", "admin", "master"]);
   if (!user) {
+    res.status(403).send("Forbidden");
     return;
   }
 
-  const authorized = handleResourceAuthorization(res, user, user.userId, false);
+  const authorized = handleResourceAuthorization(user, user.userId, false);
   if (!authorized) {
+    res.status(403).send("Forbidden");
     return;
   }
 
@@ -83,14 +87,16 @@ export const updateReview = async (req: Request, res: Response) => {
 };
 
 export const deleteReview = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["user", "admin", "master"]);
+  const user = await handleUser(req, ["user", "admin", "master"]);
 
   if (!user) {
+    res.status(403).send("Forbidden");
     return;
   }
 
-  const authorized = handleResourceAuthorization(res, user, user?.userId, true);
+  const authorized = handleResourceAuthorization(user, user.userId, true);
   if (!authorized) {
+    res.status(403).send("Forbidden");
     return;
   }
 
