@@ -3,8 +3,9 @@ import { connection } from "../utils/db-connection";
 import { handleUser } from "../utils/auth";
 
 export const createCategory = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["admin", "master"]);
+  const user = await handleUser(req, ["admin", "master"]);
   if (!user) {
+    res.status(403).send("Forbidden");
     return;
   }
 
@@ -20,8 +21,9 @@ export const listCategories = async (req: Request, res: Response) => {
 };
 
 export const updateCategory = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["admin", "master"]);
+  const user = await handleUser(req, ["admin", "master"]);
   if (!user) {
+    res.status(403).send("Forbidden");
     return;
   }
 
@@ -33,8 +35,9 @@ export const updateCategory = async (req: Request, res: Response) => {
 };
 
 export const deleteCategory = async (req: Request, res: Response) => {
-  const user = await handleUser(req, res, ["admin", "master"]);
+  const user = await handleUser(req, ["admin", "master"]);
   if (!user) {
+    res.status(403).send("Forbidden");
     return;
   }
 
