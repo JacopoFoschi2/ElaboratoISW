@@ -24,20 +24,14 @@ const handleResetPassword = async () => {
     }
 
     try {
-        await AuthenticationService.resetPassword({
-            email: email.value,
-            password: password.value
+        await AuthenticationService.changePassword({
+            currentPassword: currentPassword.value,
+            newPassword: password.value
         });
-
-        console.log("Data sent:", { email: email.value, password: password.value });
-        message.value = "Password updated with success!";
-        email.value = '';
-        password.value = '';
-        confirmPassword.value = '';
-    }
-    catch (err) {
+        message.value = "Password changed successfully!";
+    } catch (err) {
         isError.value = true;
-        message.value = "An error occurred during the reset.";
+        message.value = "Error: the current password is incorrect.";
     }
 };
 </script>

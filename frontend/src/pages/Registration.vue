@@ -36,14 +36,18 @@ const handleRegister = async () => {
     }
 
     try {
+        // 1. (Optional) Check if email already exists
+        const emailCheck = await AuthenticationService.checkEmail(email.value);
+        if (emailCheck.data.exists) {
+            isError.value = true;
+            message.value = "Email already registered.";
+            return;
+        }
+
         const response = await AuthenticationService.register({
             username: username.value,
             email: email.value,
             password: password.value
-        });
-        authStore.setLogin({
-            token: response.data.token,
-            user: response.data.user
         });
 
         message.value = "Account created successfully!";
