@@ -23,7 +23,9 @@ export const listWishlistOfUser = async (req: Request, res: Response) => {
   }
 
   const [wishlist] = await connection.execute(
-    `SELECT gameId FROM wishlist WHERE userId = ?`,
+    `SELECT w.gameId, gameName, gameCoverBin, gameCoverName 
+    FROM wishlist as w inner join games as g on w.gameId = g.gameId 
+    WHERE userId = ?`,
     [user.userId]
   );
   res.status(200).json(wishlist);

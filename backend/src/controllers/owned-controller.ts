@@ -19,8 +19,10 @@ export const listOwnedOfUser = async (req: Request, res: Response) => {
   if (!user) return;
 
   const [owned] = await connection.execute(
-    `SELECT gameId FROM owned WHERE userId = ?`,
-    [user.userId]
+    `SELECT o.gameId, gameName, gameCoverBin, gameCoverName 
+    FROM owned as o inner join games as g on o.gameId = g.gameId 
+    WHERE userId = ?`,
+    [user.userId],
   );
   res.status(200).json(owned);
 };
@@ -31,7 +33,7 @@ export const deleteFromOwned = async (req: Request, res: Response) => {
 
   await connection.execute(
     `DELETE FROM owned WHERE userId = ? AND gameId = ?`,
-    [user.userId, req.params["gameId"]]
+    [user.userId, req.params["gameId"]],
   );
   res.status(200).send("Deleted from owned successfully");
 };
@@ -41,14 +43,14 @@ export const isOwned = async (req: Request, res: Response) => {
   if (!user) return;
 
   handleExists(res, () =>
-    checkOwned(user.userId, Number(req.params["gameId"]))
+    checkOwned(user.userId, Number(req.params["gameId"])),
   );
 };
 
 const checkOwned = async (userId: number, gameId: number): Promise<boolean> => {
   const [rows] = await connection.execute(
     `SELECT 1 FROM owned WHERE userId = ? AND gameId = ?`,
-    [userId, gameId]
+    [userId, gameId],
   );
   return Array.isArray(rows) && rows.length > 0;
 };
