@@ -24,13 +24,18 @@ const reviewData = ref({
 });
 
 const submitReview = async () => {
+    if (!auth.isLoggedIn) return;
+
     try {
         const response = await fetch(`/api/game/${props.id}/reviews`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${auth.token}`
+            },
             body: JSON.stringify({
                 gameId: props.id,
-                userId: auth.user.id, 
+                userId: auth.user.id,
                 ...reviewData.value
             })
         });
@@ -128,40 +133,40 @@ onMounted(async () => {
         <section class="review-section" v-if="isLoggedIn">
             <button class="review-btn" @click="showReviewModal = true">Write your review</button>
         </section>
+        <p v-else class="login-prompt">Please log in from the navigation bar to add a review.</p>
 
         <section class="reviews-list-section" v-if="reviews.length > 0">
             <h2>User Reviews</h2>
             <div v-for="(review, index) in reviews" :key="index" class="review-card">
-                <h2 class="review-title">{{ review.title }}</h2>
                 <img :src="getImageUrl(review.userIconBin)" alt="User Icon" class="user-icon" />
+                <p class="username">{{ review.userUsername }}</p>
+                <h2 class="review-title">{{ review.reviewTitle }}</h2>
                 <div class="rating-container">
-                    <p class="rating-label">Rating: {{ review.rating }} / 5</p>
-                    <StarRating :rating="review.rating" :size="10" />
+                    <p class="rating-label">Rating: {{ review.reviewRating }} / 5</p>
+                    <StarRating :rating="review.reviewRating" :size="10" />
                 </div>
-                <p class="review-date">{{ moment(review.reviewDate).format('MMMM Do YYYY, h:mm:ss a') }}</p>
-                <p class="review-content">{{ review.content }}</p>
+                <p class="review-date">{{ moment(review.reviewTimeStamp).format('MMMM Do YYYY, h:mm:ss a') }}</p>
+                <p class="review-content">{{ review.reviewBody }}</p>
             </div>
         </section>
-
-        <p v-else class="login-prompt">Please log in from the navigation bar to add a review.</p>
 
         <div v-if="showReviewModal" class="modal-overlay" @click="showReviewModal = false">
             <div class="review-modal" @click.stop>
                 <h2>Write your review</h2>
                 <form @submit.prevent="submitReview">
-                    <input v-model="reviewData.title" id="review-title" type="text" placeholder="Review Title"
+                    <input v-model="reviewData.reviewTitle" id="review-title" type="text" placeholder="Review Title"
                         required />
 
                     <div class="rating-input">
                         <label for="review-rating">Rating(1-5):</label>
-                        <select id="review-rating" v-model.number="reviewData.rating" type="number" min="1" max="5"
-                            required>
+                        <select id="review-rating" v-model.number="reviewData.reviewRating" type="number" min="1"
+                            max="5" required>
                             <option v-for="n in 5" :key="n" :value="n">{{ n }}</option>
                         </select>
                     </div>
 
                     <label for="review-content">Content:</label>
-                    <textarea id="review-content" v-model="reviewData.content" placeholder="Your review..." rows="5"
+                    <textarea id="review-content" v-model="reviewData.reviewBody" placeholder="Your review..." rows="5"
                         required></textarea>
 
                     <div class="modal-actions">
@@ -171,7 +176,6 @@ onMounted(async () => {
 
                 </form>
             </div>
-
         </div>
     </div>
     <div v-else>
@@ -197,43 +201,60 @@ onMounted(async () => {
         padding: 15px;
     }
 
-    .review-list-section{
+    .reviews-list-section {
         max-width: 1200px;
         margin: 20px auto;
         color: style-variables.$default-text-color;
 
-        h2{
+        h2 {
             font-size: 2.5rem;
-            margin-bottom: 20px;
+            margin-bottom: 50px;
         }
 
     }
-    .review-card{
+
+    .review-card {
         background-color: style-variables.$default-background-color;
         border: 1px solid style-variables.$default-text-color;
-        
-        .rating-container{
-            display: flex;
-            align-items: center;
+        padding: 20px;
+        margin-bottom: 20px;
+
+        .username {
+            display: inline-block;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: style-variables.$default-text-color;
         }
 
-        .review-title{
-            font-size: 2rem;
+        .rating-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0;
+        }
+
+        .review-title {
+            font-size: 3rem;
             margin: 10px 0;
         }
-        .user-icon{
+
+        .user-icon {
             width: 40px;
             height: 40px;
             border-radius: 50%;
             margin-right: 10px;
         }
-        .review-date{
-            font-size: 1.2rem;
+
+        .review-date {
+            font-size: 1.0rem;
             color: style-variables.$default-text-color;
+            margin-top: 0;
+            margin-bottom: 30px;
         }
-        .review-content{
+
+        .review-content {
             font-size: 1.5rem;
-            margin-top: 10px;
             color: style-variables.$default-text-color;
         }
     }
