@@ -5,7 +5,7 @@ import { handleResourceAuthorization, handleUser } from "../utils/auth";
 export const createReview = async (req: Request, res: Response) => {
   const user = await handleUser(req, ["user", "admin", "master"]);
   if (!user) {
-    res.status(403).send("Forbidden");
+    res.status(401).send("This operation requires authentication.");
     return;
   }
 
@@ -51,7 +51,7 @@ export const listReviewsOfGame = async (req: Request, res: Response) => {
 export const getReviewOfUserForGame = async (req: Request, res: Response) => {
   const user = await handleUser(req, ["user", "admin", "master"]);
   if (!user) {
-    res.status(403).send("Forbidden");
+    res.status(401).send("This operation requires authentication.");
     return;
   }
 
@@ -65,7 +65,7 @@ export const getReviewOfUserForGame = async (req: Request, res: Response) => {
 export const updateReview = async (req: Request, res: Response) => {
   const user = await handleUser(req, ["user", "admin", "master"]);
   if (!user) {
-    res.status(403).send("Forbidden");
+    res.status(401).send("This operation requires authentication.");
     return;
   }
 
@@ -90,7 +90,7 @@ export const deleteReview = async (req: Request, res: Response) => {
   const user = await handleUser(req, ["user", "admin", "master"]);
 
   if (!user) {
-    res.status(403).send("Forbidden");
+    res.status(401).send("This operation requires authentication.");
     return;
   }
 

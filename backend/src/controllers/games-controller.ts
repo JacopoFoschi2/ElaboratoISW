@@ -5,7 +5,7 @@ import { handleUser } from "../utils/auth";
 export const createGame = async (req: Request, res: Response) => {
   const user = await handleUser(req, ["master"]);
   if (!user) {
-    res.status(403).send("Forbidden");
+    res.status(401).send("This operation requires authentication with correct privileges.");
     return;
   }
 
@@ -100,7 +100,7 @@ export const getGame = async (req: Request, res: Response) => {
 export const updateGame = async (req: Request, res: Response) => {
   const user = await handleUser(req, ["master"]);
   if (!user) {
-    res.status(403).send("Forbidden");
+    res.status(401).send("This operation requires authentication with correct privileges.");
     return;
   }
 
@@ -131,7 +131,7 @@ export const updateGame = async (req: Request, res: Response) => {
 export const deleteGame = async (req: Request, res: Response) => {
   const user = await handleUser(req, ["master"]);
   if (!user) {
-    res.status(403).send("Forbidden");
+    res.status(401).send("This operation requires authentication with correct privileges.");
     return;
   }
 

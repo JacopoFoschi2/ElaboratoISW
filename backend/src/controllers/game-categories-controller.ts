@@ -5,7 +5,7 @@ import { handleUser } from "../utils/auth";
 export const addCategoryToGame = async (req: Request, res: Response) => {
   const user = await handleUser(req, ["master"]);
   if (!user) {
-    res.status(403).send("Forbidden");
+    res.status(401).send("This operation requires authentication with correct privileges.");
     return;
   }
 
@@ -27,7 +27,7 @@ export const listCategoriesOfGame = async (req: Request, res: Response) => {
 export const updateCategoryOfGame = async (req: Request, res: Response) => {
   const user = await handleUser(req, ["master"]);
   if (!user) {
-    res.status(403).send("Forbidden");
+    res.status(401).send("This operation requires authentication with correct privileges.");
     return;
   }
 
@@ -41,7 +41,7 @@ export const updateCategoryOfGame = async (req: Request, res: Response) => {
 export const removeCategoryFromGame = async (req: Request, res: Response) => {
   const user = await handleUser(req, ["master"]);
   if (!user) {
-    res.status(403).send("Forbidden");
+    res.status(401).send("This operation requires authentication with correct privileges.");
     return;
   }
 

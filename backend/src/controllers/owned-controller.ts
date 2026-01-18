@@ -6,7 +6,7 @@ import { handleExists } from "../utils/query-handling";
 export const addToOwned = async (req: Request, res: Response) => {
   const user = await handleUser(req, ["user", "admin", "master"]);
   if (!user) {
-    res.status(403).send("Forbidden");
+    res.status(401).send("This operation requires authentication.");
     return;
   }
 
@@ -20,7 +20,7 @@ export const addToOwned = async (req: Request, res: Response) => {
 export const listOwnedOfUser = async (req: Request, res: Response) => {
   const user = await handleUser(req, ["user", "admin", "master"]);
   if (!user) {
-    res.status(403).send("Forbidden");
+    res.status(401).send("This operation requires authentication.");
     return;
   }
 
@@ -36,7 +36,7 @@ export const listOwnedOfUser = async (req: Request, res: Response) => {
 export const deleteFromOwned = async (req: Request, res: Response) => {
   const user = await handleUser(req, ["user", "admin", "master"]);
   if (!user) {
-    res.status(403).send("Forbidden");
+    res.status(401).send("This operation requires authentication.");
     return;
   }
 
@@ -50,7 +50,7 @@ export const deleteFromOwned = async (req: Request, res: Response) => {
 export const isOwned = async (req: Request, res: Response) => {
   const user = await handleUser(req, ["user", "admin", "master"]);
   if (!user) {
-    res.status(403).send("Forbidden");
+    res.status(401).send("This operation requires authentication.");
     return;
   }
 
