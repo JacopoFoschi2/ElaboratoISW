@@ -1,22 +1,26 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import AuthenticationService from '../services/AuthenticationService';
-import { useAuthStore } from '../stores/auth';
 import { useRouter } from 'vue-router';
-const username = ref('');
-const email = ref('');
-const password = ref('');
-const confirmPassword = ref('');
-const acceptTerms = ref(false);
+interface ExistsResponse {
+  exists: boolean;
+}
 
-const message = ref('');
-const isError = ref(false);
-const authStore = useAuthStore();
-const handleRegister = async () => {
-    // Reset status
+const username = ref<string>('');
+const email = ref<string>('');
+const password = ref<string>('');
+const confirmPassword = ref<string>('');
+const acceptTerms = ref<boolean>(false);
+
+const message = ref<string>('');
+const isError = ref<boolean>(false);
+const router = useRouter();
+
+const handleRegister = async (): Promise<void> => {
     message.value = '';
     isError.value = false;
 
+    // Basic Validation
     if (!username.value || !email.value || !password.value) {
         isError.value = true;
         message.value = "All fields are required!";
@@ -36,24 +40,33 @@ const handleRegister = async () => {
     }
 
     try {
-        // 1. (Optional) Check if email already exists
-        const emailCheck = await AuthenticationService.checkEmail(email.value);
+        //Check if Username exists (/api/users/exists/username/:username)
+        const userCheck = await AuthenticationService.checkUsername(username.value) as { data: ExistsResponse };
+        if (userCheck.data.exists) {
+            isError.value = true;
+            message.value = "Username is already taken.";
+            return;
+        }
+
+        //Check if Email exists (/api/users/exists/email/:email)
+        const emailCheck = await AuthenticationService.checkEmail(email.value) as { data: ExistsResponse };
         if (emailCheck.data.exists) {
             isError.value = true;
             message.value = "Email already registered.";
             return;
         }
 
-        const response = await AuthenticationService.register({
+        //Register (/api/auth/register)
+        await AuthenticationService.register({
             username: username.value,
             email: email.value,
             password: password.value
         });
 
         message.value = "Account created successfully!";
-        setTimeout(() => router.push('/'), 2000);
+        setTimeout(() => router.push('/login'), 2000);
         
-    } catch (err) {
+    } catch (err: any) {
         isError.value = true;
         message.value = err.response?.data?.error || "Registration failed.";
     }
@@ -63,45 +76,16 @@ const handleRegister = async () => {
 <template>
     <div class="register-page">
         <h2>Create Account</h2>
-
         <div class="form-container">
             <h3>Join our community</h3>
 
-            <input 
-                v-model="username" 
-                type="text" 
-                placeholder="Username" 
-                required
-            />
-
-            <input 
-                v-model="email" 
-                type="email" 
-                placeholder="Email Address" 
-                required
-            />
-
-            <input 
-                v-model="password" 
-                type="password" 
-                placeholder="Password" 
-                required    
-            />
-
-            <input 
-                v-model="confirmPassword" 
-                type="password" 
-                placeholder="Confirm Password" 
-                required    
-            />
+            <input v-model="username" type="text" placeholder="Username" required />
+            <input v-model="email" type="email" placeholder="Email Address" required />
+            <input v-model="password" type="password" placeholder="Password" required />
+            <input v-model="confirmPassword" type="password" placeholder="Confirm Password" required />
 
             <div class="terms-container">
-                <input 
-                    type="checkbox" 
-                    id="terms" 
-                    v-model="acceptTerms"
-                    required
-                />
+                <input type="checkbox" id="terms" v-model="acceptTerms" required />
                 <label for="terms">I agree to the Terms & Conditions</label>
             </div>
 
@@ -110,8 +94,6 @@ const handleRegister = async () => {
             <p v-if="message" :class="{ 'error-msg': isError, 'success-msg': !isError }">
                 {{ message }}
             </p>
-
-            
         </div>
     </div>
 </template>
@@ -134,19 +116,10 @@ const handleRegister = async () => {
     width: 100%;
 }
 
-h2 {
-    font-size: 3rem;
-    margin-top: 40px;
-}
+h2 { font-size: 3rem; margin-top: 40px; }
+h3 { font-size: 1.5rem; margin: 20px 0; }
 
-h3 {
-    font-size: 1.5rem;
-    margin: 20px 0;
-}
-
-input[type="text"],
-input[type="email"],
-input[type="password"] {
+input[type="text"], input[type="email"], input[type="password"] {
     padding: 10px;
     font-size: 1rem;
     margin-bottom: 15px;
@@ -161,42 +134,21 @@ input[type="password"] {
     align-items: center;
     gap: 10px;
     font-size: 0.9rem;
-
-    input {
-        width: auto;
-        margin-bottom: 0;
-    }
-
-    label {
-        color: style-variables.$default-text-color;
-    }
+    label { color: style-variables.$default-text-color; }
 }
 
 button {
     padding: 12px 30px;
     font-size: 1rem;
     background-color: style-variables.$default-navbar-color;
-    color: black;
-    border: none;
     cursor: pointer;
     transition: all 0.3s ease;
-
     &:hover {
         background-color: style-variables.$button-and-border-footer-color;
         color: style-variables.$default-text-color;
     }
 }
 
-.error-msg {
-    color: red;
-    margin-top: 15px;
-    font-weight: bold;
-}
-
-.success-msg {
-    color: style-variables.$default-text-color;
-    margin-top: 15px;
-    font-weight: bold;
-}
-
+.error-msg { color: red; margin-top: 15px; font-weight: bold; }
+.success-msg { color: style-variables.$default-text-color; margin-top: 15px; font-weight: bold; }
 </style>

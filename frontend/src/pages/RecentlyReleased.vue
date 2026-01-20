@@ -1,47 +1,51 @@
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue';
 
-const recentlyReleasedGames = ref([]);
-const isLoading = ref(true);
-
-const getImageUrl = (game) => {
-    try {
-        if (game.gameCoverBin && game.gameCoverBin.data) {
-            const arrayBuffer = new Uint8Array(game.gameCoverBin.data);
-            const blob = new Blob([arrayBuffer], { type: 'image/jpg' });
-            return URL.createObjectURL(blob);
-        }
-        else {
-            return '';
-        }
-    }
-    catch (error) {
-        console.error('Error processing image:', error);
-    }
-    return '';
-};
-
-const fetchRecentlyReleasedGames = async () => {
-    try {
-        isLoading.value = true;
-        const response = await fetch('/api/games/release');
-        const allGames = await response.json();
-
-        recentlyReleasedGames.value = allGames;
-    }
-    catch (error) {
-        console.error('Error fetching recently released games:', error);
-    }
-    finally {
-        isLoading.value = false;
-    }
-
+interface Game {
+  gameId: number | string;
+  gameName: string;
+  gameCoverBin?: {
+    data: Uint8Array;
+  };
 }
 
-onMounted(() => {
-    fetchRecentlyReleasedGames();
-});
 
+const recentlyReleasedGames = ref<Game[]>([]);
+const isLoading = ref<boolean>(true);
+
+const getImageUrl = (game: Game): string => {
+  try {
+    if (game.gameCoverBin && game.gameCoverBin.data) {
+      const arrayBuffer = new Uint8Array(game.gameCoverBin.data);
+      const blob = new Blob([arrayBuffer], { type: 'image/jpg' });
+      return URL.createObjectURL(blob);
+    } else {
+      return '';
+    }
+  } catch (error) {
+    console.error('Error processing image:', error);
+    return '';
+  }
+};
+
+const fetchRecentlyReleasedGames = async (): Promise<void> => {
+  try {
+    isLoading.value = true;
+    const response = await fetch('/api/games/release');
+    
+    const allGames: Game[] = await response.json();
+
+    recentlyReleasedGames.value = allGames;
+  } catch (error) {
+    console.error('Error fetching recently released games:', error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+onMounted(() => {
+  fetchRecentlyReleasedGames();
+});
 </script>
 
 <template>

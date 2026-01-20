@@ -1,55 +1,77 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
+import AuthenticationService from '../services/AuthenticationService';
 
-const email = ref('');
-const password = ref('');
-const confirmPassword = ref('');
-const message = ref('');
-const isError = ref(false);
+interface ChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+}
 
-const handleResetPassword = async () => {
+interface AuthError {
+  response?: {
+    data?: {
+      error?: string;
+    };
+  };
+}
+
+const currentPassword = ref<string>('');
+const newPassword = ref<string>('');
+const confirmPassword = ref<string>('');
+const message = ref<string>('');
+const isError = ref<boolean>(false);
+
+const handleChangePassword = async (): Promise<void> => {
+    // Reset status
     message.value = '';
     isError.value = false;
 
-    if (!email.value || !password.value) {
+    // Validation
+    if (!currentPassword.value || !newPassword.value) {
         isError.value = true;
         message.value = "Please fill in all required fields!";
         return;
     }
 
-    if (password.value !== confirmPassword.value) {
+    if (newPassword.value !== confirmPassword.value) {
         isError.value = true;
-        message.value = "Passwords do not match!";
+        message.value = "New passwords do not match!";
         return;
     }
 
     try {
-        await AuthenticationService.changePassword({
+        const payload: ChangePasswordPayload = {
             currentPassword: currentPassword.value,
-            newPassword: password.value
-        });
+            newPassword: newPassword.value
+        };
+
+        await AuthenticationService.changePassword(payload);
         message.value = "Password changed successfully!";
+        currentPassword.value = '';
+        newPassword.value = '';
+        confirmPassword.value = '';
+        
     } catch (err) {
         isError.value = true;
-        message.value = "Error: the current password is incorrect.";
+        const error = err as AuthError;
+        message.value = error.response?.data?.error || "Error: the current password is incorrect.";
     }
 };
 </script>
 
 <template>
     <div class="reset-password-page">
-        <h2>Reset Password</h2>
+        <h2>Change Password</h2>
 
         <div class="form-container">
-            <h3>Enter your details</h3>
+            <h3>Update your security</h3>
 
-            <input v-model="email" type="email" placeholder="Your Email" required />
-
-            <input v-model="password" type="password" placeholder="New Password" required />
-
+            <input v-model="currentPassword" type="password" placeholder="Current Password" required />
+            <hr class="separator" />
+            <input v-model="newPassword" type="password" placeholder="New Password" required />
             <input v-model="confirmPassword" type="password" placeholder="Confirm New Password" required />
 
-            <button @click="handleResetPassword">Reset Password</button>
+            <button @click="handleChangePassword">Update Password</button>
 
             <p v-if="message" :class="{ 'error-msg': isError, 'success-msg': !isError }">
                 {{ message }}
@@ -75,15 +97,15 @@ const handleResetPassword = async () => {
     width: 100%;
 }
 
-h2 {
-    font-size: 3rem;
-    margin-top: 40px;
+.separator {
+    width: 250px;
+    margin: 10px 0 20px 0;
+    border: 0;
+    border-top: 1px solid #eee;
 }
 
-h3 {
-    font-size: 1.5rem;
-    margin: 20px 0;
-}
+h2 { font-size: 3rem; margin-top: 40px; }
+h3 { font-size: 1.5rem; margin: 20px 0; }
 
 input {
     padding: 10px;
@@ -97,7 +119,6 @@ button {
     padding: 10px 20px;
     font-size: 1rem;
     background-color: style-variables.$default-navbar-color;
-    color: black;
     border: none;
     cursor: pointer;
     transition: background-color 0.3s;
@@ -108,15 +129,6 @@ button {
     }
 }
 
-.error-msg {
-    color: red;
-    margin-top: 15px;
-    font-weight: bold;
-}
-
-.success-msg {
-    color: style-variables.$default-text-color;
-    margin-top: 15px;
-    font-weight: bold;
-}
+.error-msg { color: red; margin-top: 15px; font-weight: bold; }
+.success-msg { color: style-variables.$default-text-color; margin-top: 15px; font-weight: bold; }
 </style>
