@@ -27,16 +27,22 @@ export const handleExists = async (
  * @param requiredRoles - An array of UserRole strings specifying the roles required for access.
  * @returns The authenticated User object if authentication is successful; otherwise, null.
  */
-export const requireUser = async (req: Request, res: Response, requiredRoles: UserRole[]): Promise<User | null> => {
+export const requireUser = async (req: Request, res: Response, requiredRoles: UserRole[], shouldItThrowError: boolean = true): Promise<User | null> => {
   const user = await handleUser(req, requiredRoles);
 
-  if (!user) {
-    res.status(401).send("This operation requires authentication.");
+  if (!user && shouldItThrowError) {
+    throw401(res);
+    return null;
+  } else if (!user) {
     return null;
   }
 
   return user;
 }
+
+const throw401 = (res: Response) => {
+  res.status(401).send("This operation requires authentication.");
+};
 
 /**
  * Requires user profile access authorization for the request.

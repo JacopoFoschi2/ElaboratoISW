@@ -21,7 +21,7 @@ export const createReview = async (req: Request, res: Response) => {
 };
 
 export const listReviewsOfGame = async (req: Request, res: Response) => {
-  const user = await requireUser(req, res, ["user", "admin", "master"]);
+  const user = await requireUser(req, res, ["user", "admin", "master"], false);
 
   let query = `
     SELECT *
