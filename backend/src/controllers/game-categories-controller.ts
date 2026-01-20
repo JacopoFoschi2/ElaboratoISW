@@ -1,11 +1,10 @@
 import type { Request, Response } from "express";
 import { connection } from "../utils/db-connection";
-import { handleUser } from "../utils/auth";
+import { requireUser } from "../utils/query-handling";
 
 export const addCategoryToGame = async (req: Request, res: Response) => {
-  const user = await handleUser(req, ["master"]);
+  const user = await requireUser(req, res, ["master"]);
   if (!user) {
-    res.status(401).send("This operation requires authentication with correct privileges.");
     return;
   }
 
@@ -26,9 +25,8 @@ export const listCategoriesOfGame = async (req: Request, res: Response) => {
 };
 
 export const updateCategoryOfGame = async (req: Request, res: Response) => {
-  const user = await handleUser(req, ["master"]);
+  const user = await requireUser(req, res, ["master"]);
   if (!user) {
-    res.status(401).send("This operation requires authentication with correct privileges.");
     return;
   }
 
@@ -40,9 +38,8 @@ export const updateCategoryOfGame = async (req: Request, res: Response) => {
 };
 
 export const removeCategoryFromGame = async (req: Request, res: Response) => {
-  const user = await handleUser(req, ["master"]);
+  const user = await requireUser(req, res, ["master"]);
   if (!user) {
-    res.status(401).send("This operation requires authentication with correct privileges.");
     return;
   }
 

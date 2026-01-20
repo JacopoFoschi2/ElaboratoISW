@@ -1,12 +1,10 @@
 import type { Request, Response } from "express";
 import { connection } from "../utils/db-connection";
-import { handleUser } from "../utils/auth";
-import { handleExists } from "../utils/query-handling";
+import { handleExists, requireUser  } from "../utils/query-handling";
 
 export const addToOwned = async (req: Request, res: Response) => {
-  const user = await handleUser(req, ["user", "admin", "master"]);
+  const user = await requireUser(req, res, ["user", "admin", "master"]);
   if (!user) {
-    res.status(401).send("This operation requires authentication.");
     return;
   }
 
@@ -18,9 +16,8 @@ export const addToOwned = async (req: Request, res: Response) => {
 };
 
 export const listOwnedOfUser = async (req: Request, res: Response) => {
-  const user = await handleUser(req, ["user", "admin", "master"]);
+  const user = await requireUser(req, res, ["user", "admin", "master"]);
   if (!user) {
-    res.status(401).send("This operation requires authentication.");
     return;
   }
 
@@ -34,9 +31,8 @@ export const listOwnedOfUser = async (req: Request, res: Response) => {
 };
 
 export const deleteFromOwned = async (req: Request, res: Response) => {
-  const user = await handleUser(req, ["user", "admin", "master"]);
+  const user = await requireUser(req, res, ["user", "admin", "master"]);
   if (!user) {
-    res.status(401).send("This operation requires authentication.");
     return;
   }
 
@@ -48,9 +44,8 @@ export const deleteFromOwned = async (req: Request, res: Response) => {
 };
 
 export const isOwned = async (req: Request, res: Response) => {
-  const user = await handleUser(req, ["user", "admin", "master"]);
+  const user = await requireUser(req, res, ["user", "admin", "master"]);
   if (!user) {
-    res.status(401).send("This operation requires authentication.");
     return;
   }
 
