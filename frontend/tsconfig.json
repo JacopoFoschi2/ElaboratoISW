@@ -9,9 +9,9 @@
     "isolatedModules": true,
     "noEmit": true,
     "types": ["vite/client"],
-    "baseUrl": ".",
     "paths": {
-      "vue": ["node_modules/vue/dist/vite-env.d.ts"]
+      "vue": ["./node_modules/vue/dist/vite-env.d.ts"],
+      "@/*": ["./src/*"]
     }
   },
   "include": [
