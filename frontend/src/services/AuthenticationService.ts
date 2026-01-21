@@ -13,6 +13,7 @@ interface PasswordChangeData {
 }
 
 interface User {
+  user: User;
   id: number;
   username: string;
   token: string;

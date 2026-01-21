@@ -1,4 +1,5 @@
 # PCMASTERRACEDB
+Node.js version: v22.19.0
 
 To consult the complete report of the project please read [report](pcmasterracedb_report.pdf)
 

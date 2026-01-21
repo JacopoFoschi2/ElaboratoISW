@@ -1,30 +1,88 @@
-<script setup>
-import { ref, onMounted } from 'vue';
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import StarRating from '../components/StarRating.vue';
 import moment from 'moment';
 
-const props = defineProps({
-    id: {
-        type: Number,
-        required: true
-    }
-});
-const game = ref(null);
-const loading = ref(true);
-const reviews = ref([]);
-const showReviewModal = ref(false);
+
+interface Game {
+    gameId: number;
+    gameName: string;
+    gameRating: number;
+    gameReleaseDate: string;
+    gameDesc: string;
+    gameCoverBin?: { data: number[] };
+    gameSteamLink?: string;
+    gameGoGLink?: string;
+    gameEpicLink?: string;
+}
+
+interface Review {
+    reviewId: number;
+    reviewTitle: string;
+    reviewBody: string; 
+    reviewRating: number;
+    reviewTimeStamp: string; 
+    userUsername: string;
+    userIconBin?: { data: number[] };
+    userIconUrl?: string; 
+}
+
+interface ReviewForm {
+    title: string;
+    content: string;
+    rating: number;
+}
+
+const props = defineProps<{
+    id: number;
+}>();
 
 const auth = useAuthStore();
-const isLoggedIn = auth.isLoggedIn;
-const reviewData = ref({
+const game = ref<Game | null>(null);
+const loading = ref<boolean>(true);
+const reviews = ref<Review[]>([]);
+const showReviewModal = ref<boolean>(false);
+
+const reviewData = ref<ReviewForm>({
     title: '',
     content: '',
-    rating: 0
+    rating: 1
 });
 
-const submitReview = async () => {
-    if (!auth.isLoggedIn) return;
+// Memory management for images
+const createdUrls: string[] = [];
+
+const bufferToUrl = (imageBuffer?: { data: number[] }): string => {
+    if (!imageBuffer || !imageBuffer.data) return '';
+    try {
+        const uint8Array = new Uint8Array(imageBuffer.data);
+        const blob = new Blob([uint8Array], { type: 'image/jpeg' });
+        const url = URL.createObjectURL(blob);
+        createdUrls.push(url);
+        return url;
+    } catch (error) {
+        return '';
+    }
+};
+
+const fetchReviews = async (): Promise<void> => {
+    try {
+        const response = await fetch(`/api/reviews/game/${props.id}`);
+        if (response.ok) {
+            const data: Review[] = await response.json();
+            reviews.value = data.map(r => ({
+                ...r,
+                userIconUrl: bufferToUrl(r.userIconBin)
+            }));
+        }
+    } catch (error) {
+        console.error('Error fetching reviews:', error);
+    }
+};
+
+const submitReview = async (): Promise<void> => {
+    if (!auth.isLoggedIn || !auth.user) return;
 
     try {
         const response = await fetch(`/api/game/${props.id}/reviews`, {
@@ -35,62 +93,48 @@ const submitReview = async () => {
             },
             body: JSON.stringify({
                 gameId: props.id,
-                userId: auth.user.id,
-                ...reviewData.value
+                userId: auth.user.userId,
+                reviewTitle: reviewData.value.title,
+                reviewRating: reviewData.value.rating,
+                reviewBody: reviewData.value.content
             })
         });
 
         if (response.ok) {
-            showModal.value = false;
-            reviewData.value = { title: '', rating: 5, comment: '' };
-
-            const reviewsResponse = await fetch(`/api/reviews/game/${props.id}`);
-            if (reviewsResponse.ok) {
-                reviews.value = await reviewsResponse.json();
-            } else {
-                console.error('Failed to fetch reviews:', reviewsResponse.statusText);
-            }
+            showReviewModal.value = false;
+            reviewData.value = { title: '', content: '', rating: 1 };
+            await fetchReviews();
         }
     } catch (error) {
         console.error('Error submitting review:', error);
     }
 };
 
-
-
-const getImageUrl = (imageBuffer) => {
-    if (!imageBuffer || !imageBuffer.data) return '';
-    const binary = String.fromCharCode(...imageBuffer.data);
-    const base64String = window.btoa(binary);
-    return `data:image/jpg;base64,${base64String}`;
-};
-
 onMounted(async () => {
     try {
-        const gameId = props.id;
-        const response = await fetch(`/api/game/${gameId}`);
+        const response = await fetch(`/api/game/${props.id}`);
         const data = await response.json();
-        game.value = data[0];
-
-        const reviewsResponse = await fetch(`/api/reviews/game/${gameId}`);
-        if (reviewsResponse.ok) {
-            reviews.value = await reviewsResponse.json();
-        } else {
-            console.error('Failed to fetch reviews:', reviewsResponse.statusText);
+        if (data && data.length > 0) {
+            game.value = data[0];
         }
+        await fetchReviews();
     } catch (error) {
-        console.error('There was a problem with the loading of the game:', error);
+        console.error('Error loading game details:', error);
     } finally {
         loading.value = false;
     }
 });
 
+onUnmounted(() => {
+    createdUrls.forEach(url => URL.revokeObjectURL(url));
+});
 </script>
+
 <template>
     <div v-if="!loading && game" class="game-detail-page">
         <main class="content-wrapper">
             <aside class="left-column">
-                <img :src="getImageUrl(game.gameCoverBin)" :alt="game.gameName" class="game-cover" />
+                <img :src="bufferToUrl(game.gameCoverBin)" :alt="game.gameName" class="game-cover" />
 
                 <div class="rating-container">
                     <p class="rating-label">Rating: {{ Math.floor(game.gameRating) }} / 5</p>
@@ -121,24 +165,20 @@ onMounted(async () => {
 
             <div class="right-column">
                 <h2 class="game-title">{{ game.gameName }}</h2>
-
-
                 <p class="game-release-date">{{ moment(game.gameReleaseDate).format('DD/MM/YYYY') }}</p>
                 <p class="game-description">{{ game.gameDesc }}</p>
-
-
             </div>
-
         </main>
-        <section class="review-section" v-if="isLoggedIn">
+
+        <section class="review-section" v-if="auth.isLoggedIn">
             <button class="review-btn" @click="showReviewModal = true">Write your review</button>
         </section>
         <p v-else class="login-prompt">Please log in from the navigation bar to add a review.</p>
 
         <section class="reviews-list-section" v-if="reviews.length > 0">
             <h2>User Reviews</h2>
-            <div v-for="(review, index) in reviews" :key="index" class="review-card">
-                <img :src="getImageUrl(review.userIconBin)" alt="User Icon" class="user-icon" />
+            <div v-for="review in reviews" :key="review.reviewId" class="review-card">
+                <img :src="review.userIconUrl" alt="User Icon" class="user-icon" />
                 <p class="username">{{ review.userUsername }}</p>
                 <h2 class="review-title">{{ review.reviewTitle }}</h2>
                 <div class="rating-container">
@@ -154,35 +194,30 @@ onMounted(async () => {
             <div class="review-modal" @click.stop>
                 <h2>Write your review</h2>
                 <form @submit.prevent="submitReview">
-                    <input v-model="reviewData.reviewTitle" id="review-title" type="text" placeholder="Review Title"
-                        required />
+                    <input v-model="reviewData.title" type="text" placeholder="Review Title" required />
 
                     <div class="rating-input">
-                        <label for="review-rating">Rating(1-5):</label>
-                        <select id="review-rating" v-model.number="reviewData.reviewRating" type="number" min="1"
-                            max="5" required>
+                        <label for="review-rating">Rating (1-5):</label>
+                        <select id="review-rating" v-model.number="reviewData.rating" required>
                             <option v-for="n in 5" :key="n" :value="n">{{ n }}</option>
                         </select>
                     </div>
 
                     <label for="review-content">Content:</label>
-                    <textarea id="review-content" v-model="reviewData.reviewBody" placeholder="Your review..." rows="5"
-                        required></textarea>
+                    <textarea id="review-content" v-model="reviewData.content" placeholder="Your review..." rows="5" required></textarea>
 
                     <div class="modal-actions">
-                        <button @click="submitReview">Submit Review</button>
-                        <button @click="showReviewModal = false">Cancel</button>
+                        <button type="submit">Submit Review</button>
+                        <button type="button" @click="showReviewModal = false">Cancel</button>
                     </div>
-
                 </form>
             </div>
         </div>
     </div>
     <div v-else>
-        <p>Loading...</p>
+        <p class="loader">Loading...</p>
     </div>
 </template>
-
 <style scoped lang="scss">
 @use "../styles/style-variables.scss" as style-variables;
 

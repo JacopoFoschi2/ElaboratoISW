@@ -1,60 +1,85 @@
-<script setup>
-import { ref, onMounted, watch } from 'vue';
+<script setup lang="ts">
+import { ref, onMounted, watch, onUnmounted } from 'vue';
 
-const props = defineProps({
-    id: {
-        type: Number,
-        required: true
-    }
-});
+interface Category {
+    categoryId: number;
+    categoryName: string;
+}
 
-const categoryName = ref('');
-const games = ref([]);
-const isLoading = ref(true);
+interface Game {
+    gameId: number | string;
+    gameName: string;
+    gameTitle: string;
+    gameCoverBin?: {
+        data: number[];
+    };
+}
 
-const getImageUrl = (game) => {
+const props = defineProps<{
+    id: number;
+}>();
+
+const categoryName = ref<string>('');
+const games = ref<Game[]>([]);
+const isLoading = ref<boolean>(true);
+
+const activeObjectUrls = new Set<string>();
+
+const cleanupUrls = (): void => {
+    activeObjectUrls.forEach(url => URL.revokeObjectURL(url));
+    activeObjectUrls.clear();
+};
+
+const getImageUrl = (game: Game): string => {
     try {
-        if (game.gameCoverBin && game.gameCoverBin.data) {
+        if (game.gameCoverBin?.data) {
             const arrayBuffer = new Uint8Array(game.gameCoverBin.data);
-            const blob = new Blob([arrayBuffer], { type: 'image/jpg' });
-            return URL.createObjectURL(blob);
+            const blob = new Blob([arrayBuffer], { type: 'image/jpeg' });
+            const url = URL.createObjectURL(blob);
+            
+            // 2. Track the new URL
+            activeObjectUrls.add(url);
+            return url;
         }
-        else {
-            return '';
-        }
-    }
-    catch (error) {
+    } catch (error) {
         console.error('Error processing image:', error);
     }
     return '';
 };
-const fetchData = async() => {
+
+const fetchData = async (): Promise<void> => {
+    cleanupUrls();
+    
     isLoading.value = true;
     const categoryId = props.id;
 
     try {
         const categoryResponse = await fetch(`/api/categories`);
-        const allCategoryData = await categoryResponse.json();
-        const currentCategory = allCategoryData.find(cat => cat.categoryId === parseInt(categoryId));
+        const allCategoryData: Category[] = await categoryResponse.json();
 
-        if (currentCategory) {
-            categoryName.value = currentCategory.categoryName;
-        } else {
-            categoryName.value = 'Unknown Category';
-        }
+        const currentCategory = allCategoryData.find(
+            (cat) => cat.categoryId === categoryId
+        );
+
+        categoryName.value = currentCategory ? currentCategory.categoryName : 'Unknown Category';
 
         const gamesResponse = await fetch(`/api/games/${categoryId}`);
-        const gamesData = await gamesResponse.json();
+        const gamesData: Game[] = await gamesResponse.json();
         games.value = gamesData;
+
     } catch (error) {
         console.error('Error fetching category games:', error);
     } finally {
         isLoading.value = false;
     }
-}
+};
 
 onMounted(() => {
     fetchData();
+});
+
+onUnmounted(() => {
+    cleanupUrls();
 });
 
 watch(() => props.id, () => {
@@ -69,12 +94,8 @@ watch(() => props.id, () => {
 
             <div v-if="isLoading" class="loader">Loading games...</div>
             <div v-else-if="games.length > 0" class="games-grid">
-                <router-link
-                    v-for="game in games"
-                    :key="game.gameId"
-                    :to="{ name: 'GameDetail', params: { id: game.gameId } }"
-                    class="game-card"
-                >
+                <router-link v-for="game in games" :key="game.gameId"
+                    :to="{ name: 'GameDetail', params: { id: game.gameId } }" class="game-card">
                     <img :src="getImageUrl(game)" :alt="game.gameTitle" class="game-cover" />
                 </router-link>
             </div>
@@ -107,7 +128,7 @@ watch(() => props.id, () => {
     width: 100%;
 }
 
-.page-title{
+.page-title {
     font-size: 2.5rem;
     text-transform: uppercase;
     color: style-variables.$default-text-color;
@@ -138,6 +159,7 @@ watch(() => props.id, () => {
             height: 100%;
             object-fit: cover;
         }
+
         &:hover {
             transform: scale(1.05);
         }
@@ -146,7 +168,8 @@ watch(() => props.id, () => {
     }
 }
 
-.loader,.no-games-message {
+.loader,
+.no-games-message {
     text-align: center;
     font-size: 1.5rem;
     color: style-variables.$default-text-color;

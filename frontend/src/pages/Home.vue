@@ -1,18 +1,31 @@
-<script setup>
-import { ref, onMounted } from 'vue';
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 
+interface Game {
+    gameId: number;
+    gameName: string;
+    gameCoverBin?: {
+        data: number[];
+    };
+}
+
+interface Category {
+    categoryId: number;
+    categoryName: string;
+    games: Game[];
+}
+
 const router = useRouter();
-const categories = ref([]);
-const searchQuery = ref('');
-const suggestions = ref([]);
-const showSuggestions = ref(false);
+const categories = ref<Category[]>([]);
+const searchQuery = ref<string>('');
+const suggestions = ref<Game[]>([]);
+const showSuggestions = ref<boolean>(false);
 
-let debounceTimer = null;
+let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
-const fetchSuggestions = async () => {
-
-    clearTimeout(debounceTimer);
+const fetchSuggestions = async (): Promise<void> => {
+    if (debounceTimer) clearTimeout(debounceTimer);
 
     const term = searchQuery.value.trim();
 
@@ -20,6 +33,7 @@ const fetchSuggestions = async () => {
         suggestions.value = [];
         return;
     }
+
     debounceTimer = setTimeout(async () => {
         try {
             const response = await fetch(`/api/games/as-you-type/${encodeURIComponent(term)}`);
@@ -38,57 +52,59 @@ const fetchSuggestions = async () => {
                 console.error('Unexpected data format:', data);
                 suggestions.value = [];
             }
-
-            suggestions.value = data.slice(0, 3);
         }
         catch (error) {
             console.error('Error fetching search suggestions:', error);
             suggestions.value = [];
         }
     }, 300);
-
 };
 
-const goToGameDetail = (gameId) => {
+const goToGameDetail = (gameId: number): void => {
     showSuggestions.value = false;
     searchQuery.value = '';
     router.push({ name: 'GameDetail', params: { id: gameId } });
 };
 
-const handleSearchButton = () => {
+const handleSearchButton = (): void => {
     if (suggestions.value.length > 0) {
         goToGameDetail(suggestions.value[0].gameId);
     }
 };
 
-const getImageUrl = (game) => {
+const createdUrls: string[] = [];
+
+const getImageUrl = (game: Game): string => {
     try {
         if (game.gameCoverBin && game.gameCoverBin.data) {
             const arrayBuffer = new Uint8Array(game.gameCoverBin.data);
             const blob = new Blob([arrayBuffer], { type: 'image/jpg' });
-            return URL.createObjectURL(blob);
+            const url = URL.createObjectURL(blob);
+            createdUrls.push(url);
+            return url;
         }
-        else {
-            return '';
-        }
+        return '';
     }
     catch (error) {
         console.error('Error processing image:', error);
+        return '';
     }
-    return '';
 };
 
-const fetchCategories = async () => {
+const fetchCategories = async (): Promise<void> => {
     try {
         const response = await fetch('/api/categories');
-        const catData = await response.json();
+        const catData: Omit<Category, 'games'>[] = await response.json();
+        
+        // Initialize categories with empty games array
         categories.value = catData.map(cat => ({ ...cat, games: [] }));
 
+        // Fetch games for each category
         for (const category of categories.value) {
             try {
                 const gamesResponse = await fetch(`/api/games/${category.categoryId}`);
-                const gamesData = await gamesResponse.json();
-                category.games = gamesData.slice(0, 5); //only 5 per category
+                const gamesData: Game[] = await gamesResponse.json();
+                category.games = gamesData.slice(0, 5); 
             }
             catch (error) {
                 console.error(`Error fetching games for category ${category.categoryId}:`, error);
@@ -100,18 +116,23 @@ const fetchCategories = async () => {
     }
 };
 
+const handleClickOutside = (event: MouseEvent): void => {
+    const searchContainer = document.querySelector('.search-container');
+    if (searchContainer && !searchContainer.contains(event.target as Node)) {
+        showSuggestions.value = false;
+    }
+};
+
 onMounted(() => {
     fetchCategories();
+    window.addEventListener('click', handleClickOutside);
+});
 
-    window.addEventListener('click', (event) => {
-        const searchContainer = document.querySelector('.search-container');
-        if (searchContainer && !searchContainer.contains(event.target)) {
-            showSuggestions.value = false;
-        }
-    });
+onUnmounted(() => {
+    window.removeEventListener('click', handleClickOutside);
+    createdUrls.forEach(url => URL.revokeObjectURL(url));
 });
 </script>
-
 
 <template>
     <div class="homepage">
@@ -149,10 +170,6 @@ onMounted(() => {
     </div>
 
 </template>
-<script>
-
-
-</script>
 
 <style scoped lang="scss">
 @use "../styles/style-variables.scss" as style-variables;

@@ -1,10 +1,19 @@
 export interface Game {
-    id: number;
-    title: string;
-    description: string;
-    raiting: number;
-    coverImage:string;
-    stores: string[];
+    gameId: number | string;
+    gameName?: string;
+    gameTitle?: string;
+    gameCoverBin?: {
+        data: number[];
+    };
+    gameSmallBannerBin?: {
+        data: number[];
+    };
+    rating?: number;
+}
+
+export interface Category {
+    categoryId: number;
+    categoryName: string;
 }
 
 export interface User {

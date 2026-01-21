@@ -1,44 +1,61 @@
-<script setup>
-import { ref, onMounted } from 'vue';
-const bestGames = ref([]);
-const isLoading = ref(true);
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue';
 
-const getImageUrl = (game) => {
-    try {
-        if (game.gameCoverBin && game.gameCoverBin.data) {
-            const arrayBuffer = new Uint8Array(game.gameCoverBin.data);
-            const blob = new Blob([arrayBuffer], { type: 'image/jpg' });
-            return URL.createObjectURL(blob);
-        }
-        else {
-            return '';
-        }
-    }
-    catch (error) {
-        console.error('Error processing image:', error);
-    }
-    return '';
-};
-
-const fetchBestGames = async () => {
-    try {
-        isLoading.value = true;
-        const response = await fetch('/api/games/rating');
-        const allGames = await response.json();
-
-        bestGames.value = allGames;
-    }
-    catch (error) {
-        console.error('Error fetching best games:', error);
-    }
-    finally {
-        isLoading.value = false;
-    }
-
+interface Game {
+  gameId: number | string;
+  gameName: string;
+  gameCoverBin?: {
+    data: number[];
+  };
+  rating?: number;
 }
 
+const bestGames = ref<Game[]>([]);
+const isLoading = ref<boolean>(true);
+
+const objectUrls = new Set<string>();
+
+const getImageUrl = (game: Game): string => {
+  try {
+    if (game.gameCoverBin?.data) {
+      const arrayBuffer = new Uint8Array(game.gameCoverBin.data);
+      const blob = new Blob([arrayBuffer], { type: 'image/jpeg' });
+      const url = URL.createObjectURL(blob);
+      
+      objectUrls.add(url);
+      return url;
+    }
+  } catch (error) {
+    console.error('Error processing game image:', error);
+  }
+  return ''; 
+};
+
+const fetchBestGames = async (): Promise<void> => {
+  try {
+    isLoading.value = true;
+    const response = await fetch('/api/games/rating');
+    
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.status}`);
+    }
+
+    const allGames: Game[] = await response.json();
+    bestGames.value = allGames;
+  } catch (error) {
+    console.error('Error fetching best games:', error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
 onMounted(() => {
-    fetchBestGames();
+  fetchBestGames();
+});
+
+onUnmounted(() => {
+  objectUrls.forEach(url => URL.revokeObjectURL(url));
+  objectUrls.clear();
 });
 </script>
 

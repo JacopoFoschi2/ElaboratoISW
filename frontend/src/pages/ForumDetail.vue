@@ -1,41 +1,69 @@
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import moment from 'moment';
 
-const props = defineProps({
-    id: {
-        type: Number,
-        required: true
-    }
-});
+// 1. Define interfaces for the Data structures
+interface GameInfo {
+    gameId?: number | string;
+    gameName?: string;
+    gameTitle?: string;
+    gameDescription?: string;
+}
 
+interface Comment {
+    commentId: number;
+    userUsername: string;
+    commentTimeStamp: string;
+    commentBody: string;
+    commentWasEdited: boolean | number;
+    userIconBin?: { data: number[] };
+    // UI mapped properties
+    userIconUrl: string;
+    displayName: string;
+    commentDate: string;
+    commentText: string;
+    isEdited: boolean | number;
+}
+
+// 2. Typed Props
+const props = defineProps<{
+    id: number;
+}>();
 
 const auth = useAuthStore();
-const newComment = ref('');
-const isSubmitting = ref(false);
+const newComment = ref<string>('');
+const isSubmitting = ref<boolean>(false);
 
-const gameInfo = ref({});
-const bannerUrl = ref('');
-const comments = ref([]);
-const isLoading = ref(true);
-const createdUrls = [];
+const gameInfo = ref<GameInfo>({});
+const bannerUrl = ref<string>('');
+const comments = ref<Comment[]>([]);
+const isLoading = ref<boolean>(true);
 
-const bufferToUrl = (imageBuffer) => {
+// Track URLs for memory cleanup
+const createdUrls: string[] = [];
+
+// 3. Helper function with explicit types
+const bufferToUrl = (imageBuffer?: { data: number[] }): string => {
     if (!imageBuffer || !imageBuffer.data) return '';
-    const uint8Array = new Uint8Array(imageBuffer.data);
-    const blob = new Blob([uint8Array], { type: 'image/jpeg' });
-    const url = URL.createObjectURL(blob);
-    createdUrls.push(url);
-    return url;
+    try {
+        const uint8Array = new Uint8Array(imageBuffer.data);
+        const blob = new Blob([uint8Array], { type: 'image/jpeg' });
+        const url = URL.createObjectURL(blob);
+        createdUrls.push(url);
+        return url;
+    } catch (error) {
+        console.error('Error creating image URL:', error);
+        return '';
+    }
 };
 
-const fetchForumDetails = async () => {
+const fetchForumDetails = async (): Promise<void> => {
     try {
         isLoading.value = true;
 
         const gameRes = await fetch(`/api/game/${props.id}`);
-        const gameData = await gameRes.json();
+        const gameData: GameInfo[] = await gameRes.json();
 
         if (gameData.length > 0) {
             gameInfo.value = gameData[0];
@@ -49,33 +77,33 @@ const fetchForumDetails = async () => {
         ]);
 
         const bannerData = await bannerRes.json();
-        const commentsData = await dataRes.json();
+        const commentsData: any[] = await dataRes.json();
 
         if (bannerData.length > 0) {
             const banner = bannerData[0];
             bannerUrl.value = bufferToUrl(banner.gameBigBannerBin);
         }
 
+        // Map the raw API comments to our typed Comment interface
         comments.value = commentsData.map(comment => ({
             ...comment,
             userIconUrl: bufferToUrl(comment.userIconBin),
             displayName: comment.userUsername,
             commentDate: comment.commentTimeStamp,
             commentText: comment.commentBody,
-            isEdited: comment.commentWasEdited
+            isEdited: !!comment.commentWasEdited
         }));
     } catch (error) {
         console.error('Error fetching forum details:', error);
     } finally {
         isLoading.value = false;
     }
-
-
 };
 
-
-const submitComment = async () => {
-    if (!auth.isLoggedIn) return;
+const submitComment = async (): Promise<void> => {
+    // Ensure user is logged in and comment isn't empty
+    if (!auth.isLoggedIn || !auth.user || !newComment.value.trim()) return;
+    
     isSubmitting.value = true;
 
     try {
@@ -87,13 +115,14 @@ const submitComment = async () => {
             },
             body: JSON.stringify({
                 gameId: props.id,
-                userId: auth.user.id, 
+                userId: auth.user.userId, 
                 commentText: newComment.value
             })
         });
 
         if (response.ok) {
             newComment.value = '';
+            // Refresh details to show the new comment
             await fetchForumDetails();
         }
     } catch (error) {
@@ -103,9 +132,12 @@ const submitComment = async () => {
     }
 };
 
-onMounted(fetchForumDetails);
+onMounted(() => {
+    fetchForumDetails();
+});
 
 onUnmounted(() => {
+    // Revoke all created URLs to free up memory
     createdUrls.forEach(url => URL.revokeObjectURL(url));
 });
 </script>
@@ -138,7 +170,7 @@ onUnmounted(() => {
                         <p class="username">{{ comment.displayName }}</p>
                         <p class="comment-date">{{ moment(comment.commentDate).format('MMMM Do YYYY, h:mm:ss a') }}</p>
                         <p class="comment-text">{{ comment.commentText }}</p>
-                        <p v-if="comment.isEdited === 1" class="edited-label">(Edited)</p>
+                        <p v-if="comment.isEdited" class="edited-label">(Edited)</p>
                     </div>
                 </div>
             </div>

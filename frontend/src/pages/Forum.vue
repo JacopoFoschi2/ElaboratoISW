@@ -1,18 +1,25 @@
-<script setup>
-import { ref, onMounted } from 'vue';
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 
+interface Forum {
+  gameId: number | string;
+  gameName: string;
+  gameSmallBannerBin?: {
+    data: number[];
+  };
+}
+
 const router = useRouter();
-const forums = ref([]);
+const forums = ref<Forum[]>([]);
+const searchQuery = ref<string>('');
+const suggestions = ref<Forum[]>([]);
+const showSuggestions = ref<boolean>(false);
 
-const searchQuery = ref('');
-const suggestions = ref([]);
-const showSuggestions = ref(false);
+let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
-let debounceTimer = null;
-
-const fetchSuggestions = async () => {
-    clearTimeout(debounceTimer);
+const fetchSuggestions = async (): Promise<void> => {
+    if (debounceTimer) clearTimeout(debounceTimer);
 
     const term = searchQuery.value.trim();
 
@@ -34,7 +41,7 @@ const fetchSuggestions = async () => {
             const data = await response.json();
 
             if (Array.isArray(data)) {
-                suggestions.value = data.slice(0, 3);
+                suggestions.value = data.slice(0, 3) as Forum[];
             } else {
                 console.error('Unexpected data format:', data);
                 suggestions.value = [];
@@ -45,31 +52,26 @@ const fetchSuggestions = async () => {
             suggestions.value = [];
         }
     }, 300);
-
-
 };
 
-const goToForumDetail = (gameId) => {
+const goToForumDetail = (gameId: number | string): void => {
     showSuggestions.value = false;
     searchQuery.value = '';
     router.push({ name: 'ForumDetail', params: { id: gameId } });
 };
 
-const handleSearchButton = () => {
+const handleSearchButton = (): void => {
     if (suggestions.value.length > 0) {
         goToForumDetail(suggestions.value[0].gameId);
     }
 };
 
-const getImageUrl = (game) => {
+const getImageUrl = (game: Forum): string => {
     try {
-        if (game.gameSmallBannerBin && game.gameSmallBannerBin.data) {
+        if (game.gameSmallBannerBin?.data) {
             const arrayBuffer = new Uint8Array(game.gameSmallBannerBin.data);
-            const blob = new Blob([arrayBuffer], { type: 'image/jpg' });
+            const blob = new Blob([arrayBuffer], { type: 'image/jpeg' });
             return URL.createObjectURL(blob);
-        }
-        else {
-            return '';
         }
     }
     catch (error) {
@@ -78,10 +80,10 @@ const getImageUrl = (game) => {
     return '';
 };
 
-const fetchForums = async () => {
+const fetchForums = async (): Promise<void> => {
     try {
         const response = await fetch('/api/forums');
-        const data = await response.json();
+        const data: Forum[] = await response.json();
         forums.value = data;
     }
     catch (error) {
@@ -89,15 +91,20 @@ const fetchForums = async () => {
     }
 };
 
+const handleClickOutside = (event: MouseEvent) => {
+    const searchContainer = document.querySelector('.search-container');
+    if (searchContainer && !searchContainer.contains(event.target as Node)) {
+        showSuggestions.value = false;
+    }
+};
+
 onMounted(() => {
     fetchForums();
+    window.addEventListener('click', handleClickOutside);
+});
 
-    window.addEventListener('click', (event) => {
-        const searchContainer = document.querySelector('.search-container');
-        if (searchContainer && !searchContainer.contains(event.target)) {
-            showSuggestions.value = false;
-        }
-    });
+onUnmounted(() => {
+    window.removeEventListener('click', handleClickOutside);
 });
 </script>
 
