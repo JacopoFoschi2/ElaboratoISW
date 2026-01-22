@@ -18,10 +18,10 @@ interface PasswordChangeData {
 }
 
 interface User {
-  user: User;
-  id: number;
-  username: string;
-  token: string;
+    user: User;
+    id: number;
+    username: string;
+    token: string;
 }
 
 export default {
@@ -33,6 +33,10 @@ export default {
     // Read
     getProfile(): Promise<AxiosResponse> {
         return Api().get('/api/auth/profile');
+    },
+
+    getUserData(): Promise<AxiosResponse> {
+        return Api().get('/api/user');
     },
 
     checkUsername(username: string): Promise<AxiosResponse> {
@@ -49,7 +53,7 @@ export default {
     },
 
     login(credentials: LoginCredentials): Promise<AxiosResponse<User>> {
-        return Api().post < User > ('/api/auth/login', credentials);
+        return Api().post<User>('/api/auth/login', credentials);
     },
 
     logout(): Promise<AxiosResponse> {

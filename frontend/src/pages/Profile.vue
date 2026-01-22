@@ -2,6 +2,9 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { resizeFileToBlob } from '../utils/resizeFileToBlob';
+import { useAuthStore } from '../stores/auth';
+
+const authStore = useAuthStore();
 
 interface UserProfile {
   nickname: string;
@@ -19,10 +22,17 @@ const isError = ref<boolean>(false);
 
 const fetchUserProfile = async (): Promise<void> => {
   try {
-    const response = await axios.get<UserProfile>('/api/user');
-    user.value = response.data;
-    if (user.value.image && !user.value.image.startsWith('data:')) {
-      user.value.image = `data:image/jpeg;base64,${user.value.image}`;
+    const response = await axios.get<any[]>('/api/user');
+    if (response.data && response.data.length > 0) {
+      const data = response.data[0];
+      user.value.nickname = data.userUsername;
+
+      if (data.userIconBin && data.userIconBin.data) {
+        const uint8Array = new Uint8Array(data.userIconBin.data);
+        let binary = '';
+        uint8Array.forEach(byte => binary += String.fromCharCode(byte));
+        user.value.image = `data:image/jpeg;base64,${btoa(binary)}`;
+      }
     }
   } catch (error) {
     showFeedback("Could not load profile.", true);
@@ -30,7 +40,6 @@ const fetchUserProfile = async (): Promise<void> => {
     loading.value = false;
   }
 };
-
 const handleImageUpload = (event: Event): void => {
   const target = event.target as HTMLInputElement;
   if (target.files && target.files[0]) {
@@ -46,25 +55,31 @@ const updateProfile = async (): Promise<void> => {
 
   try {
     const formData = new FormData();
-    formData.append('nickname', user.value.nickname);
-    
+
+    formData.append('userUsername', user.value.nickname);
+
     if (selectedFile.value) {
       const resizedBlob = await resizeFileToBlob(
-        selectedFile.value, 
-        300, // Target Width
-        300, // Target Height
-        "image/jpeg", 
-        0.85 // Quality
+        selectedFile.value,
+        300, 300,
+        "image/jpeg",
+        0.85
       );
-      
-      formData.append('image', resizedBlob, 'profile-picture.jpg');
+
+      formData.append('userIconBin', resizedBlob, 'profile-picture.jpg');
     }
 
-    await axios.put('/api/user', formData);
+    await axios.put('/api/user', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+
     showFeedback("Profile updated successfully!", false);
     selectedFile.value = null;
+    previewImage.value = null;
+    await fetchUserProfile();
   } catch (error: any) {
-    showFeedback("Error saving profile.", true);
+    console.error("Errore salvataggio:", error.response?.data);
+    showFeedback("Error saving profile (Server 500).", true);
   } finally {
     saving.value = false;
   }
@@ -73,7 +88,7 @@ const updateProfile = async (): Promise<void> => {
 const checkUsername = async (): Promise<void> => {
   if (!user.value.nickname || user.value.nickname.length < 3) return;
   try {
-    const response = await axios.get<{ exists: boolean }>(`/api/users/exists/username/${user.value.nickname}`);
+    const response = await axios.get<{ exists: boolean }>(`/api/auth/username-exists/${user.value.nickname}`);
     usernameExists.value = response.data.exists;
   } catch (error) { console.error(error); }
 };
@@ -96,32 +111,18 @@ onMounted(fetchUserProfile);
       <form v-else @submit.prevent="updateProfile" class="profile-form">
         <div class="avatar-upload">
           <div class="avatar-preview">
-            <img 
-              :src="previewImage || user.image || '/default-avatar.png'" 
-              alt="Profile Preview" 
-            />
+            <img :src="previewImage || user.image || '/default-avatar.png'" alt="Profile Preview" />
           </div>
           <div class="file-input-wrapper">
             <label for="file-upload" class="btn-secondary">Change Photo</label>
-            <input 
-              id="file-upload" 
-              type="file" 
-              @change="handleImageUpload" 
-              accept="image/*" 
-            />
+            <input id="file-upload" type="file" @change="handleImageUpload" accept="image/*" />
           </div>
         </div>
 
         <div class="form-group">
           <label for="username">Username</label>
-          <input 
-            id="username"
-            type="text" 
-            v-model="user.nickname" 
-            @input="checkUsername"
-            :class="{ 'input-error': usernameExists }"
-            placeholder="Enter your nickname"
-          />
+          <input id="username" type="text" v-model="user.nickname" @input="checkUsername"
+            :class="{ 'input-error': usernameExists }" placeholder="Enter your nickname" />
           <span v-if="usernameExists" class="error-text">
             This username is already taken.
           </span>
@@ -143,6 +144,7 @@ onMounted(fetchUserProfile);
 
 <style scoped lang="scss">
 @use "../styles/style-variables.scss" as style-variables;
+
 .profile-page {
   display: flex;
   justify-content: center;
@@ -154,7 +156,7 @@ onMounted(fetchUserProfile);
 .profile-card {
   background: style-variables.$default-navbar-color;
   padding: 30px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   width: 100%;
   max-width: 500px;
 
@@ -206,18 +208,18 @@ input[type="text"] {
 }
 
 .input-error {
-  border-color: #ff5252;
+  border-color: red;
 }
 
 .error-text {
-  color: #ff5252;
+  color: red;
   font-size: 0.85rem;
   margin-top: 5px;
 }
 
 .btn-primary {
-  background-color: #42b883;
-  color: white;
+  background-color: style-variables.$button-and-border-footer-color;
+  color: style-variables.$default-text-color;
   border: none;
   padding: 12px 24px;
   cursor: pointer;
@@ -226,7 +228,8 @@ input[type="text"] {
 }
 
 .btn-secondary {
-  background-color: #eee;
+  background-color: style-variables.$button-and-border-footer-color;
+  color: style-variables.$default-text-color;
   padding: 8px 16px;
   cursor: pointer;
   font-size: 0.9rem;
@@ -238,6 +241,13 @@ input[type="text"] {
   text-align: center;
 }
 
-.alert-success { background: #e8f5e9; color: #2e7d32; }
-.alert-danger { background: #ffebee; color: #c62828; }
+.alert-success {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.alert-danger {
+  background: #ffebee;
+  color: #c62828;
+}
 </style>

@@ -16,10 +16,17 @@ export default {
     computed: {
         ...mapState(useAuthStore, ['user', 'isLoggedIn']),
 
-        userImage() {
-            if (this.user && this.user.userIconBin && this.user.userIconBin.data) {
-                const binary = String.fromCharCode(...this.user.userIconBin.data);
-                return `data:image/png;base64,${btoa(binary)}`;
+        userImageUrl() {
+            const userData = this.user;
+            if (userData && userData.userIconBin && userData.userIconBin.data) {
+                try {
+                    const uint8Array = new Uint8Array(userData.userIconBin.data);
+                    let binary = '';
+                    uint8Array.forEach(byte => binary += String.fromCharCode(byte));
+                    return `data:image/jpeg;base64,${btoa(binary)}`;
+                } catch (e) {
+                    console.error("Error converting image:", e);
+                }
             }
             return './assets/pfpIcon.svg';
         },
@@ -50,17 +57,19 @@ export default {
                     email: this.loginEmail,
                     password: this.loginPassword
                 });
-                const profileResponse = await AuthenticationService.getProfile();
 
-                // Chiamiamo il login passando i dati ricevuti dal profilo
+                const userResponse = await AuthenticationService.getUserData();
+
+                const loggedUser = userResponse.data[0];
+
                 this.setLogin({
-                    token: profileResponse.data.token || null,
-                    user: profileResponse.data // mappiamo i dati grezzi visti in console
+                    token: loggedUser.token || this.token,
+                    user: loggedUser
                 });
 
                 this.showSignIn = false;
             } catch (error) {
-                this.errorMessage = "Error during login";
+                this.errorMessage = "Login failed";
             }
         },
         async handleLogout() {
@@ -136,7 +145,7 @@ export default {
             </li>
             <li v-else class="dropdown-user">
                 <div class="dropdown-trigger">
-                    <img class="pfp-icon" :src="userImage" alt="User Icon"></img>
+                    <img class="pfp-icon" :src="userImageUrl" alt="User Icon"></img>
                 </div>
 
                 <ul class="drop-menu">
@@ -157,7 +166,6 @@ export default {
             <div class="sign-in-container">
                 <img @click="toggleSignIn" class="close-icon" src="../src/assets/xIcon.svg" />
                 <h2>SIGN IN</h2>
-                <p style="color: white">Stato login: {{ isLoggedIn }}</p>
                 <form @submit.prevent="handleLogin">
                     <input v-model="loginEmail" type="text" placeholder="insert your email..." required="" />
                     <input v-model="loginPassword" type="password" placeholder="insert your password..." required="" />
