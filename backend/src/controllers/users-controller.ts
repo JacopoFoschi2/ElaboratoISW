@@ -47,7 +47,7 @@ export const updateUserInfo = async (req: Request, res: Response) => {
       req.body["username"],
       req.body["iconBin"],
       req.body["iconName"],
-      req.params["userId"],
+      user.userId,
     ]
   );
 
