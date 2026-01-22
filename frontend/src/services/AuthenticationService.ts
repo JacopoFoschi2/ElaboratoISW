@@ -2,9 +2,14 @@ import { AxiosResponse } from 'axios';
 import Api from './Api';
 
 interface Credentials {
-    username?: string;
-    email?: string;
-    password?: string;
+    username: string;
+    email: string;
+    password: string;
+}
+
+interface LoginCredentials {
+    email: string;
+    password: string;
 }
 
 interface PasswordChangeData {
@@ -43,7 +48,7 @@ export default {
         return Api().post('/api/auth/change-password', data);
     },
 
-    login(credentials: Credentials): Promise<AxiosResponse<User>> {
+    login(credentials: LoginCredentials): Promise<AxiosResponse<User>> {
         return Api().post < User > ('/api/auth/login', credentials);
     },
 
