@@ -86,13 +86,13 @@ export const login = async (req: Request, res: Response) => {
     return;
   }
 
-  // Extract username and password from the request body
-  const { username, password } = req.body;
+  // Extract email and password from the request body
+  const { email, password } = req.body;
 
-  // Execute the database query to get user data based on the username
+  // Execute the database query to get user data based on the email
   const [results] = await connection.execute(
-    "SELECT userId, userUsername, userEmail, userPassword, userRole FROM users WHERE userUsername=?",
-    [username]
+    "SELECT userId, userUsername, userEmail, userPassword, userRole FROM users WHERE userEmail=?",
+    [email]
   );
 
   // Error if the user was not found
