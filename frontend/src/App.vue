@@ -52,6 +52,9 @@ export default {
         },
         async handleLogin() {
             this.errorMessage = '';
+            this.setLogout();
+            localStorage.clear();
+            sessionStorage.clear();
             try {
                 await AuthenticationService.login({
                     email: this.loginEmail,
@@ -70,6 +73,7 @@ export default {
                 this.showSignIn = false;
             } catch (error) {
                 this.errorMessage = "Login failed";
+                this.setLogout();
             }
         },
         async handleLogout() {
@@ -104,17 +108,22 @@ export default {
             }
         },
     },
-    async mounted() {
-        this.fetchCategories();
-
-        if (this.token && !this.user) {
-            try {
-                const response = await AuthenticationService.getProfile();
-                this.setUser(response.data.user);
-            } catch (err) {
-                console.log('Error fetching user profile on app mount:', err);
+    created() {
+        if (window.performance && window.performance.navigation.type === window.performance.navigation.TYPE_RELOAD) {
+            localStorage.clear();
+            this.setLogout();
+            if (this.$route.path !== '/') {
+                this.$router.replace('/');
             }
         }
+    },
+    mounted() {
+        localStorage.clear();
+        this.setLogout();
+        if (this.$route.path !== '/') {
+            this.$router.push('/');
+        }
+        this.fetchCategories();
     }
 };
 
