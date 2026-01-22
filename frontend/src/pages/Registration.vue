@@ -64,7 +64,7 @@ const handleRegister = async (): Promise<void> => {
         });
 
         message.value = "Account created successfully!";
-        setTimeout(() => router.push('/login'), 2000);
+        setTimeout(() => router.push('/'), 2000);
         
     } catch (err: any) {
         isError.value = true;
