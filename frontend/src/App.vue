@@ -7,7 +7,10 @@ export default {
     data() {
         return {
             showSignIn: false,
-            categories: []
+            categories: [],
+            loginEmail: '',
+            loginPassword: '',
+            errorMessage: ''
         };
     },
     computed: {
@@ -22,6 +25,7 @@ export default {
 
         toggleSignIn() {
             this.showSignIn = !this.showSignIn;
+            this.errorMessage = '';
         },
         handleClickpfp() {
             const auth = useAuthStore();
@@ -32,6 +36,7 @@ export default {
             }
         },
         async handleLogin() {
+            this.errorMessage = '';
             try {
                 const response = await AuthenticationService.login({
                     email: this.loginEmail,
@@ -46,7 +51,7 @@ export default {
                 this.showSignIn = false;
                 this.$router.push('/api/user');
             } catch (error) {
-                alert("Errore Login: " + (error.response?.data?.error || "Credentials not right"));
+                this.errorMessage = error.response?.data?.error || "Credentials not right";
             }
         },
         async handleLogout() {
@@ -55,6 +60,7 @@ export default {
                 this.setLogout();
                 this.$router.push('/');
             } catch (error) {
+                this.errorMessage = "Error during logout";
                 console.error("Error during logout", error);
             }
         },
@@ -147,6 +153,7 @@ export default {
                 <form @submit.prevent="handleLogin">
                     <input v-model="loginEmail" type="text" placeholder="insert your email..." required="" />
                     <input v-model="loginPassword" type="password" placeholder="insert your password..." required="" />
+                    <p v-if="errorMessage" class="error-message" style="color: red;">{{ errorMessage }}</p>
                     <button type="submit">Enter</button>
                     <p>Don't have an account? <router-link to="/registration"
                             @click="toggleSignIn">Register</router-link></p>
@@ -346,6 +353,13 @@ body.sign-in-background {
     color: style-variables.$default-text-color;
     width: 100%;
     max-width: 400px;
+
+    .error-message {
+        color: red;
+        font-size: 0.9rem;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
 }
 
 .sign-in-container h2 {
