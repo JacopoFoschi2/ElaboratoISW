@@ -26,6 +26,10 @@ export const useAuthStore = defineStore('auth', {
     if (payload.user) localStorage.setItem('user', JSON.stringify(payload.user));
     AuthenticationService.login({ email: payload.user.userEmail, password: '' });
   },
+  setUser(userData: User) {
+    this.user = userData;
+    localStorage.setItem('user', JSON.stringify(userData));
+  },
   setLogout() {
     this.token = null;
     this.user = null;

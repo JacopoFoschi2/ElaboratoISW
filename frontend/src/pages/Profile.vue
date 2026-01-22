@@ -44,7 +44,7 @@ const handleImageUpload = (event: Event): void => {
   const target = event.target as HTMLInputElement;
   if (target.files && target.files[0]) {
     const file = target.files[0];
-    selectedFile.value = file; 
+    selectedFile.value = file;
     const reader = new FileReader();
     reader.onload = (e) => {
       user.value.image = e.target?.result as string;
@@ -52,33 +52,56 @@ const handleImageUpload = (event: Event): void => {
     reader.readAsDataURL(file);
   }
 };
-
 const updateProfile = async (): Promise<void> => {
   if (usernameExists.value) return;
   saving.value = true;
   message.value = '';
-  
+
   try {
-    const formData = new FormData();
-    if (authStore.user?.userId) {
-      formData.append('userId', authStore.user.userId.toString());
-    }
-    formData.append('username', user.value.userUsername);
+    const payload: any = {
+      username: user.value.userUsername,
+      iconBin: null,
+      iconName: null
+    };
+
+
     if (selectedFile.value) {
       const resizedBlob = await resizeFileToBlob(selectedFile.value, 300, 300);
-      formData.append('iconBin', resizedBlob, selectedFile.value.name);
-      formData.append('iconName', selectedFile.value.name);
+
+      const base64String = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(resizedBlob);
+      });
+
+      payload.iconBin = base64String.split(',')[1];
+      payload.iconName = selectedFile.value.name;
+    } else {
+      payload.iconBin = user.value.image ? user.value.image.split(',')[1] : null;
+      payload.iconName = "profile_image.jpg";
     }
-    await axios.put('/api/user', formData, {
-      headers: { 
-        'Content-Type': 'multipart/form-data' 
-      }
-    });
-    
-    showFeedback("Profilo aggiornato con successo!", false);
+    await axios.put('/api/user', payload);
+    if (authStore.user) {
+     
+      const binaryString = atob(payload.iconBin || "");
+      const byteArray = Array.from(binaryString, c => c.charCodeAt(0));
+
+      const updatedUser = {
+        ...authStore.user,
+        userId: authStore.user.userId,
+        userUsername: payload.username,
+        userIconBin: {
+          data: byteArray 
+        }
+      };
+      authStore.setUser(updatedUser);
+      user.value.image = `data:image/jpeg;base64,${payload.iconBin}`;
+    }
+
+    showFeedback("Profile updated successfully!", false);
   } catch (error: any) {
-    console.error("Errore 500:", error.response?.data);
-    showFeedback("Errore server: controlla che lo username sia valido.", true);
+    console.error("Update Error:", error.response?.data);
+    showFeedback("Error updating profile.", true);
   } finally {
     saving.value = false;
   }

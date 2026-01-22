@@ -118,11 +118,11 @@ export default {
         }
     },
     mounted() {
-        localStorage.clear();
-        this.setLogout();
-        if (this.$route.path !== '/') {
-            this.$router.push('/');
-        }
+        // localStorage.clear();
+        // this.setLogout();
+        // if (this.$route.path !== '/') {
+        //     this.$router.push('/');
+        // }
         this.fetchCategories();
     }
 };
