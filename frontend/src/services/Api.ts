@@ -22,10 +22,10 @@ const createApi = (): AxiosInstance => {
   instance.interceptors.response.use(
     (response) => response,
     (error) => {
-      if (error.response && error.response.status === 401) {
-        const authStore = useAuthStore();
-        authStore.setLogout(); 
-      }
+      // if (error.response && error.response.status === 401) {
+      //   const authStore = useAuthStore();
+      //   authStore.setLogout(); 
+      // }
       return Promise.reject(error);
     }
   );

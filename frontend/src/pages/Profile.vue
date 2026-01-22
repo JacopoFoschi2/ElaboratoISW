@@ -141,26 +141,31 @@ onMounted(fetchUserProfile);
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@use "../styles/style-variables.scss" as style-variables;
 .profile-page {
   display: flex;
   justify-content: center;
   padding: 40px 20px;
-  background-color: #f4f7f6;
+  background-color: style-variables.$default-background-color;
   min-height: 100vh;
 }
 
 .profile-card {
-  background: white;
+  background: style-variables.$default-navbar-color;
   padding: 30px;
-  border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.08);
   width: 100%;
   max-width: 500px;
+
+  h2 {
+    margin-bottom: 10px;
+    color: black;
+  }
 }
 
 .subtitle {
-  color: #666;
+  color: black;
   margin-bottom: 30px;
 }
 
@@ -174,7 +179,6 @@ onMounted(fetchUserProfile);
 .avatar-preview img {
   width: 120px;
   height: 120px;
-  border-radius: 50%;
   object-fit: cover;
   border: 3px solid #42b883;
   margin-bottom: 15px;
@@ -198,7 +202,6 @@ label {
 input[type="text"] {
   padding: 12px;
   border: 1px solid #ddd;
-  border-radius: 6px;
   font-size: 16px;
 }
 
@@ -217,7 +220,6 @@ input[type="text"] {
   color: white;
   border: none;
   padding: 12px 24px;
-  border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
   width: 100%;
@@ -226,14 +228,12 @@ input[type="text"] {
 .btn-secondary {
   background-color: #eee;
   padding: 8px 16px;
-  border-radius: 4px;
   cursor: pointer;
   font-size: 0.9rem;
 }
 
 .alert {
   padding: 12px;
-  border-radius: 6px;
   margin-bottom: 20px;
   text-align: center;
 }

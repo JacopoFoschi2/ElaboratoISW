@@ -14,23 +14,31 @@ export default {
         };
     },
     computed: {
-        ...mapState(useAuthStore, ['user', 'isLoggedIn', 'token']),
+        ...mapState(useAuthStore, ['user', 'isLoggedIn']),
+
+        userImage() {
+            if (this.user && this.user.userIconBin && this.user.userIconBin.data) {
+                const binary = String.fromCharCode(...this.user.userIconBin.data);
+                return `data:image/png;base64,${btoa(binary)}`;
+            }
+            return './assets/pfpIcon.svg';
+        },
 
         currentUserId() {
-            return this.user ? this.user.id : null;
+            return this.user ? this.user.userId : null;
         }
     },
     methods: {
-        ...mapActions(useAuthStore, ['setLogin', 'setLogout', 'setUser', 'setIsLoggedIn']),
+        ...mapActions(useAuthStore, ['setLogin', 'setLogout', 'setUser']),
 
         toggleSignIn() {
             this.showSignIn = !this.showSignIn;
             this.errorMessage = '';
         },
         handleClickpfp() {
-            
+
             if (this.isLoggedIn) {
-                this.$router.push(`/api/user`);
+                this.$router.push(`/profile/${this.user.userId}`);
             } else {
                 this.toggleSignIn();
             }
@@ -38,20 +46,21 @@ export default {
         async handleLogin() {
             this.errorMessage = '';
             try {
-                const response = await AuthenticationService.login({
+                await AuthenticationService.login({
                     email: this.loginEmail,
                     password: this.loginPassword
                 });
+                const profileResponse = await AuthenticationService.getProfile();
 
+                // Chiamiamo il login passando i dati ricevuti dal profilo
                 this.setLogin({
-                    token: response.data.token,
-                    user: response.data.user
+                    token: profileResponse.data.token || null,
+                    user: profileResponse.data // mappiamo i dati grezzi visti in console
                 });
 
                 this.showSignIn = false;
-                this.$router.push('/api/user');
             } catch (error) {
-                this.errorMessage = error.response?.data?.error || "Credentials not right";
+                this.errorMessage = "Error during login";
             }
         },
         async handleLogout() {
@@ -94,7 +103,7 @@ export default {
                 const response = await AuthenticationService.getProfile();
                 this.setUser(response.data.user);
             } catch (err) {
-                this.setLogout(); 
+                console.log('Error fetching user profile on app mount:', err);
             }
         }
     }
@@ -127,11 +136,11 @@ export default {
             </li>
             <li v-else class="dropdown-user">
                 <div class="dropdown-trigger">
-                    <img class="pfp-icon" src="./assets/pfpIcon.svg" alt="User Icon"></img>
+                    <img class="pfp-icon" :src="userImage" alt="User Icon"></img>
                 </div>
 
                 <ul class="drop-menu">
-                    <li><router-link :to="`#`">PROFILE</router-link></li>
+                    <li><router-link :to="'/profile/' + user.userId">PROFILE</router-link></li>
                     <li><router-link :to="`#`">WISHLIST</router-link></li>
                     <li><router-link :to="`#`">OWNED</router-link></li>
                     <div class="menu-divider"></div>
@@ -148,6 +157,7 @@ export default {
             <div class="sign-in-container">
                 <img @click="toggleSignIn" class="close-icon" src="../src/assets/xIcon.svg" />
                 <h2>SIGN IN</h2>
+                <p style="color: white">Stato login: {{ isLoggedIn }}</p>
                 <form @submit.prevent="handleLogin">
                     <input v-model="loginEmail" type="text" placeholder="insert your email..." required="" />
                     <input v-model="loginPassword" type="password" placeholder="insert your password..." required="" />
@@ -276,6 +286,8 @@ export default {
             visibility: hidden;
             transform: translateY(10px);
             transition: all 0.3s ease;
+            margin-top: 0;
+            padding: 10px 0;
 
             li {
                 width: 100%;
