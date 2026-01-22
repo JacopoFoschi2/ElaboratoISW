@@ -14,22 +14,22 @@ export default {
         };
     },
     computed: {
-        ...mapState(useAuthStore, ['setLogin', 'setLogout']),
+        ...mapState(useAuthStore, ['user', 'isLoggedIn', 'token']),
 
         currentUserId() {
-            return this.currentUserId ? this.currentUserId : null;
+            return this.user ? this.user.id : null;
         }
     },
     methods: {
-        ...mapActions(useAuthStore, ['setCurrentUser', 'setIsLoggedIn']),
+        ...mapActions(useAuthStore, ['setLogin', 'setLogout', 'setUser', 'setIsLoggedIn']),
 
         toggleSignIn() {
             this.showSignIn = !this.showSignIn;
             this.errorMessage = '';
         },
         handleClickpfp() {
-            const auth = useAuthStore();
-            if (auth.isLoggedIn) {
+            
+            if (this.isLoggedIn) {
                 this.$router.push(`/api/user`);
             } else {
                 this.toggleSignIn();
@@ -89,13 +89,12 @@ export default {
     async mounted() {
         this.fetchCategories();
 
-        const auth = useAuthStore();
-        if (auth.token && !auth.user) {
+        if (this.token && !this.user) {
             try {
                 const response = await AuthenticationService.getProfile();
-                auth.setUser(response.data.user);
+                this.setUser(response.data.user);
             } catch (err) {
-                auth.setLogout(); 
+                this.setLogout(); 
             }
         }
     }
@@ -126,7 +125,6 @@ export default {
             <li v-if="!isLoggedIn">
                 <img @click="handleClickpfp" class="pfp-icon" src="./assets/pfpIcon.svg" alt="User Icon"></img>
             </li>
-
             <li v-else class="dropdown-user">
                 <div class="dropdown-trigger">
                     <img class="pfp-icon" src="./assets/pfpIcon.svg" alt="User Icon"></img>
