@@ -40,7 +40,7 @@ const handleRegister = async (): Promise<void> => {
     }
 
     try {
-        //Check if Username exists (/api/users/exists/username/:username)
+        //Check if Username exists (/api/auth/username-exists/:username)
         const userCheck = await AuthenticationService.checkUsername(username.value) as { data: ExistsResponse };
         if (userCheck.data.exists) {
             isError.value = true;
@@ -48,7 +48,7 @@ const handleRegister = async (): Promise<void> => {
             return;
         }
 
-        //Check if Email exists (/api/users/exists/email/:email)
+        //Check if Email exists (/api/auth/email-exists/:email)
         const emailCheck = await AuthenticationService.checkEmail(email.value) as { data: ExistsResponse };
         if (emailCheck.data.exists) {
             isError.value = true;

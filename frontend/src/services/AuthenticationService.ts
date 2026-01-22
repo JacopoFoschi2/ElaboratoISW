@@ -31,11 +31,11 @@ export default {
     },
 
     checkUsername(username: string): Promise<AxiosResponse> {
-        return Api().get(`/api/users/exists/username/${username}`);
+        return Api().get(`/api/auth/username-exists/${username}`);
     },
 
     checkEmail(email: string): Promise<AxiosResponse> {
-        return Api().get(`/api/users/exists/email/${email}`);
+        return Api().get(`/api/auth/email-exists/${email}`);
     },
 
     // Update
