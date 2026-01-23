@@ -59,7 +59,7 @@ export const createUser = async (req: Request, res: Response) => {
 
   // Extract data for the new user
   const [results] = await connection.execute(
-    "SELECT userId, userUsername, userEmail, userRole FROM users WHERE userUsername=?",
+    "SELECT * FROM users WHERE userUsername=?",
     [username]
   );
   const newUser = (results as User[])[0];
@@ -91,7 +91,7 @@ export const login = async (req: Request, res: Response) => {
 
   // Execute the database query to get user data based on the email
   const [results] = await connection.execute(
-    "SELECT userId, userUsername, userEmail, userPassword, userRole FROM users WHERE userEmail=?",
+    "SELECT * FROM users WHERE userEmail=?",
     [email]
   );
 
