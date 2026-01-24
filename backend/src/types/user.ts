@@ -5,6 +5,4 @@ export interface User {
   userUsername: string;
   userEmail: string;
   userRole: UserRole;
-  userIconBin?: string;
-  userIconName?: string;
 }
