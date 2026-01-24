@@ -52,28 +52,25 @@ export default {
         },
         async handleLogin() {
             this.errorMessage = '';
-            this.setLogout();
-            localStorage.clear();
-            sessionStorage.clear();
+
             try {
-                await AuthenticationService.login({
+                const response = await AuthenticationService.login({
                     email: this.loginEmail,
                     password: this.loginPassword
                 });
 
-                const userResponse = await AuthenticationService.getUserData();
-
-                const loggedUser = userResponse.data[0];
-
                 this.setLogin({
-                    token: loggedUser.token || this.token,
-                    user: loggedUser
+                    token: response.data.token,
+                    user: response.data.user
                 });
 
                 this.showSignIn = false;
+                this.loginEmail = '';
+                this.loginPassword = '';
+
             } catch (error) {
                 this.errorMessage = "Login failed";
-                this.setLogout();
+                console.error(error);
             }
         },
         async handleLogout() {
@@ -108,21 +105,7 @@ export default {
             }
         },
     },
-    created() {
-        if (window.performance && window.performance.navigation.type === window.performance.navigation.TYPE_RELOAD) {
-            localStorage.clear();
-            this.setLogout();
-            if (this.$route.path !== '/') {
-                this.$router.replace('/');
-            }
-        }
-    },
     mounted() {
-        // localStorage.clear();
-        // this.setLogout();
-        // if (this.$route.path !== '/') {
-        //     this.$router.push('/');
-        // }
         this.fetchCategories();
     }
 };

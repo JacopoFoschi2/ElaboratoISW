@@ -12,107 +12,115 @@ interface UserProfile {
 }
 
 const user = ref<UserProfile>({ userUsername: '', image: null });
-const previewImage = ref<string | null>(null);
 const selectedFile = ref<File | null>(null);
-const loading = ref<boolean>(true);
-const saving = ref<boolean>(false);
-const usernameExists = ref<boolean>(false);
-const message = ref<string>('');
-const isError = ref<boolean>(false);
+const loading = ref(true);
+const saving = ref(false);
+const usernameExists = ref(false);
+const message = ref('');
+const isError = ref(false);
 
-const fetchUserProfile = async (): Promise<void> => {
+/* ---------------- FETCH ---------------- */
+
+const fetchUserProfile = async () => {
   try {
-    const response = await axios.get<any[]>('/api/user');
-    if (response.data && response.data.length > 0) {
-      const data = response.data[0];
-      user.value.userUsername = data.userUsername;
+    const { data } = await axios.get<any[]>('/api/user');
+    if (data?.length) {
+      const u = data[0];
+      user.value.userUsername = u.userUsername;
 
-      if (data.userIconBin && data.userIconBin.data) {
-        const uint8Array = new Uint8Array(data.userIconBin.data);
-        let binary = '';
-        uint8Array.forEach(byte => binary += String.fromCharCode(byte));
-        user.value.image = `data:image/jpeg;base64,${btoa(binary)}`;
+      if (u.userIconBin?.data) {
+        const bytes = new Uint8Array(u.userIconBin.data);
+        user.value.image = `data:image/jpeg;base64,${btoa(
+          String.fromCharCode(...bytes)
+        )}`;
       }
     }
-  } catch (error) {
-    showFeedback("Could not load profile.", true);
+  } catch {
+    showFeedback('Could not load profile.', true);
   } finally {
     loading.value = false;
   }
 };
-const handleImageUpload = (event: Event): void => {
-  const target = event.target as HTMLInputElement;
-  if (target.files && target.files[0]) {
-    const file = target.files[0];
-    selectedFile.value = file;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      user.value.image = e.target?.result as string;
-    };
-    reader.readAsDataURL(file);
-  }
+
+/* ---------------- IMAGE UPLOAD ---------------- */
+
+const handleImageUpload = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  if (!input.files?.length) return;
+
+  selectedFile.value = input.files[0];
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    user.value.image = e.target?.result as string;
+  };
+  reader.readAsDataURL(selectedFile.value);
 };
-const updateProfile = async (): Promise<void> => {
-  if (usernameExists.value) return;
+
+/* ---------------- UPDATE ---------------- */
+
+const updateProfile = async () => {
+  if (usernameExists.value || !authStore.user) return;
+
   saving.value = true;
   message.value = '';
 
   try {
-    const payload: any = {
+    const payload: {
+      username: string;
+      iconBin: string | null;
+      iconName: string | null;
+    } = {
       username: user.value.userUsername,
       iconBin: null,
       iconName: null
     };
 
-
     if (selectedFile.value) {
-      const resizedBlob = await resizeFileToBlob(selectedFile.value, 300, 300);
-
-      const base64String = await new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result as string);
-        reader.readAsDataURL(resizedBlob);
-      });
-
-      payload.iconBin = base64String.split(',')[1];
+      const resized = await resizeFileToBlob(selectedFile.value, 300, 300);
+      const base64 = await blobToBase64(resized);
+      payload.iconBin = base64.split(',')[1];
       payload.iconName = selectedFile.value.name;
-    } else {
-      payload.iconBin = user.value.image ? user.value.image.split(',')[1] : null;
-      payload.iconName = "profile_image.jpg";
     }
-    await axios.put('/api/user', payload);
-    if (authStore.user) {
-     
-      const binaryString = atob(payload.iconBin || "");
-      const byteArray = Array.from(binaryString, c => c.charCodeAt(0));
 
-      const updatedUser = {
-        ...authStore.user,
-        userId: authStore.user.userId,
-        userUsername: payload.username,
-        userIconBin: {
-          data: byteArray 
-        }
-      };
-      authStore.setUser(updatedUser);
+    await axios.put('/api/user', payload);
+
+    // 🔥 aggiorna SOLO i dati logici nello store
+    authStore.setUser({
+      ...authStore.user,
+      userUsername: payload.username
+    });
+
+    if (payload.iconBin) {
       user.value.image = `data:image/jpeg;base64,${payload.iconBin}`;
     }
 
-    showFeedback("Profile updated successfully!", false);
-  } catch (error: any) {
-    console.error("Update Error:", error.response?.data);
-    showFeedback("Error updating profile.", true);
+    showFeedback('Profile updated successfully!', false);
+  } catch (err: any) {
+    console.error(err);
+    showFeedback('Error updating profile.', true);
   } finally {
     saving.value = false;
   }
 };
 
-const checkUsername = async (): Promise<void> => {
-  if (!user.value.userUsername || user.value.userUsername.length < 3) return;
+/* ---------------- UTILS ---------------- */
+
+const blobToBase64 = (blob: Blob): Promise<string> =>
+  new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.readAsDataURL(blob);
+  });
+
+const checkUsername = async () => {
+  if (user.value.userUsername.length < 3) return;
   try {
-    const response = await axios.get<{ exists: boolean }>(`/api/auth/username-exists/${user.value.userUsername}`);
-    usernameExists.value = response.data.exists;
-  } catch (error) { console.error(error); }
+    const { data } = await axios.get<{ exists: boolean }>(
+      `/api/auth/username-exists/${user.value.userUsername}`
+    );
+    usernameExists.value = data.exists;
+  } catch {}
 };
 
 const showFeedback = (msg: string, err: boolean) => {
@@ -129,11 +137,10 @@ onMounted(fetchUserProfile);
       <p class="subtitle">Manage your account settings and profile image</p>
 
       <div v-if="loading" class="loader">Loading profile...</div>
-
       <form v-else @submit.prevent="updateProfile" class="profile-form">
         <div class="avatar-upload">
           <div class="avatar-preview">
-            <img :src="previewImage || user.image || '/default-avatar.png'" alt="Profile Preview" />
+            <img :src="user.image || '/default-avatar.png'" alt="Profile Preview" />
           </div>
           <div class="file-input-wrapper">
             <label for="file-upload" class="btn-secondary">Change Photo</label>
