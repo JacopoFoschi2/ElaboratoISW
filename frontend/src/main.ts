@@ -43,6 +43,23 @@ const router = createRouter({
             meta: { requiresAuth: true }
         },
         {
+            path: "/wishlist/:id",
+            component: () => import("./pages/WishListProfile.vue"),
+            props: route => ({ id: Number(route.params.id) }),
+            meta: { requiresAuth: true }
+        },
+        {
+            path: "/owned/:id",
+            component: () => import("./pages/OwnedGames.vue"),
+            props: route => ({ id: Number(route.params.id) }),
+            meta: { requiresAuth: true }
+        },
+        {
+            path: "/super-admin",
+            component: () => import("./pages/SuperAdmin.vue"),
+            meta: { requiresAuth: true, role: 'master' }
+        },
+        {
             path: "/forum/game/:id",
             component: () => import("./pages/ForumDetail.vue"),
             props: route => ({ id: Number(route.params.id) })
@@ -66,11 +83,21 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     const auth = useAuthStore();
 
+    if (to.meta.requiresAuth && !authStore.user) {
+        return next('/login');
+    }
+
+    if (to.meta.role && authStore.user?.userRole !== to.meta.role) {
+        return next('/'); // o pagina 403
+    }
+
     if (to.meta.requiresAuth && !auth.isLoggedIn) {
         next('/');
     } else {
         next();
     }
+
+
 });
 
 const app = createApp(App);

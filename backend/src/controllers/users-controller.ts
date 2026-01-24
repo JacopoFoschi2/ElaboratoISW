@@ -5,7 +5,7 @@ import { requireProfileAccess, requireUser } from "../utils/query-handling";
 
 export const listUsers = async (req: Request, res: Response) => {
   const user = await requireUser(req, res, ["master"]);
-    if (!user) {
+  if (!user) {
     return;
   }
 
@@ -32,6 +32,12 @@ export const getUser = async (req: Request, res: Response) => {
 
 export const updateUserInfo = async (req: Request, res: Response) => {
   const user = await requireUser(req, res, ["user", "admin", "master"]);
+  let iconBuffer: Buffer | null | undefined = undefined;
+
+  if (req.body.iconBin && typeof req.body.iconBin === 'string') {
+    iconBuffer = Buffer.from(req.body.iconBin, 'base64');
+  }
+
   if (!user) {
     return;
   }
@@ -42,14 +48,25 @@ export const updateUserInfo = async (req: Request, res: Response) => {
   }
 
   await connection.execute(
-    `UPDATE users SET userUsername = ?, userIconBin = ?, userIconName = ? WHERE userId = ?`,
-    [
-      req.body["username"],
-      req.body["iconBin"],
-      req.body["iconName"],
-      user.userId,
-    ]
-  );
+  iconBuffer !== undefined
+    ? `UPDATE users 
+       SET userUsername = ?, userIconBin = ?, userIconName = ? 
+       WHERE userId = ?`
+    : `UPDATE users 
+       SET userUsername = ? 
+       WHERE userId = ?`,
+  iconBuffer !== undefined
+    ? [
+        req.body.username,
+        iconBuffer,
+        req.body.iconName,
+        user.userId,
+      ]
+    : [
+        req.body.username,
+        user.userId,
+      ]
+);
 
   res.status(200).send("User information updated successfully.");
 };

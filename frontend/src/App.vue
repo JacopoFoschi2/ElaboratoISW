@@ -21,78 +21,78 @@ const errorMessage = ref('');
 const currentUserId = computed(() => user.value?.userId ?? null);
 
 watch(isLoggedIn, (logged) => {
-  if (logged) {
-    showSignIn.value = false;
-    errorMessage.value = '';
-  }
+    if (logged) {
+        showSignIn.value = false;
+        errorMessage.value = '';
+    }
 });
 
 function toggleSignIn() {
-  showSignIn.value = !showSignIn.value;
-  errorMessage.value = '';
+    showSignIn.value = !showSignIn.value;
+    errorMessage.value = '';
 }
 
 function handleClickpfp() {
-  if (isLoggedIn.value && currentUserId.value) {
-    router.push(`/profile/${currentUserId.value}`);
-  } else {
-    toggleSignIn();
-  }
+    if (isLoggedIn.value && currentUserId.value) {
+        router.push(`/profile/${currentUserId.value}`);
+    } else {
+        toggleSignIn();
+    }
 }
 
 async function handleLogin() {
-  errorMessage.value = '';
+    errorMessage.value = '';
 
-  try {
-    await AuthenticationService.login(loginEmail.value, loginPassword.value);
-    await authStore.loadUser();
-    showSignIn.value = false;
-  } catch {
-    errorMessage.value = 'Login failed';
-  }
+    try {
+        await AuthenticationService.login(loginEmail.value, loginPassword.value);
+        await authStore.loadUser();
+        showSignIn.value = false;
+    } catch {
+        errorMessage.value = 'Login failed';
+    }
 }
 
 async function handleLogout() {
-  try {
-    await AuthenticationService.logout();
-    authStore.logout();
-    router.push('/');
-  } catch (error) {
-    errorMessage.value = 'Error during logout';
-    console.error(error);
-  }
+    try {
+        await AuthenticationService.logout();
+        authStore.logout();
+        router.push('/');
+    } catch (error) {
+        errorMessage.value = 'Error during logout';
+        console.error(error);
+    }
 }
 
 async function fetchCategories() {
-  try {
-    const response = await fetch('/api/categories');
-    const catData = await response.json();
+    try {
+        const response = await fetch('/api/categories');
+        const catData = await response.json();
 
-    categories.value = catData.map((cat: any) => ({
-      ...cat,
-      games: [],
-    }));
+        categories.value = catData.map((cat: any) => ({
+            ...cat,
+            games: [],
+        }));
 
-    for (const category of categories.value) {
-      try {
-        const gamesResponse = await fetch(`/api/games/${category.categoryId}`);
-        const gamesData = await gamesResponse.json();
-        category.games = gamesData.slice(0, 5);
-      } catch (err) {
-        console.error(
-          `Error fetching games for category ${category.categoryId}`,
-          err
-        );
-      }
+        for (const category of categories.value) {
+            try {
+                const gamesResponse = await fetch(`/api/games/${category.categoryId}`);
+                const gamesData = await gamesResponse.json();
+                category.games = gamesData.slice(0, 5);
+            } catch (err) {
+                console.error(
+                    `Error fetching games for category ${category.categoryId}`,
+                    err
+                );
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching categories', error);
     }
-  } catch (error) {
-    console.error('Error fetching categories', error);
-  }
 }
 
 onMounted(async () => {
-  await authStore.loadUser();
-  fetchCategories();
+    await authStore.loadUser();
+    fetchCategories();
 });
 </script>
 
@@ -123,7 +123,8 @@ onMounted(async () => {
             </li>
             <li v-else class="dropdown-user">
                 <div class="dropdown-trigger">
-                    <img class="pfp-icon" :src="avatarSrc" alt="User Icon"></img>
+                    <img v-if="avatarSrc" class="pfp-icon" :src="avatarSrc" alt="User Icon"></img>
+                    <img v-else class="pfp-icon" src="/pfpICON.svg" alt="User Icon"></img>
                 </div>
 
                 <ul class="drop-menu">

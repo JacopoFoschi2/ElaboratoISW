@@ -1,15 +1,26 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import { resizeFileToBlob } from '../utils/resizeFileToBlob';
 import { useAuthStore } from '../stores/auth';
-
-const authStore = useAuthStore();
 
 interface UserProfile {
   userUsername: string;
   image: string | null;
 }
+
+const authStore = useAuthStore();
+
+const isMaster = computed(() => authStore.user?.userRole === 'master');
+
+const previewImage = ref<string | null>(null);
+const avatarSrc = computed(() => {
+  return (
+    previewImage.value ||
+    authStore.userAvatar ||
+    '/pfpICON.svg'
+  );
+});
 
 const user = ref<UserProfile>({ userUsername: '', image: null });
 const selectedFile = ref<File | null>(null);
@@ -19,52 +30,38 @@ const usernameExists = ref(false);
 const message = ref('');
 const isError = ref(false);
 
-function bufferToString(buffer: number[]): string {
-  return new TextDecoder().decode(new Uint8Array(buffer));
-}
-
-function bufferToBase64(buffer: number[]): string {
-  let binary = '';
-  const bytes = new Uint8Array(buffer);
-  bytes.forEach(b => (binary += String.fromCharCode(b)));
-  return btoa(binary);
-}
+const blobToBase64 = (blob: Blob): Promise<string> =>
+  new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.readAsDataURL(blob);
+  });
 
 const fetchUserProfile = async () => {
   try {
     const { data } = await axios.get('/api/user', { withCredentials: true });
-    const u = data[0];
-    if (!u) throw new Error('No user');
+    const u = Array.isArray(data) ? data[0] : data;
 
     user.value.userUsername = u.userUsername;
-
-    if (u.userIconBin?.data?.length) {
-      const base64 = bufferToString(u.userIconBin.data);
-      user.value.image = `data:image/jpeg;base64,${base64}`;
-    } else {
-      user.value.image = '/pfpICON.svg';
-    }
-
   } catch (err) {
-    console.error(err);
     showFeedback('Could not load profile.', true);
   } finally {
     loading.value = false;
   }
 };
-
 const handleImageUpload = (event: Event) => {
   const input = event.target as HTMLInputElement;
   if (!input.files?.length) return;
 
   selectedFile.value = input.files[0];
 
-  const reader = new FileReader();
-  reader.onload = e => {
-    user.value.image = e.target?.result as string;
-  };
-  reader.readAsDataURL(selectedFile.value);
+  if (previewImage.value?.startsWith('blob:')) {
+    URL.revokeObjectURL(previewImage.value);
+  }
+
+  previewImage.value = URL.createObjectURL(selectedFile.value);
 };
+
 
 const updateProfile = async () => {
   if (usernameExists.value) return;
@@ -90,8 +87,10 @@ const updateProfile = async () => {
 
     await axios.put('/api/user', payload, { withCredentials: true });
 
-    await authStore.loadUser();   
-    await fetchUserProfile();    
+    await authStore.loadUser();
+    await fetchUserProfile();
+
+    previewImage.value = null;
 
     showFeedback('Profile updated successfully!', false);
   } catch (err) {
@@ -102,14 +101,6 @@ const updateProfile = async () => {
   }
 };
 
-
-const blobToBase64 = (blob: Blob): Promise<string> =>
-  new Promise(resolve => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result as string);
-    reader.readAsDataURL(blob);
-  });
-
 const checkUsername = async () => {
   if (user.value.userUsername.length < 3) return;
   try {
@@ -117,7 +108,7 @@ const checkUsername = async () => {
       `/api/auth/username-exists/${user.value.userUsername}`
     );
     usernameExists.value = data.exists;
-  } catch {}
+  } catch { }
 };
 
 const showFeedback = (msg: string, err: boolean) => {
@@ -125,8 +116,12 @@ const showFeedback = (msg: string, err: boolean) => {
   isError.value = err;
 };
 
-onMounted(fetchUserProfile);
+onMounted(async () => {
+  await authStore.loadUser();
+  await fetchUserProfile();
+});
 </script>
+
 
 <template>
   <div class="profile-page">
@@ -138,7 +133,7 @@ onMounted(fetchUserProfile);
       <form v-else @submit.prevent="updateProfile" class="profile-form">
         <div class="avatar-upload">
           <div class="avatar-preview">
-            <img :src="user.image || '/pfpICON.svg'" alt="Profile Preview" />
+            <img :key="avatarSrc" class="pfp-icon" :src="avatarSrc" alt="User Icon"></img>
           </div>
           <div class="file-input-wrapper">
             <label for="file-upload" class="btn-secondary">Change Photo</label>
@@ -168,6 +163,13 @@ onMounted(fetchUserProfile);
         <router-link to="/reset-password">
           <button type="button" class="btn-primary">Change Password</button>
         </router-link>
+
+        <router-link v-if="isMaster" to="/super-admin">
+          <button type="button" class="btn-primary">
+            Super Admin Panel
+          </button>
+        </router-link>
+
       </form>
     </div>
   </div>

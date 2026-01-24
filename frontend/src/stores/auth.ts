@@ -18,22 +18,21 @@ export const useAuthStore = defineStore('auth', {
   }),
 
   getters: {
-    userAvatar(state): string {
-      return state.avatarUrl ?? '/pfpICON.svg';
-    },
+    userAvatar: (state) => state.avatarUrl || '/pfpICON.svg',
   },
 
   actions: {
     async loadUser() {
-      const res = await fetch('/api/user');
-      const user: User = await res.json();
+      const res = await fetch('/api/user', { credentials: 'include' });
+      const data = await res.json();
+
+      const user = Array.isArray(data) ? data[0] : data;
 
       this.user = user;
       this.isLoggedIn = true;
 
       this.setAvatarFromUser();
     },
-
     setAvatarFromUser() {
       if (!this.user?.userIconBin) {
         this.clearAvatar();
@@ -53,12 +52,18 @@ export const useAuthStore = defineStore('auth', {
         URL.revokeObjectURL(this.avatarUrl);
       }
 
-      const uint8 = new Uint8Array(bin);
+      const bytes = new Uint8Array(bin);
 
-      const blob = new Blob([uint8], { type: 'image/jpeg' });
+      let mime = 'image/jpeg';
 
+      if (bytes[0] === 0x89 && bytes[1] === 0x50) mime = 'image/png';
+      else if (bytes[0] === 0x52 && bytes[1] === 0x49) mime = 'image/webp';
+      else if (bytes[0] === 0xff && bytes[1] === 0xd8) mime = 'image/jpeg';
+
+      const blob = new Blob([bytes], { type: mime });
       this.avatarUrl = URL.createObjectURL(blob);
     },
+
 
     clearAvatar() {
       if (this.avatarUrl?.startsWith('blob:')) {
