@@ -2,6 +2,7 @@
 import { useAuthStore } from './stores/auth';
 import AuthenticationService from './services/AuthenticationService';
 import { mapState, mapActions } from 'pinia';
+import { ref } from 'vue';
 export default {
     name: 'App',
     data() {
@@ -12,6 +13,14 @@ export default {
             loginPassword: '',
             errorMessage: ''
         };
+    },
+    watch: {
+        isLoggedIn(newValue) {
+            if (newValue) {
+                this.showSignIn = false;
+                this.errorMessage = '';
+            }
+        }
     },
     computed: {
         ...mapState(useAuthStore, ['user', 'isLoggedIn']),
@@ -54,24 +63,17 @@ export default {
             this.errorMessage = '';
 
             try {
-                const response = await AuthenticationService.login({
-                    email: this.loginEmail,
-                    password: this.loginPassword
-                });
+                await AuthenticationService.login(this.loginEmail, this.loginPassword);
 
-                this.setLogin({
-                    token: response.data.token,
-                    user: response.data.user
-                });
+                const profile = await AuthenticationService.getProfile();
+                this.setLogin(profile.data);
 
                 this.showSignIn = false;
-                this.loginEmail = '';
-                this.loginPassword = '';
-
-            } catch (error) {
-                this.errorMessage = "Login failed";
-                console.error(error);
+            } catch (e) {
+                this.errorMessage = 'Login failed';
             }
+
+
         },
         async handleLogout() {
             try {
@@ -107,7 +109,7 @@ export default {
     },
     mounted() {
         this.fetchCategories();
-    }
+    },
 };
 
 </script>
@@ -141,7 +143,9 @@ export default {
                 </div>
 
                 <ul class="drop-menu">
-                    <li><router-link :to="'/profile/' + user.userId">PROFILE</router-link></li>
+                    <li><router-link v-if="user" :to="`/profile/${user.userId}`">
+                            PROFILE
+                        </router-link></li>
                     <li><router-link :to="`#`">WISHLIST</router-link></li>
                     <li><router-link :to="`#`">OWNED</router-link></li>
                     <div class="menu-divider"></div>

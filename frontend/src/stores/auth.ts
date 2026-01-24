@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import AuthenticationService from '../services/AuthenticationService';
 
 interface User {
   userId: number;
@@ -10,54 +9,45 @@ interface User {
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    token: null as string | null,
+    token: localStorage.getItem("token"),
     user: null as User | null,
     isLoggedIn: false
   }),
 
-  getters: {
-    isAuthenticated: (state) => !!state.token
-  },
-
   actions: {
-    setLogin(payload: { token: string; user: User }) {
-      this.token = payload.token;
-      this.user = payload.user;
-      this.isLoggedIn = true;
-
-      localStorage.setItem('token', payload.token);
-      localStorage.setItem('user', JSON.stringify(payload.user));
-    },
-
-    setUser(user: User) {
+    setLogin(user: User) {
       this.user = user;
+      this.isLoggedIn = true;
       localStorage.setItem('user', JSON.stringify(user));
     },
 
     loadFromStorage() {
-      const token = localStorage.getItem('token');
-      const user = localStorage.getItem('user');
+      const token = localStorage.getItem("token");
+      const userRaw = localStorage.getItem("user");
 
-      if (token && user) {
+      if (token) {
+        this.token = token;
+        this.isLoggedIn = true;
+      }
+
+      if (userRaw && userRaw !== "undefined") {
         try {
-          this.token = token;
-          this.user = JSON.parse(user);
-          this.isLoggedIn = true;
-        } catch {
-          this.setLogout();
+          this.user = JSON.parse(userRaw);
+        } catch (e) {
+          console.warn("Invalid user in localStorage, clearing it");
+          localStorage.removeItem("user");
+          this.user = null;
         }
       }
-    },
+    }
+    ,
 
-    setLogout() {
-      this.token = null;
+    logout() {
       this.user = null;
       this.isLoggedIn = false;
 
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-
-      AuthenticationService.logout();
     }
   }
 });

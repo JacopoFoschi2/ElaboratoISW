@@ -1,6 +1,8 @@
 @font-face {
     font-family: "Jaidi Regular";
-    src: url("./fonts/Jaidi-Regular.ttf");
+    src: url("./font/Jaidi-Regular.ttf")format('ttf');
+    font-weight: normal;
+    font-style: normal;
 }
 
 $default-text-color : #ffff;

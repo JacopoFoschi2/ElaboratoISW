@@ -1,62 +1,25 @@
-import { AxiosResponse } from 'axios';
-import Api from './Api';
+import api from './Api';
+import type { User } from '../types';
 
-interface Credentials {
-    username: string;
-    email: string;
-    password: string;
-}
+export const AuthenticationService = {
+  login(email: string, password: string) {
+    return api.post('/auth/login', { email, password });
+  },
 
-interface LoginCredentials {
-    email: string;
-    password: string;
-}
+  logout() {
+    return api.post('/auth/logout');
+  },
 
-interface PasswordChangeData {
-    oldPassword?: string;
-    newPassword: string;
-}
+  getProfile() {
+    return api.get<User | null>('/auth/profile');
+  },
 
-interface User {
-    user: User;
-    id: number;
-    username: string;
-    token: string;
-}
-
-export default {
-    // Create
-    register(credentials: Credentials): Promise<AxiosResponse> {
-        return Api().post('/api/auth/register', credentials);
-    },
-
-    // Read
-    getProfile(): Promise<AxiosResponse> {
-        return Api().get('/api/auth/profile');
-    },
-
-    getUserData(): Promise<AxiosResponse> {
-        return Api().get('/api/user');
-    },
-
-    checkUsername(username: string): Promise<AxiosResponse> {
-        return Api().get(`/api/auth/username-exists/${username}`);
-    },
-
-    checkEmail(email: string): Promise<AxiosResponse> {
-        return Api().get(`/api/auth/email-exists/${email}`);
-    },
-
-    // Update
-    changePassword(data: PasswordChangeData): Promise<AxiosResponse> {
-        return Api().post('/api/auth/change-password', data);
-    },
-
-    login(credentials: LoginCredentials): Promise<AxiosResponse<User>> {
-        return Api().post<User>('/api/auth/login', credentials);
-    },
-
-    logout(): Promise<AxiosResponse> {
-        return Api().post('/api/auth/logout');
-    }
+  register(username: string, email: string, password: string) {
+    return api.post('/auth/register', {
+      username,
+      email,
+      password,
+    });
+  },
 };
+export default AuthenticationService;

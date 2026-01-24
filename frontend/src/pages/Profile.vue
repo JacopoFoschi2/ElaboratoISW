@@ -19,7 +19,6 @@ const usernameExists = ref(false);
 const message = ref('');
 const isError = ref(false);
 
-/* ---------------- FETCH ---------------- */
 
 const fetchUserProfile = async () => {
   try {
@@ -42,7 +41,6 @@ const fetchUserProfile = async () => {
   }
 };
 
-/* ---------------- IMAGE UPLOAD ---------------- */
 
 const handleImageUpload = (event: Event) => {
   const input = event.target as HTMLInputElement;
@@ -56,8 +54,6 @@ const handleImageUpload = (event: Event) => {
   };
   reader.readAsDataURL(selectedFile.value);
 };
-
-/* ---------------- UPDATE ---------------- */
 
 const updateProfile = async () => {
   if (usernameExists.value || !authStore.user) return;
@@ -85,11 +81,12 @@ const updateProfile = async () => {
 
     await axios.put('/api/user', payload);
 
-    // 🔥 aggiorna SOLO i dati logici nello store
-    authStore.setUser({
+    authStore.user={
       ...authStore.user,
-      userUsername: payload.username
-    });
+      userUsername: user.value.userUsername,
+      userEmail: authStore.user.userEmail,
+      userRole: authStore.user.userRole
+    };
 
     if (payload.iconBin) {
       user.value.image = `data:image/jpeg;base64,${payload.iconBin}`;
@@ -104,7 +101,6 @@ const updateProfile = async () => {
   }
 };
 
-/* ---------------- UTILS ---------------- */
 
 const blobToBase64 = (blob: Blob): Promise<string> =>
   new Promise(resolve => {
