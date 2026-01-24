@@ -10,10 +10,7 @@ import TermsOfService from "./pages/Terms-of-Service.vue"
 import CommunityGuidelines from "./pages/Community-Guidelines.vue"
 import CookiePolicy from "./pages/Cookie-Policy.vue"
 import CategoryGames from "./pages/CategoryGames.vue"
-
-const app = createApp(App)
-const pinia = createPinia()
-
+import { useAuthStore } from './stores/auth';
 
 const router: Router = createRouter({
     history: createWebHistory(),
@@ -68,7 +65,24 @@ const router: Router = createRouter({
         { path: "/:pathMatch(.*)*", component: NotFound }
     ]
 })
-
+const app = createApp(App)
+const pinia = createPinia()
 app.use(pinia)
-app.use(router)
-app.mount("#app")
+
+
+localStorage.clear();
+sessionStorage.clear();
+
+localStorage.removeItem('user');
+localStorage.removeItem('token');
+localStorage.removeItem('auth');
+
+const authStore = useAuthStore(pinia);
+authStore.setLogout(); 
+
+if (window.location.pathname !== '/') {
+    window.location.href = '/';
+} else {
+    app.use(router)
+    app.mount('#app')
+}

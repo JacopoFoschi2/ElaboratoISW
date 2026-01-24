@@ -7,11 +7,11 @@ import { useAuthStore } from '../stores/auth';
 const authStore = useAuthStore();
 
 interface UserProfile {
-  nickname: string;
+  userUsername: string;
   image: string | null;
 }
 
-const user = ref<UserProfile>({ nickname: '', image: null });
+const user = ref<UserProfile>({ userUsername: '', image: null });
 const previewImage = ref<string | null>(null);
 const selectedFile = ref<File | null>(null);
 const loading = ref<boolean>(true);
@@ -25,7 +25,7 @@ const fetchUserProfile = async (): Promise<void> => {
     const response = await axios.get<any[]>('/api/user');
     if (response.data && response.data.length > 0) {
       const data = response.data[0];
-      user.value.nickname = data.userUsername;
+      user.value.userUsername = data.userUsername;
 
       if (data.userIconBin && data.userIconBin.data) {
         const uint8Array = new Uint8Array(data.userIconBin.data);
@@ -43,52 +43,74 @@ const fetchUserProfile = async (): Promise<void> => {
 const handleImageUpload = (event: Event): void => {
   const target = event.target as HTMLInputElement;
   if (target.files && target.files[0]) {
-    selectedFile.value = target.files[0];
-    previewImage.value = URL.createObjectURL(target.files[0]);
+    const file = target.files[0];
+    selectedFile.value = file;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      user.value.image = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
   }
 };
-
 const updateProfile = async (): Promise<void> => {
   if (usernameExists.value) return;
   saving.value = true;
   message.value = '';
 
   try {
-    const formData = new FormData();
+    const payload: any = {
+      username: user.value.userUsername,
+      iconBin: null,
+      iconName: null
+    };
 
-    formData.append('userUsername', user.value.nickname);
 
     if (selectedFile.value) {
-      const resizedBlob = await resizeFileToBlob(
-        selectedFile.value,
-        300, 300,
-        "image/jpeg",
-        0.85
-      );
+      const resizedBlob = await resizeFileToBlob(selectedFile.value, 300, 300);
 
-      formData.append('userIconBin', resizedBlob, 'profile-picture.jpg');
+      const base64String = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(resizedBlob);
+      });
+
+      payload.iconBin = base64String.split(',')[1];
+      payload.iconName = selectedFile.value.name;
+    } else {
+      payload.iconBin = user.value.image ? user.value.image.split(',')[1] : null;
+      payload.iconName = "profile_image.jpg";
+    }
+    await axios.put('/api/user', payload);
+    if (authStore.user) {
+     
+      const binaryString = atob(payload.iconBin || "");
+      const byteArray = Array.from(binaryString, c => c.charCodeAt(0));
+
+      const updatedUser = {
+        ...authStore.user,
+        userId: authStore.user.userId,
+        userUsername: payload.username,
+        userIconBin: {
+          data: byteArray 
+        }
+      };
+      authStore.setUser(updatedUser);
+      user.value.image = `data:image/jpeg;base64,${payload.iconBin}`;
     }
 
-    await axios.put('/api/user', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
-
     showFeedback("Profile updated successfully!", false);
-    selectedFile.value = null;
-    previewImage.value = null;
-    await fetchUserProfile();
   } catch (error: any) {
-    console.error("Errore salvataggio:", error.response?.data);
-    showFeedback("Error saving profile (Server 500).", true);
+    console.error("Update Error:", error.response?.data);
+    showFeedback("Error updating profile.", true);
   } finally {
     saving.value = false;
   }
 };
 
 const checkUsername = async (): Promise<void> => {
-  if (!user.value.nickname || user.value.nickname.length < 3) return;
+  if (!user.value.userUsername || user.value.userUsername.length < 3) return;
   try {
-    const response = await axios.get<{ exists: boolean }>(`/api/auth/username-exists/${user.value.nickname}`);
+    const response = await axios.get<{ exists: boolean }>(`/api/auth/username-exists/${user.value.userUsername}`);
     usernameExists.value = response.data.exists;
   } catch (error) { console.error(error); }
 };
@@ -121,8 +143,8 @@ onMounted(fetchUserProfile);
 
         <div class="form-group">
           <label for="username">Username</label>
-          <input id="username" type="text" v-model="user.nickname" @input="checkUsername"
-            :class="{ 'input-error': usernameExists }" placeholder="Enter your nickname" />
+          <input id="username" type="text" v-model="user.userUsername" @input="checkUsername"
+            :class="{ 'input-error': usernameExists }" placeholder="Enter your username" />
           <span v-if="usernameExists" class="error-text">
             This username is already taken.
           </span>
@@ -137,6 +159,10 @@ onMounted(fetchUserProfile);
             {{ saving ? 'Saving...' : 'Save Changes' }}
           </button>
         </div>
+
+        <router-link to="/reset-password">
+          <button type="button" class="btn-primary">Change Password</button>
+        </router-link>
       </form>
     </div>
   </div>
@@ -225,6 +251,7 @@ input[type="text"] {
   cursor: pointer;
   font-weight: bold;
   width: 100%;
+  margin-top: 20px;
 }
 
 .btn-secondary {
