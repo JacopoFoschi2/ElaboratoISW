@@ -20,12 +20,12 @@ interface Game {
 interface Review {
     reviewId: number;
     reviewTitle: string;
-    reviewBody: string; 
+    reviewBody: string;
     reviewRating: number;
-    reviewTimeStamp: string; 
+    reviewTimeStamp: string;
     userUsername: string;
     userIconBin?: { data: number[] };
-    userIconUrl?: string; 
+    userIconUrl?: string;
 }
 
 interface ReviewForm {
@@ -43,6 +43,8 @@ const game = ref<Game | null>(null);
 const loading = ref<boolean>(true);
 const reviews = ref<Review[]>([]);
 const showReviewModal = ref<boolean>(false);
+const isOwned = ref<boolean>(false);
+const isWishlisted = ref<boolean>(false);
 
 const reviewData = ref<ReviewForm>({
     title: '',
@@ -78,6 +80,64 @@ const fetchReviews = async (): Promise<void> => {
         }
     } catch (error) {
         console.error('Error fetching reviews:', error);
+    }
+};
+
+const fetchOwnedStatus = async () => {
+    if (!auth.isLoggedIn) return;
+
+    const res = await fetch(`/api/owned/${props.id}`, {
+        headers: {
+            'Authorization': `Bearer ${auth.token}`
+        }
+    });
+
+    if (res.ok) {
+        isOwned.value = true;
+    }
+};
+
+const fetchWishlistStatus = async () => {
+    if (!auth.isLoggedIn) return;
+
+    const res = await fetch(`/api/wishlist/${props.id}`, {
+        headers: {
+            'Authorization': `Bearer ${auth.token}`
+        }
+    });
+
+    if (res.ok) {
+        isWishlisted.value = true;
+    }
+};
+
+const toggleOwned = async () => {
+    const method = isOwned.value ? 'DELETE' : 'POST';
+
+    const res = await fetch(`/api/owned/${props.id}`, {
+        method,
+        headers: {
+            'Authorization': `Bearer ${auth.token}`
+        }
+    });
+
+    if (res.ok) {
+        isOwned.value = !isOwned.value;
+    }
+};
+
+const toggleWishlist = async () => {
+    const method = isWishlisted.value ? 'DELETE' : 'POST';
+
+    const res = await fetch(`/api/wishlist/${props.id}`, {
+        method,
+        headers: {
+            'Authorization': `Bearer ${auth.token}`
+        }
+    });
+
+    if (res.ok) {
+        isWishlisted.value = !isWishlisted.value;
     }
 };
 
@@ -117,7 +177,11 @@ onMounted(async () => {
         if (data && data.length > 0) {
             game.value = data[0];
         }
+
         await fetchReviews();
+        await fetchOwnedStatus();
+        await fetchWishlistStatus();
+
     } catch (error) {
         console.error('Error loading game details:', error);
     } finally {
@@ -167,6 +231,16 @@ onUnmounted(() => {
                 <h2 class="game-title">{{ game.gameName }}</h2>
                 <p class="game-release-date">{{ moment(game.gameReleaseDate).format('DD/MM/YYYY') }}</p>
                 <p class="game-description">{{ game.gameDesc }}</p>
+                <div v-if="auth.isLoggedIn" class="game-actions">
+                    <button class="owned-btn" @click="toggleOwned">
+                        {{ isOwned ? 'Remove from Owned' : 'Add to Owned' }}
+                    </button>
+
+                    <button class="wishlist-btn" @click="toggleWishlist">
+                        <span v-if="isWishlisted">✔ In Wishlist</span>
+                        <span v-else>♡ Add to Wishlist</span>
+                    </button>
+                </div>
             </div>
         </main>
 
@@ -204,7 +278,8 @@ onUnmounted(() => {
                     </div>
 
                     <label for="review-content">Content:</label>
-                    <textarea id="review-content" v-model="reviewData.content" placeholder="Your review..." rows="5" required></textarea>
+                    <textarea id="review-content" v-model="reviewData.content" placeholder="Your review..." rows="5"
+                        required></textarea>
 
                     <div class="modal-actions">
                         <button type="submit">Submit Review</button>
@@ -318,14 +393,53 @@ onUnmounted(() => {
     display: flex;
     flex-direction: column;
     gap: 20px;
+
+    .game-title {
+        font-size: 3.5rem;
+        font-weight: 500;
+        color: style-variables.$default-text-color;
+        margin: 0;
+    }
+
+    .game-release-date {
+        font-size: 1.8rem;
+        color: style-variables.$default-text-color;
+        padding: 0;
+        margin: 0;
+    }
+
+    .game-description {
+        font-size: 1.5rem;
+        color: style-variables.$default-text-color;
+    }
+
+    .game-actions {
+        display: flex;
+        gap: 15px;
+        margin: 15px 0;
+
+        button {
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border: 1px solid style-variables.$default-text-color;
+            background-color: transparent;
+            color: style-variables.$default-text-color;
+            transition: all 0.3s;
+
+            &:hover {
+                background-color: style-variables.$default-text-color;
+                color: style-variables.$default-background-color;
+            }
+        }
+
+        .wishlist-btn {
+            font-weight: bold;
+        }
+    }
 }
 
-.game-title {
-    font-size: 3.5rem;
-    font-weight: 500;
-    color: style-variables.$default-text-color;
-    margin: 0;
-}
+
 
 
 .rating-container {
@@ -341,17 +455,7 @@ onUnmounted(() => {
     }
 }
 
-.game-release-date {
-    font-size: 1.8rem;
-    color: style-variables.$default-text-color;
-    padding: 0;
-    margin: 0;
-}
 
-.game-description {
-    font-size: 1.5rem;
-    color: style-variables.$default-text-color;
-}
 
 h3 {
     font-size: 2rem;
