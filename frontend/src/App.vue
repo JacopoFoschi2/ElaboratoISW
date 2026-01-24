@@ -131,8 +131,8 @@ onMounted(async () => {
                     <li><router-link v-if="user" :to="`/profile/${user.userId}`">
                             PROFILE
                         </router-link></li>
-                    <li><router-link :to="`#`">WISHLIST</router-link></li>
-                    <li><router-link :to="`#`">OWNED</router-link></li>
+                    <li><router-link v-if="user" :to="`/wishlist/${user.userId}`">WISHLIST</router-link></li>
+                    <li><router-link v-if="user" :to="`/owned/${user.userId}`">OWNED</router-link></li>
                     <div class="menu-divider"></div>
                     <li><a @click="handleLogout" class="logout-btn">LOGOUT</a>
                     </li>

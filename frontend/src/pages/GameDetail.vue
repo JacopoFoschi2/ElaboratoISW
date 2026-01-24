@@ -43,8 +43,8 @@ const game = ref<Game | null>(null);
 const loading = ref<boolean>(true);
 const reviews = ref<Review[]>([]);
 const showReviewModal = ref<boolean>(false);
-const isOwned = ref<boolean>(false);
-const isWishlisted = ref<boolean>(false);
+const isOwned = ref<boolean | null>(null);
+const isWishlisted = ref<boolean | null>(null);
 
 const reviewData = ref<ReviewForm>({
     title: '',
@@ -84,30 +84,55 @@ const fetchReviews = async (): Promise<void> => {
 };
 
 const fetchOwnedStatus = async () => {
-    if (!auth.isLoggedIn) return;
+    if (!auth.isLoggedIn) {
+        isOwned.value = false;
+        return;
+    }
 
-    const res = await fetch(`/api/owned/${props.id}`, {
-        headers: {
-            'Authorization': `Bearer ${auth.token}`
+    try {
+        const res = await fetch(`/api/owned/${props.id}`, {
+            headers: {
+                'Authorization': `Bearer ${auth.token}`
+            }
+        });
+
+        if (!res.ok) {
+            isOwned.value = false;
+            return;
         }
-    });
 
-    if (res.ok) {
-        isOwned.value = true;
+        const data = await res.json();
+        isOwned.value = Boolean(data.exists);
+    } catch (error) {
+        console.error('Error checking owned status:', error);
+        isOwned.value = false;
     }
 };
 
+
 const fetchWishlistStatus = async () => {
-    if (!auth.isLoggedIn) return;
+    if (!auth.isLoggedIn) {
+        isWishlisted.value = false;
+        return;
+    }
 
-    const res = await fetch(`/api/wishlist/${props.id}`, {
-        headers: {
-            'Authorization': `Bearer ${auth.token}`
+    try {
+        const res = await fetch(`/api/wishlist/${props.id}`, {
+            headers: {
+                'Authorization': `Bearer ${auth.token}`
+            }
+        });
+
+        if (!res.ok) {
+            isWishlisted.value = false;
+            return;
         }
-    });
 
-    if (res.ok) {
-        isWishlisted.value = true;
+        const data = await res.json();
+        isWishlisted.value = Boolean(data.exists);
+    } catch (error) {
+        console.error('Error checking wishlist status:', error);
+        isWishlisted.value = false;
     }
 };
 
@@ -232,14 +257,22 @@ onUnmounted(() => {
                 <p class="game-release-date">{{ moment(game.gameReleaseDate).format('DD/MM/YYYY') }}</p>
                 <p class="game-description">{{ game.gameDesc }}</p>
                 <div v-if="auth.isLoggedIn" class="game-actions">
-                    <button class="owned-btn" @click="toggleOwned">
-                        {{ isOwned ? 'Remove from Owned' : 'Add to Owned' }}
-                    </button>
+                    <template v-if="isOwned !== null && isWishlisted !== null">
 
-                    <button class="wishlist-btn" @click="toggleWishlist">
-                        <span v-if="isWishlisted">✔ In Wishlist</span>
-                        <span v-else>♡ Add to Wishlist</span>
-                    </button>
+                        <button class="owned-btn" @click="toggleOwned">
+                            {{ isOwned ? 'Remove from Owned' : 'Add to Owned' }}
+                        </button>
+
+                        <button class="wishlist-btn" @click="toggleWishlist">
+                            <span v-if="isWishlisted">✔ In Wishlist</span>
+                            <span v-else>♡ Add to Wishlist</span>
+                        </button>
+
+                    </template>
+
+                    <p v-else class="status-loading">
+                        Checking library status...
+                    </p>
                 </div>
             </div>
         </main>
