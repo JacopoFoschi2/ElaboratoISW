@@ -2,7 +2,6 @@ import { createApp } from "vue";
 import { createPinia } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
 import App from "./App.vue";
-
 import Home from "./pages/Home.vue";
 import NotFound from "./pages/NotFound.vue";
 import PrivacyPolicy from "./pages/Privacy-Policy.vue";
@@ -10,7 +9,6 @@ import Forum from "./pages/Forum.vue";
 import TermsOfService from "./pages/Terms-of-Service.vue";
 import CommunityGuidelines from "./pages/Community-Guidelines.vue";
 import CookiePolicy from "./pages/Cookie-Policy.vue";
-
 import { useAuthStore } from "./stores/auth";
 
 const router = createRouter({
@@ -66,13 +64,13 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const authStore = useAuthStore();
+    const auth = useAuthStore();
 
-  if (to.meta.requiresAuth && !authStore.isLoggedIn) {
-    next({ name: "login" }); 
-  } else {
-    next();
-  }
+    if (to.meta.requiresAuth && !auth.isLoggedIn) {
+        next('/');
+    } else {
+        next();
+    }
 });
 
 const app = createApp(App);
@@ -80,8 +78,9 @@ const pinia = createPinia();
 
 app.use(pinia);
 
-const authStore = useAuthStore();
-authStore.loadFromStorage();
 
-app.use(router);
-app.mount("#app");
+const authStore = useAuthStore();
+authStore.loadUser().finally(() => {
+    app.use(router);
+    app.mount('#app');
+});

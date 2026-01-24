@@ -1,118 +1,102 @@
-<script>
+<script setup lang="ts">
+import { ref, computed, watch, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
+
 import { useAuthStore } from './stores/auth';
 import AuthenticationService from './services/AuthenticationService';
-import { mapState, mapActions } from 'pinia';
-import { ref } from 'vue';
-export default {
-    name: 'App',
-    data() {
-        return {
-            showSignIn: false,
-            categories: [],
-            loginEmail: '',
-            loginPassword: '',
-            errorMessage: ''
-        };
-    },
-    watch: {
-        isLoggedIn(newValue) {
-            if (newValue) {
-                this.showSignIn = false;
-                this.errorMessage = '';
-            }
-        }
-    },
-    computed: {
-        ...mapState(useAuthStore, ['user', 'isLoggedIn']),
 
-        userImageUrl() {
-            const userData = this.user;
-            if (userData && userData.userIconBin && userData.userIconBin.data) {
-                try {
-                    const uint8Array = new Uint8Array(userData.userIconBin.data);
-                    let binary = '';
-                    uint8Array.forEach(byte => binary += String.fromCharCode(byte));
-                    return `data:image/jpeg;base64,${btoa(binary)}`;
-                } catch (e) {
-                    console.error("Error converting image:", e);
-                }
-            }
-            return './assets/pfpIcon.svg';
-        },
+const authStore = useAuthStore();
+const router = useRouter();
+const { user, isLoggedIn } = storeToRefs(authStore);
 
-        currentUserId() {
-            return this.user ? this.user.userId : null;
-        }
-    },
-    methods: {
-        ...mapActions(useAuthStore, ['setLogin', 'setLogout', 'setUser']),
+const avatarSrc = computed(() => authStore.userAvatar);
 
-        toggleSignIn() {
-            this.showSignIn = !this.showSignIn;
-            this.errorMessage = '';
-        },
-        handleClickpfp() {
+const showSignIn = ref(false);
+const categories = ref<any[]>([]);
+const loginEmail = ref('');
+const loginPassword = ref('');
+const errorMessage = ref('');
 
-            if (this.isLoggedIn) {
-                this.$router.push(`/profile/${this.user.userId}`);
-            } else {
-                this.toggleSignIn();
-            }
-        },
-        async handleLogin() {
-            this.errorMessage = '';
+const currentUserId = computed(() => user.value?.userId ?? null);
 
-            try {
-                await AuthenticationService.login(this.loginEmail, this.loginPassword);
+watch(isLoggedIn, (logged) => {
+  if (logged) {
+    showSignIn.value = false;
+    errorMessage.value = '';
+  }
+});
 
-                const profile = await AuthenticationService.getProfile();
-                this.setLogin(profile.data);
+function toggleSignIn() {
+  showSignIn.value = !showSignIn.value;
+  errorMessage.value = '';
+}
 
-                this.showSignIn = false;
-            } catch (e) {
-                this.errorMessage = 'Login failed';
-            }
+function handleClickpfp() {
+  if (isLoggedIn.value && currentUserId.value) {
+    router.push(`/profile/${currentUserId.value}`);
+  } else {
+    toggleSignIn();
+  }
+}
 
+async function handleLogin() {
+  errorMessage.value = '';
 
-        },
-        async handleLogout() {
-            try {
-                await AuthenticationService.logout();
-                this.setLogout();
-                this.$router.push('/');
-            } catch (error) {
-                this.errorMessage = "Error during logout";
-                console.error("Error during logout", error);
-            }
-        },
-        async fetchCategories() {
-            try {
-                const response = await fetch('/api/categories');
-                const catData = await response.json();
-                this.categories = catData.map(cat => ({ ...cat, games: [] }));
+  try {
+    await AuthenticationService.login(loginEmail.value, loginPassword.value);
+    await authStore.loadUser();
+    showSignIn.value = false;
+  } catch {
+    errorMessage.value = 'Login failed';
+  }
+}
 
-                for (const category of this.categories) {
-                    try {
-                        const gamesResponse = await fetch(`/api/games/${category.categoryId}`);
-                        const gamesData = await gamesResponse.json();
-                        category.games = gamesData.slice(0, 5); //only 5 per category
-                    }
-                    catch (error) {
-                        console.error(`Error fetching games for category ${category.categoryId}:`, error);
-                    }
-                }
-            }
-            catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        },
-    },
-    mounted() {
-        this.fetchCategories();
-    },
-};
+async function handleLogout() {
+  try {
+    await AuthenticationService.logout();
+    authStore.logout();
+    router.push('/');
+  } catch (error) {
+    errorMessage.value = 'Error during logout';
+    console.error(error);
+  }
+}
 
+async function fetchCategories() {
+  try {
+    const response = await fetch('/api/categories');
+    const catData = await response.json();
+
+    categories.value = catData.map((cat: any) => ({
+      ...cat,
+      games: [],
+    }));
+
+    for (const category of categories.value) {
+      try {
+        const gamesResponse = await fetch(`/api/games/${category.categoryId}`);
+        const gamesData = await gamesResponse.json();
+        category.games = gamesData.slice(0, 5);
+      } catch (err) {
+        console.error(
+          `Error fetching games for category ${category.categoryId}`,
+          err
+        );
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching categories', error);
+  }
+}
+
+onMounted(async () => {
+  await authStore.loadUser();
+  fetchCategories();
+});
 </script>
+
+
 
 <template>
     <nav class="navbar-everywhere">
@@ -135,11 +119,11 @@ export default {
 
             </li>
             <li v-if="!isLoggedIn">
-                <img @click="handleClickpfp" class="pfp-icon" src="./assets/pfpIcon.svg" alt="User Icon"></img>
+                <img @click="handleClickpfp" class="pfp-icon" src="/pfpICON.svg" alt="User Icon"></img>
             </li>
             <li v-else class="dropdown-user">
                 <div class="dropdown-trigger">
-                    <img class="pfp-icon" :src="userImageUrl" alt="User Icon"></img>
+                    <img class="pfp-icon" :src="avatarSrc" alt="User Icon"></img>
                 </div>
 
                 <ul class="drop-menu">
@@ -163,8 +147,8 @@ export default {
                 <img @click="toggleSignIn" class="close-icon" src="../src/assets/xIcon.svg" />
                 <h2>SIGN IN</h2>
                 <form @submit.prevent="handleLogin">
-                    <input v-model="loginEmail" type="text" placeholder="insert your email..." required="" />
-                    <input v-model="loginPassword" type="password" placeholder="insert your password..." required="" />
+                    <input v-model="loginEmail" type="text" placeholder="insert your email..." required />
+                    <input v-model="loginPassword" type="password" placeholder="insert your password..." required />
                     <p v-if="errorMessage" class="error-message" style="color: red;">{{ errorMessage }}</p>
                     <button type="submit">Enter</button>
                     <p>Don't have an account? <router-link to="/registration"

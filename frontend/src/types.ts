@@ -17,9 +17,15 @@ export interface Category {
 }
 
 export interface User {
-  id: number
-  username: string
-    email: string
-  role: string
-  userIconBin?: { data: number[] }
+  userId: number;
+  userEmail: string;
+  userUsername: string;
+  userRole: string;
+
+  userIconBin?: {
+    type: 'Buffer';
+    data: number[];
+  };
+
+  userIconName?: string;
 }

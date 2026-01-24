@@ -19,28 +19,39 @@ const usernameExists = ref(false);
 const message = ref('');
 const isError = ref(false);
 
+function bufferToString(buffer: number[]): string {
+  return new TextDecoder().decode(new Uint8Array(buffer));
+}
+
+function bufferToBase64(buffer: number[]): string {
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  bytes.forEach(b => (binary += String.fromCharCode(b)));
+  return btoa(binary);
+}
 
 const fetchUserProfile = async () => {
   try {
-    const { data } = await axios.get<any[]>('/api/user');
-    if (data?.length) {
-      const u = data[0];
-      user.value.userUsername = u.userUsername;
+    const { data } = await axios.get('/api/user', { withCredentials: true });
+    const u = data[0];
+    if (!u) throw new Error('No user');
 
-      if (u.userIconBin?.data) {
-        const bytes = new Uint8Array(u.userIconBin.data);
-        user.value.image = `data:image/jpeg;base64,${btoa(
-          String.fromCharCode(...bytes)
-        )}`;
-      }
+    user.value.userUsername = u.userUsername;
+
+    if (u.userIconBin?.data?.length) {
+      const base64 = bufferToString(u.userIconBin.data);
+      user.value.image = `data:image/jpeg;base64,${base64}`;
+    } else {
+      user.value.image = '/pfpICON.svg';
     }
-  } catch {
+
+  } catch (err) {
+    console.error(err);
     showFeedback('Could not load profile.', true);
   } finally {
     loading.value = false;
   }
 };
-
 
 const handleImageUpload = (event: Event) => {
   const input = event.target as HTMLInputElement;
@@ -56,7 +67,7 @@ const handleImageUpload = (event: Event) => {
 };
 
 const updateProfile = async () => {
-  if (usernameExists.value || !authStore.user) return;
+  if (usernameExists.value) return;
 
   saving.value = true;
   message.value = '';
@@ -64,12 +75,10 @@ const updateProfile = async () => {
   try {
     const payload: {
       username: string;
-      iconBin: string | null;
-      iconName: string | null;
+      iconBin?: string;
+      iconName?: string;
     } = {
-      username: user.value.userUsername,
-      iconBin: null,
-      iconName: null
+      username: user.value.userUsername
     };
 
     if (selectedFile.value) {
@@ -79,21 +88,13 @@ const updateProfile = async () => {
       payload.iconName = selectedFile.value.name;
     }
 
-    await axios.put('/api/user', payload);
+    await axios.put('/api/user', payload, { withCredentials: true });
 
-    authStore.user={
-      ...authStore.user,
-      userUsername: user.value.userUsername,
-      userEmail: authStore.user.userEmail,
-      userRole: authStore.user.userRole
-    };
-
-    if (payload.iconBin) {
-      user.value.image = `data:image/jpeg;base64,${payload.iconBin}`;
-    }
+    await authStore.loadUser();   
+    await fetchUserProfile();    
 
     showFeedback('Profile updated successfully!', false);
-  } catch (err: any) {
+  } catch (err) {
     console.error(err);
     showFeedback('Error updating profile.', true);
   } finally {
@@ -126,6 +127,7 @@ const showFeedback = (msg: string, err: boolean) => {
 
 onMounted(fetchUserProfile);
 </script>
+
 <template>
   <div class="profile-page">
     <div class="profile-card">
@@ -136,7 +138,7 @@ onMounted(fetchUserProfile);
       <form v-else @submit.prevent="updateProfile" class="profile-form">
         <div class="avatar-upload">
           <div class="avatar-preview">
-            <img :src="user.image || '/default-avatar.png'" alt="Profile Preview" />
+            <img :src="user.image || '/pfpICON.svg'" alt="Profile Preview" />
           </div>
           <div class="file-input-wrapper">
             <label for="file-upload" class="btn-secondary">Change Photo</label>
@@ -211,7 +213,7 @@ onMounted(fetchUserProfile);
   width: 120px;
   height: 120px;
   object-fit: cover;
-  border: 3px solid #42b883;
+  border: 3px solid style-variables.$button-and-border-footer-color;
   margin-bottom: 15px;
 }
 
