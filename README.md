@@ -1,4 +1,5 @@
 # PCMASTERRACEDB
+
 Node.js version: v22.19.0
 
 To consult the complete report of the project please read [report](pcmasterracedb_report.pdf)
@@ -104,6 +105,7 @@ To consult the complete report of the project please read [report](pcmasterraced
 - Read:
   - /api/reviews/game/:gameId    Lists all reviews of game and tries to put review of user on top if logged
   - /api/reviews/user    Lists all reviews of user
+  - /api/reviews/permission/:gameId    If the user already wrote a review they can't write another
 - Update:
   - /api/reviews/:gameId    Updates review of logged user of said game, admins cannot modify reviews of others
 - Delete:

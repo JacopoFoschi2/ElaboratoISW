@@ -60,6 +60,24 @@ export const getReviewsOfUser = async (req: Request, res: Response) => {
   res.status(200).json(reviews);
 };
 
+export const canUserReviewGame = async (req: Request, res: Response) => {
+  const user = await requireUser(req, res, ["user", "admin", "master"]);
+  if (!user) {
+    return;
+  }
+
+  const [review] = await connection.execute(
+    'SELECT 1 FROM reviews WHERE gameId = ? AND userId = ?',
+    [req.params["gameId"], user.userId]
+  );
+
+  if (Array.isArray(review) && review.length > 0) {
+    res.status(200).json({ canReview: false });
+  } else {
+    res.status(200).json({ canReview: true });
+  }
+};
+
 export const updateReview = async (req: Request, res: Response) => {
   const user = await requireUser(req, res, ["user", "admin", "master"]);
   if (!user) {
