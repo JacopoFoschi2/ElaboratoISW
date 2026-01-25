@@ -3,7 +3,6 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import moment from 'moment';
 
-// 1. Define interfaces for the Data structures
 interface GameInfo {
     gameId?: number | string;
     gameName?: string;
@@ -13,6 +12,7 @@ interface GameInfo {
 
 interface Comment {
     commentId: number;
+    userId: number;
     userUsername: string;
     commentTimeStamp: string;
     commentBody: string;
@@ -26,7 +26,6 @@ interface Comment {
     isEdited: boolean | number;
 }
 
-// 2. Typed Props
 const props = defineProps<{
     id: number;
 }>();
@@ -35,15 +34,17 @@ const auth = useAuthStore();
 const newComment = ref<string>('');
 const isSubmitting = ref<boolean>(false);
 
+const editingCommentId = ref<number | null>(null);
+const editedCommentText = ref<string>('');
+
+
 const gameInfo = ref<GameInfo>({});
 const bannerUrl = ref<string>('');
 const comments = ref<Comment[]>([]);
 const isLoading = ref<boolean>(true);
 
-// Track URLs for memory cleanup
 const createdUrls: string[] = [];
 
-// 3. Helper function with explicit types
 const bufferToUrl = (imageBuffer?: { data: number[] }): string => {
     if (!imageBuffer || !imageBuffer.data) return '';
     try {
@@ -101,9 +102,8 @@ const fetchForumDetails = async (): Promise<void> => {
 };
 
 const submitComment = async (): Promise<void> => {
-    // Ensure user is logged in and comment isn't empty
     if (!auth.isLoggedIn || !auth.user || !newComment.value.trim()) return;
-    
+
     isSubmitting.value = true;
 
     try {
@@ -115,22 +115,78 @@ const submitComment = async (): Promise<void> => {
             },
             body: JSON.stringify({
                 gameId: props.id,
-                userId: auth.user.userId, 
-                commentText: newComment.value
+                commentBody: newComment.value
             })
         });
 
         if (response.ok) {
+            const createdComment = await response.json();
+
+            comments.value.unshift({
+                ...createdComment,
+                userIconUrl: bufferToUrl(createdComment.userIconBin),
+                displayName: createdComment.userUsername,
+                commentDate: createdComment.commentTimeStamp,
+                commentText: createdComment.commentBody,
+                isEdited: !!createdComment.commentWasEdited
+            });
+
             newComment.value = '';
-            // Refresh details to show the new comment
-            await fetchForumDetails();
         }
-    } catch (error) {
-        console.error('Error submitting comment:', error);
     } finally {
         isSubmitting.value = false;
     }
 };
+
+const cancelEdit = () => {
+    editingCommentId.value = null;
+    editedCommentText.value = '';
+};
+
+const isAuthor = (comment: Comment): boolean => {
+    if (!auth.user) return false;
+    return auth.user.userId === comment.userId;
+};
+
+
+const startEdit = (comment: Comment): void => {
+    editingCommentId.value = comment.commentId;
+    editedCommentText.value = comment.commentText;
+};
+
+const saveEdit = async (commentId: number) => {
+    if (!auth.user) return;
+    if (!editedCommentText.value.trim()) return;
+
+    try {
+        const response = await fetch(`/api/comments/${commentId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${auth.token}`
+            },
+            body: JSON.stringify({
+                commentBody: editedCommentText.value,
+                userId: auth.user.userId
+            })
+        });
+
+        if (response.ok) {
+            const updated = await response.json();
+
+            const index = comments.value.findIndex(c => c.commentId === commentId);
+            if (index !== -1) {
+                comments.value[index].commentText = updated.commentBody;
+                comments.value[index].isEdited = true;
+            }
+
+            cancelEdit();
+        }
+    } catch (error) {
+        console.error('Error updating comment:', error);
+    }
+};
+
 
 onMounted(() => {
     fetchForumDetails();
@@ -149,28 +205,59 @@ onUnmounted(() => {
         <div class="game-banner" :style="{ backgroundImage: bannerUrl ? `url(${bannerUrl})` : '' }">
             <h2 class="game-title">{{ gameInfo.gameName }}</h2>
         </div>
-        <main class="content-wrapper">
 
+        <main class="content-wrapper">
             <section v-if="auth.isLoggedIn" class="add-comment-section">
                 <h2>Add a Comment</h2>
                 <textarea v-model="newComment" placeholder="Write your comment here..." rows="4"
                     class="comment-textarea"></textarea>
+
                 <button @click="submitComment" :disabled="isSubmitting" class="submit-comment-button">
                     {{ isSubmitting ? 'Submitting...' : 'Submit Comment' }}
                 </button>
             </section>
-
-            <p v-else class="login-prompt">Please log in from the navigation bar to add a comment.</p>
+            <p v-else class="login-prompt">
+                Please log in from the navigation bar to add a comment.
+            </p>
 
             <h2>Comments</h2>
+
             <div v-if="comments.length" class="comments-list">
-                <div v-for="(comment, index) in comments" :key="index" class="comment-card">
+                <div v-for="comment in comments" :key="comment.commentId" class="comment-card">
                     <img :src="comment.userIconUrl" alt="User Icon" class="user-icon" />
+
                     <div class="comment-content">
                         <p class="username">{{ comment.displayName }}</p>
-                        <p class="comment-date">{{ moment(comment.commentDate).format('MMMM Do YYYY, h:mm:ss a') }}</p>
-                        <p class="comment-text">{{ comment.commentText }}</p>
+
+                        <p class="comment-date">
+                            {{ moment(comment.commentDate).format('MMMM Do YYYY, h:mm:ss a') }}
+                        </p>
+
+                        <!-- VIEW MODE -->
+                        <p v-if="editingCommentId !== comment.commentId" class="comment-text">
+                            {{ comment.commentText }}
+                        </p>
+
+                        <!-- EDIT MODE -->
+                        <textarea v-else v-model="editedCommentText" rows="3" class="comment-textarea"></textarea>
+
                         <p v-if="comment.isEdited" class="edited-label">(Edited)</p>
+
+                        <!-- ACTIONS-->
+                        <div v-if="isAuthor(comment)" class="comment-actions">
+                            <button v-if="editingCommentId !== comment.commentId" @click="startEdit(comment)">
+                                Edit
+                            </button>
+
+                            <template v-else>
+                                <button @click="saveEdit(comment.commentId)">
+                                    Save
+                                </button>
+                                <button @click="cancelEdit">
+                                    Cancel
+                                </button>
+                            </template>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -183,11 +270,12 @@ onUnmounted(() => {
 @use "../styles/style-variables.scss" as style-variables;
 
 .content-wrapper {
-    height: 100vh;
+    min-height: 100vh;
     flex-direction: column;
     display: flex;
     margin: 0 auto;
     padding: 0 20px;
+    padding-bottom: 10%;
 
     .non-available {
         font-size: 3.2rem;
@@ -208,17 +296,17 @@ onUnmounted(() => {
     margin-bottom: 30px;
     display: flex;
     flex-direction: column;
-    gap:10px;
+    gap: 10px;
+    width: 100%;
 
-    h2{
+    h2 {
         font-size: 2rem;
     }
 
     .comment-textarea {
         width: 100%;
-        padding: 10px;
+        box-sizing: border-box;
         border: 1px solid style-variables.$button-and-border-footer-color;
-        padding: 15px;
         font-size: 1rem;
         color: style-variables.$default-text-color;
         background-color: style-variables.$default-background-color;
@@ -226,9 +314,10 @@ onUnmounted(() => {
     }
 
     .submit-comment-button {
+        width: 100%;
         font-size: 1.5rem;
         margin-top: 10px;
-        padding: 10px 20px;
+        padding: 20px 20px;
         background-color: style-variables.$button-and-border-footer-color;
         color: style-variables.$default-text-color;
         border: none;
@@ -282,6 +371,20 @@ h2 {
     flex-direction: column;
     gap: 15px;
 
+
+    .comment-actions {
+        button {
+            margin-top: 10px;
+            margin-right: 10px;
+            padding: 5px 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            background-color: style-variables.$button-and-border-footer-color;
+            color: style-variables.$default-text-color;
+            border: none;
+        }
+    }
+
     .comment-card {
         display: flex;
         gap: 15px;
@@ -318,6 +421,7 @@ h2 {
                 color: style-variables.$default-text-color;
                 margin-bottom: 5px;
             }
+
             .edited-label {
                 font-size: 1rem;
                 color: rgb(255, 255, 255, 0.7);

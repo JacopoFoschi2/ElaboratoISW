@@ -57,7 +57,7 @@ const fetchSuggestions = async (): Promise<void> => {
 const goToForumDetail = (gameId: number | string): void => {
     showSuggestions.value = false;
     searchQuery.value = '';
-    router.push({ name: 'ForumDetail', params: { id: gameId } });
+    router.push(`/forum/game/${gameId}`);
 };
 
 const handleSearchButton = (): void => {

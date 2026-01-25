@@ -88,14 +88,14 @@ router.beforeEach((to, from, next) => {
     }
 
     if (to.meta.role && authStore.user?.userRole !== to.meta.role) {
-        return next('/'); // o pagina 403
+        return next('/'); 
     }
 
     if (to.meta.requiresAuth && !auth.isLoggedIn) {
         next('/');
-    } else {
-        next();
     }
+    next();
+
 
 
 });

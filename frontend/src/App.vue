@@ -239,13 +239,14 @@ onMounted(async () => {
             display: flex;
             align-items: center;
             height: 100%;
+            z-index: 2;
 
             &:hover {
                 .drop-menu {
                     opacity: 1;
                     visibility: visible;
                     transform: translateY(0);
-                    z-index: 2;
+                    z-index: 3;
                 }
             }
 
