@@ -23,7 +23,7 @@ export const getUser = async (req: Request, res: Response) => {
   }
 
   const [userData] = await connection.execute(
-    `SELECT * FROM users WHERE userId = ?`,
+    `SELECT userId, userUsername, userEmail, userRole, userIconBin, userIconName FROM users WHERE userId = ?`,
     [user.userId]
   );
 
@@ -34,8 +34,8 @@ export const updateUserInfo = async (req: Request, res: Response) => {
   const user = await requireUser(req, res, ["user", "admin", "master"]);
   let iconBuffer: Buffer | null | undefined = undefined;
 
-  if (req.body.iconBin && typeof req.body.iconBin === 'string') {
-    iconBuffer = Buffer.from(req.body.iconBin, 'base64');
+  if (req.body["iconBin"] && typeof req.body["iconBin"] === 'string') {
+    iconBuffer = Buffer.from(req.body["iconBin"], 'base64');
   }
 
   if (!user) {
@@ -57,13 +57,13 @@ export const updateUserInfo = async (req: Request, res: Response) => {
        WHERE userId = ?`,
   iconBuffer !== undefined
     ? [
-        req.body.username,
+        req.body["username"],
         iconBuffer,
-        req.body.iconName,
+        req.body["iconName"],
         user.userId,
       ]
     : [
-        req.body.username,
+        req.body["username"],
         user.userId,
       ]
 );
