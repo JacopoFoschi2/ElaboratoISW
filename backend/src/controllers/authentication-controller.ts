@@ -167,7 +167,7 @@ export const updateUserPassword = async (req: Request, res: Response) => {
 
   await connection.execute(
     `UPDATE users SET userPassword = ? WHERE userId = ?`,
-    [newPasswordHash, req.params["userId"]]
+    [newPasswordHash, user.userId]
   );
   unsetUser(res);
   const updatedUser: User | null = getUser(req);
