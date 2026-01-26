@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
-import { useRouter } from 'vue-router';
 
 interface Game {
     gameId: number;
@@ -10,7 +9,6 @@ interface Game {
     };
 }
 
-const router = useRouter();
 const wishlist = ref<Game[]>([]);
 const createdUrls: string[] = [];
 
@@ -77,13 +75,10 @@ onUnmounted(() => {
 }
 
 .content-wrapper {
-    flex-direction: column;
-    display: flex;
     margin: 0;
-    padding: 0 20px;
+    padding: 0 50px;
     padding-bottom: 3%;
     text-align: center;
-    justify-content: center;
 }
 
 .page-title {
@@ -122,6 +117,6 @@ onUnmounted(() => {
 .empty-wishlist {
     margin-top: 40px;
     text-align: center;
-    font-size: 1.2rem;
+    font-size: 1.6rem;
 }
 </style>

@@ -89,14 +89,13 @@ export const updateReview = async (req: Request, res: Response): Promise<Respons
   if (!user) return;
 
   const authorized = requireProfileAccess(res, user, user.userId, false);
-  if (!authorized) {
-    return;
-  }
+  if (!authorized) return;
 
   const [result] = await connection.execute(
     `
     UPDATE reviews
     SET
+      reviewTitle = ?,
       reviewRating = ?,
       reviewBody = ?,
       reviewTimeStamp = NOW(),
@@ -104,6 +103,7 @@ export const updateReview = async (req: Request, res: Response): Promise<Respons
     WHERE gameId = ? AND userId = ?
     `,
     [
+      req.body["reviewTitle"],  
       req.body["reviewRating"],
       req.body["reviewBody"],
       req.params["gameId"],
@@ -123,6 +123,7 @@ export const updateReview = async (req: Request, res: Response): Promise<Respons
     message: "Review updated successfully"
   });
 };
+
 
 
 

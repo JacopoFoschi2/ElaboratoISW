@@ -72,6 +72,7 @@ const averageRating = computed(() => {
     return sum / reviews.value.length;
 });
 
+
 const bufferToUrl = (imageBuffer?: { data: number[] }): string => {
     if (!imageBuffer || !imageBuffer.data) return '';
     try {
@@ -172,12 +173,21 @@ const toggleOwned = async () => {
     const res = await fetch(`/api/owned/${props.id}`, {
         method,
         headers: {
-            'Authorization': `Bearer ${auth.token}`
+            Authorization: `Bearer ${auth.token}`
         }
     });
 
     if (res.ok) {
         isOwned.value = !isOwned.value;
+
+        // se diventa owned → rimuovi da wishlist
+        if (isOwned.value && isWishlisted.value) {
+            await fetch(`/api/wishlist/${props.id}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${auth.token}` }
+            });
+            isWishlisted.value = false;
+        }
     }
 };
 
@@ -187,14 +197,24 @@ const toggleWishlist = async () => {
     const res = await fetch(`/api/wishlist/${props.id}`, {
         method,
         headers: {
-            'Authorization': `Bearer ${auth.token}`
+            Authorization: `Bearer ${auth.token}`
         }
     });
 
     if (res.ok) {
         isWishlisted.value = !isWishlisted.value;
+
+        // se entra in wishlist → rimuovi da owned
+        if (isWishlisted.value && isOwned.value) {
+            await fetch(`/api/owned/${props.id}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${auth.token}` }
+            });
+            isOwned.value = false;
+        }
     }
 };
+
 
 const isAuthor = (review: Review): boolean => {
     if (!auth.user) return false;

@@ -162,7 +162,7 @@ onUnmounted(() => {
 .content-wrapper {
     margin: 0 auto;
     max-width: 1200px;
-    padding: 0 20px;
+    padding: 0 50px;
     padding-bottom: 3%;
     align-items: center;
 

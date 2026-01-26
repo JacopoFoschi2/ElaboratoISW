@@ -77,13 +77,10 @@ onUnmounted(() => {
 }
 
 .content-wrapper {
-    flex-direction: column;
-    display: flex;
     margin: 0;
-    padding: 0 20px;
+    padding: 0 50px;
     padding-bottom: 3%;
     text-align: center;
-    justify-content: center;
 }
 
 .page-title {
@@ -100,7 +97,7 @@ onUnmounted(() => {
     gap: 30px;
 }
 
-.game-card{
+.game-card {
     text-decoration: none;
     cursor: pointer;
     overflow: hidden;
@@ -121,6 +118,6 @@ onUnmounted(() => {
 .empty-owned {
     margin-top: 40px;
     text-align: center;
-    font-size: 1.2rem;
+    font-size: 1.6rem;
 }
 </style>
