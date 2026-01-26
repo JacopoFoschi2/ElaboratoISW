@@ -88,6 +88,11 @@ export const updateReview = async (req: Request, res: Response): Promise<Respons
   const user = await requireUser(req, res, ["user", "admin", "master"]);
   if (!user) return;
 
+  const authorized = requireProfileAccess(res, user, user.userId, false);
+  if (!authorized) {
+    return;
+  }
+
   const [result] = await connection.execute(
     `
     UPDATE reviews
@@ -124,6 +129,11 @@ export const updateReview = async (req: Request, res: Response): Promise<Respons
 export const deleteReview = async (req: Request, res: Response): Promise<Response | void> => {
   const user = await requireUser(req, res, ["user", "admin", "master"]);
   if (!user) return;
+  
+  const authorized = requireProfileAccess(res, user, user.userId, false);
+  if (!authorized) {
+    return;
+  }
 
   const [result] = await connection.execute(
     `
