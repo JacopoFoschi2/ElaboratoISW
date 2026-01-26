@@ -21,44 +21,32 @@ const categories = ref<Category[]>([]);
 const searchQuery = ref<string>('');
 const suggestions = ref<Game[]>([]);
 const showSuggestions = ref<boolean>(false);
-
+const createdUrls: string[] = [];
+const imageCache = new Map<number, string>();
+const searchContainerRef = ref<HTMLElement | null>(null);
+let abortController: AbortController | null = null;
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
-const fetchSuggestions = async (): Promise<void> => {
-    if (debounceTimer) clearTimeout(debounceTimer);
+const fetchSuggestions = async () => {
+    if (debounceTimer) {
+        clearTimeout(debounceTimer);
+    }
 
     const term = searchQuery.value.trim();
-
     if (term.length < 3) {
         suggestions.value = [];
         return;
     }
 
     debounceTimer = setTimeout(async () => {
-        try {
-            const response = await fetch(`/api/games/as-you-type/${encodeURIComponent(term)}`);
+        const res = await fetch(`/api/games/as-you-type/${encodeURIComponent(term)}`);
+        if (!res.ok) return;
 
-            if (!response.ok) {
-                console.error('Network response was not ok:', response.statusText);
-                suggestions.value = [];
-                return;
-            }
-
-            const data = await response.json();
-
-            if (Array.isArray(data)) {
-                suggestions.value = data.slice(0, 3);
-            } else {
-                console.error('Unexpected data format:', data);
-                suggestions.value = [];
-            }
-        }
-        catch (error) {
-            console.error('Error fetching search suggestions:', error);
-            suggestions.value = [];
-        }
+        const data = await res.json();
+        suggestions.value = Array.isArray(data) ? data.slice(0, 3) : [];
     }, 300);
 };
+
 
 const goToGameDetail = (gameId: number): void => {
     showSuggestions.value = false;
@@ -72,55 +60,59 @@ const handleSearchButton = (): void => {
     }
 };
 
-const createdUrls: string[] = [];
+
 
 const getImageUrl = (game: Game): string => {
-    try {
-        if (game.gameCoverBin && game.gameCoverBin.data) {
-            const arrayBuffer = new Uint8Array(game.gameCoverBin.data);
-            const blob = new Blob([arrayBuffer], { type: 'image/jpg' });
-            const url = URL.createObjectURL(blob);
-            createdUrls.push(url);
-            return url;
-        }
-        return '';
-    }
-    catch (error) {
-        console.error('Error processing image:', error);
-        return '';
-    }
+  if (imageCache.has(game.gameId)) {
+    return imageCache.get(game.gameId)!;
+  }
+
+  if (!game.gameCoverBin?.data) return '';
+
+  const bytes = new Uint8Array(game.gameCoverBin.data);
+  const blob = new Blob([bytes], { type: 'image/jpeg' });
+  const url = URL.createObjectURL(blob);
+
+  imageCache.set(game.gameId, url);
+  createdUrls.push(url);
+
+  return url;
 };
+
 
 const fetchCategories = async (): Promise<void> => {
     try {
         const response = await fetch('/api/categories');
         const catData: Omit<Category, 'games'>[] = await response.json();
-        
-        // Initialize categories with empty games array
+
         categories.value = catData.map(cat => ({ ...cat, games: [] }));
 
-        // Fetch games for each category
-        for (const category of categories.value) {
-            try {
-                const gamesResponse = await fetch(`/api/games/${category.categoryId}`);
-                const gamesData: Game[] = await gamesResponse.json();
-                category.games = gamesData.slice(0, 5); 
-            }
-            catch (error) {
-                console.error(`Error fetching games for category ${category.categoryId}:`, error);
-            }
-        }
-    }
-    catch (error) {
+        await Promise.all(
+            categories.value.map(async (category) => {
+                try {
+                    const gamesResponse = await fetch(`/api/games/${category.categoryId}`);
+                    const gamesData: Game[] = await gamesResponse.json();
+                    category.games = gamesData.slice(0, 5);
+                } catch (err) {
+                    console.error(`Error fetching games for category ${category.categoryId}`, err);
+                }
+            })
+        );
+    } catch (error) {
         console.error('Error fetching data:', error);
     }
 };
 
+
+
+
 const handleClickOutside = (event: MouseEvent): void => {
-    const searchContainer = document.querySelector('.search-container');
-    if (searchContainer && !searchContainer.contains(event.target as Node)) {
-        showSuggestions.value = false;
-    }
+  if (
+    searchContainerRef.value &&
+    !searchContainerRef.value.contains(event.target as Node)
+  ) {
+    showSuggestions.value = false;
+  }
 };
 
 onMounted(() => {
@@ -138,7 +130,7 @@ onUnmounted(() => {
     <div class="homepage">
         <main class="content-wrapper">
             <div class="search-wrapper">
-                <div class="search-container">
+                <div class="search-container" ref="searchContainerRef">
                     <input type="text" placeholder="search your games..." class="search-input" v-model="searchQuery"
                         @input="fetchSuggestions" @focus="showSuggestions = true" />
                     <button class="search-button" @click="handleSearchButton">
@@ -277,7 +269,7 @@ onUnmounted(() => {
     aspect-ratio: 2/3;
     object-fit: cover;
     overflow: hidden;
-    transition: transform 0.3s;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
     min-width: 200px;
     min-height: 342px;
 
@@ -285,6 +277,7 @@ onUnmounted(() => {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        background-color: style-variables.$default-text-color;
     }
 
     .placeholder-img {
@@ -294,7 +287,8 @@ onUnmounted(() => {
 }
 
 .game-card:hover {
-    transform: scale(1.05);
+     transform: translateY(-4px) scale(1.04);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
 }
 
 .loader {

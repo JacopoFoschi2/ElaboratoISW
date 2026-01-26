@@ -19,27 +19,48 @@ export const listCategories = async (req: Request, res: Response) => {
   res.status(200).json(categories);
 };
 
-export const updateCategory = async (req: Request, res: Response) => {
+export const updateCategory = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const user = await requireUser(req, res, ["master"]);
-  if (!user) {
+  if (!user) return;
+
+  const { categoryName } = req.body;
+const { categoryId } = req.params;
+
+  if (!categoryId || !categoryName) {
+    res.status(400).json({ error: "Missing categoryName or id" });
+    return;
+  }
+
+ await connection.execute(
+  `UPDATE categories SET categoryName = ? WHERE categoryId = ?`,
+  [categoryName, categoryId]
+);
+
+  res.sendStatus(200);
+};
+
+
+export const deleteCategory = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const user = await requireUser(req, res, ["master"]);
+  if (!user) return;
+
+  const { categoryId } = req.params;
+
+  if (!categoryId) {
+    res.status(400).json({ error: "Missing categoryId" });
     return;
   }
 
   await connection.execute(
-    `UPDATE categories SET categoryName = ? WHERE categoryId = ?`,
-    [req.body["categoryName"], req.params["id"]]
+    `DELETE FROM categories WHERE categoryId = ?`,
+    [categoryId]
   );
-  res.sendStatus(200);
-};
 
-export const deleteCategory = async (req: Request, res: Response) => {
-  const user = await requireUser(req, res, ["master"]);
-  if (!user) {
-    return;
-  }
-
-  await connection.execute(`DELETE FROM categories WHERE categoryId = ?`, [
-    req.params["id"],
-  ]);
   res.sendStatus(200);
 };

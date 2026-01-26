@@ -1,6 +1,7 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from "./stores/auth";
 import App from "./App.vue";
 import Home from "./pages/Home.vue";
 import NotFound from "./pages/NotFound.vue";
@@ -9,7 +10,21 @@ import Forum from "./pages/Forum.vue";
 import TermsOfService from "./pages/Terms-of-Service.vue";
 import CommunityGuidelines from "./pages/Community-Guidelines.vue";
 import CookiePolicy from "./pages/Cookie-Policy.vue";
-import { useAuthStore } from "./stores/auth";
+import SuperAdminPanel from "./pages/SuperAdminPanel.vue";
+import BestGames from "./pages/BestGames.vue";
+import UsersAdmin from "./pages/UsersAdmin.vue";
+import GamesAdmin from "./pages/GamesAdmin.vue";
+import CategoriesAdmin from "./pages/CategoriesAdmin.vue";
+import ForumsAdmin from "./pages/ForumsAdmin.vue";
+import GameDetail from "./pages/GameDetail.vue";
+import CategoryGames from "./pages/CategoryGames.vue";
+import RecentlyReleased from "./pages/RecentlyReleased.vue";
+import Profile from "./pages/Profile.vue";
+import WishListProfile from "./pages/WishListProfile.vue";
+import OwnedGames from "./pages/OwnedGames.vue";
+import ForumDetail from "./pages/ForumDetail.vue";
+import Registration from "./pages/Registration.vue";
+import ResetPassword from "./pages/ResetPassword.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -19,58 +34,64 @@ const router = createRouter({
         {
             path: "/category/:id",
             name: "CategoryGames",
-            component: () => import("./pages/CategoryGames.vue"),
+            component: CategoryGames,
             props: route => ({ id: Number(route.params.id) })
         },
         {
             path: "/game/:id",
             name: "GameDetail",
-            component: () => import("./pages/GameDetail.vue"),
+            component: GameDetail,
             props: route => ({ id: Number(route.params.id) })
         },
         {
             path: "/best-games",
-            component: () => import("./pages/BestGames.vue")
+            component: BestGames
         },
         {
             path: "/recently-released",
-            component: () => import("./pages/RecentlyReleased.vue")
+            component: RecentlyReleased
         },
         {
             path: "/profile/:id",
-            component: () => import("./pages/Profile.vue"),
+            component: Profile,
             props: route => ({ id: Number(route.params.id) }),
             meta: { requiresAuth: true }
         },
         {
             path: "/wishlist/:id",
-            component: () => import("./pages/WishListProfile.vue"),
+            component: WishListProfile,
             props: route => ({ id: Number(route.params.id) }),
             meta: { requiresAuth: true }
         },
         {
             path: "/owned/:id",
-            component: () => import("./pages/OwnedGames.vue"),
+            component: OwnedGames,
             props: route => ({ id: Number(route.params.id) }),
             meta: { requiresAuth: true }
         },
         {
             path: "/super-admin",
-            component: () => import("./pages/SuperAdmin.vue"),
-            meta: { requiresAuth: true, role: 'master' }
+            component: SuperAdminPanel,
+            meta: { requiresAuth: true, role: 'master' },
+            children: [
+                { path: 'users', component: UsersAdmin },
+                { path: 'games', component: GamesAdmin },
+                { path: 'categories', component: CategoriesAdmin },
+                { path: 'forums', component: ForumsAdmin },
+            ]
         },
         {
             path: "/forum/game/:id",
-            component: () => import("./pages/ForumDetail.vue"),
+            component: ForumDetail,
             props: route => ({ id: Number(route.params.id) })
         },
         {
             path: "/registration",
-            component: () => import("./pages/Registration.vue")
+            component: Registration
         },
         {
             path: "/reset-password",
-            component: () => import("./pages/ResetPassword.vue")
+            component: ResetPassword
         },
         { path: "/privacy-policy", component: PrivacyPolicy },
         { path: "/terms-of-service", component: TermsOfService },
@@ -88,7 +109,7 @@ router.beforeEach((to, from, next) => {
     }
 
     if (to.meta.role && authStore.user?.userRole !== to.meta.role) {
-        return next('/'); 
+        return next('/');
     }
 
     if (to.meta.requiresAuth && !auth.isLoggedIn) {
