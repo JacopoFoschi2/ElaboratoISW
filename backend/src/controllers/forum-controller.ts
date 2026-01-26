@@ -9,7 +9,7 @@ export const addComment = async (req: Request, res: Response) => {
   const [result]: any = await connection.execute(
     `INSERT INTO comments (gameId, userId, commentBody, commentTimeStamp)
      VALUES (?, ?, ?, NOW())`,
-    [req.body.gameId, user.userId, req.body.commentBody]
+    [req.body["gameId"], user.userId, req.body["commentBody"]]
   );
 
   const [rows]: any = await connection.execute(
@@ -103,7 +103,7 @@ export const updateComment = async (req: Request, res: Response) => {
      SET commentBody = ?, commentWasEdited = true 
      WHERE commentId = ? AND userId = ?`,
     [
-      req.body.commentBody,
+      req.body["commentBody"],
       req.params["commentId"],
       user.userId
     ]
@@ -111,7 +111,7 @@ export const updateComment = async (req: Request, res: Response) => {
 
   res.status(200).json({
     commentId: req.params["commentId"],
-    commentBody: req.body.commentBody
+    commentBody: req.body["commentBody"]
   });
 };
 
