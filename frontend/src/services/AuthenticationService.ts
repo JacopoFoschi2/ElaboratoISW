@@ -1,6 +1,10 @@
 import api from './Api';
 import type { User } from '../types';
 
+interface ExistsResponse {
+  exists: boolean;
+}
+
 export const AuthenticationService = {
   login(email: string, password: string) {
     return api.post('/auth/login', { email, password });
@@ -21,5 +25,21 @@ export const AuthenticationService = {
       password,
     });
   },
+  checkUsername(username: string) {
+    return api.get<{ exists: boolean }>(
+      `/auth/username-exists/${username}`
+    );
+  },
+
+  checkEmail(email: string) {
+    return api.get<{ exists: boolean }>(
+      `/auth/email-exists/${email}`
+    );
+  },
+  changePassword(payload: { currentPassword: string; password: string }) {
+    return api.put('/auth/change-password', payload);
+  },
+
+
 };
 export default AuthenticationService;

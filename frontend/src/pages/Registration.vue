@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import AuthenticationService from '../services/AuthenticationService';
 import { useRouter } from 'vue-router';
 interface ExistsResponse {
-  exists: boolean;
+    exists: boolean;
 }
 
 const username = ref<string>('');
@@ -20,7 +20,7 @@ const handleRegister = async (): Promise<void> => {
     message.value = '';
     isError.value = false;
 
-    // Basic Validation
+    // Basic validation
     if (!username.value || !email.value || !password.value) {
         isError.value = true;
         message.value = "All fields are required!";
@@ -57,15 +57,15 @@ const handleRegister = async (): Promise<void> => {
         }
 
         //Register (/api/auth/register)
-        await AuthenticationService.register({
-            username: username.value,
-            email: email.value,
-            password: password.value
-        });
+        await AuthenticationService.register(
+            username.value,
+            email.value,
+            password.value
+        );
 
         message.value = "Account created successfully!";
         setTimeout(() => router.push('/'), 2000);
-        
+
     } catch (err: any) {
         isError.value = true;
         message.value = err.response?.data?.error || "Registration failed.";
@@ -116,10 +116,19 @@ const handleRegister = async (): Promise<void> => {
     width: 100%;
 }
 
-h2 { font-size: 3rem; margin-top: 40px; }
-h3 { font-size: 1.5rem; margin: 20px 0; }
+h2 {
+    font-size: 3rem;
+    margin-top: 40px;
+}
 
-input[type="text"], input[type="email"], input[type="password"] {
+h3 {
+    font-size: 1.5rem;
+    margin: 20px 0;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
     padding: 10px;
     font-size: 1rem;
     margin-bottom: 15px;
@@ -134,7 +143,10 @@ input[type="text"], input[type="email"], input[type="password"] {
     align-items: center;
     gap: 10px;
     font-size: 0.9rem;
-    label { color: style-variables.$default-text-color; }
+
+    label {
+        color: style-variables.$default-text-color;
+    }
 }
 
 button {
@@ -143,12 +155,22 @@ button {
     background-color: style-variables.$default-navbar-color;
     cursor: pointer;
     transition: all 0.3s ease;
+
     &:hover {
         background-color: style-variables.$button-and-border-footer-color;
         color: style-variables.$default-text-color;
     }
 }
 
-.error-msg { color: red; margin-top: 15px; font-weight: bold; }
-.success-msg { color: style-variables.$default-text-color; margin-top: 15px; font-weight: bold; }
+.error-msg {
+    color: red;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.success-msg {
+    color: style-variables.$default-text-color;
+    margin-top: 15px;
+    font-weight: bold;
+}
 </style>

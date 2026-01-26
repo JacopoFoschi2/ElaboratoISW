@@ -48,7 +48,7 @@ async function handleLogin() {
         await authStore.loadUser();
         showSignIn.value = false;
     } catch {
-        errorMessage.value = 'Login failed';
+        errorMessage.value = 'Login failed, please check your credentials.';
     }
 }
 

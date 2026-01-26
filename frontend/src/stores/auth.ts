@@ -23,15 +23,30 @@ export const useAuthStore = defineStore('auth', {
 
   actions: {
     async loadUser() {
-      const res = await fetch('/api/user', { credentials: 'include' });
-      const data = await res.json();
+      try {
+        const res = await fetch('/api/user', {
+          credentials: 'include',
+        });
 
-      const user = Array.isArray(data) ? data[0] : data;
+        if (!res.ok) {
+          this.logout();
+          return;
+        }
 
-      this.user = user;
-      this.isLoggedIn = true;
+        const data = await res.json();
+        const user = Array.isArray(data) ? data[0] : data;
 
-      this.setAvatarFromUser();
+        if (!user) {
+          this.logout();
+          return;
+        }
+
+        this.user = user;
+        this.isLoggedIn = true;
+        this.setAvatarFromUser();
+      } catch {
+        this.logout();
+      }
     },
     setAvatarFromUser() {
       if (!this.user?.userIconBin) {

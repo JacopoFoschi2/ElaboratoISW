@@ -3,16 +3,17 @@ import { ref } from 'vue';
 import AuthenticationService from '../services/AuthenticationService';
 
 interface ChangePasswordPayload {
-  currentPassword: string;
-  newPassword: string;
+    currentPassword: string;
+    password: string;
 }
 
+
 interface AuthError {
-  response?: {
-    data?: {
-      error?: string;
+    response?: {
+        data?: {
+            error?: string;
+        };
     };
-  };
 }
 
 const currentPassword = ref<string>('');
@@ -42,7 +43,7 @@ const handleChangePassword = async (): Promise<void> => {
     try {
         const payload: ChangePasswordPayload = {
             currentPassword: currentPassword.value,
-            newPassword: newPassword.value
+            password: newPassword.value
         };
 
         await AuthenticationService.changePassword(payload);
@@ -51,11 +52,13 @@ const handleChangePassword = async (): Promise<void> => {
         newPassword.value = '';
         confirmPassword.value = '';
         
-    } catch (err) {
+
+    } catch (err: any) {
         isError.value = true;
-        const error = err as AuthError;
-        message.value = error.response?.data?.error || "Error: the current password is incorrect.";
+        message.value =
+            err.response?.data || "Error: the current password is incorrect.";
     }
+
 };
 </script>
 
@@ -104,8 +107,15 @@ const handleChangePassword = async (): Promise<void> => {
     border-top: 1px solid #eee;
 }
 
-h2 { font-size: 3rem; margin-top: 40px; }
-h3 { font-size: 1.5rem; margin: 20px 0; }
+h2 {
+    font-size: 3rem;
+    margin-top: 40px;
+}
+
+h3 {
+    font-size: 1.5rem;
+    margin: 20px 0;
+}
 
 input {
     padding: 10px;
@@ -129,6 +139,15 @@ button {
     }
 }
 
-.error-msg { color: red; margin-top: 15px; font-weight: bold; }
-.success-msg { color: style-variables.$default-text-color; margin-top: 15px; font-weight: bold; }
+.error-msg {
+    color: red;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.success-msg {
+    color: style-variables.$default-text-color;
+    margin-top: 15px;
+    font-weight: bold;
+}
 </style>

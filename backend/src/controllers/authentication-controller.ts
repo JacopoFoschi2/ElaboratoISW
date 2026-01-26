@@ -165,13 +165,25 @@ export const updateUserPassword = async (req: Request, res: Response) => {
   const newPassword = req.body["password"];
   const newPasswordHash = await bcrypt.hash(newPassword, 10);
 
+  // updates password 
   await connection.execute(
     `UPDATE users SET userPassword = ? WHERE userId = ?`,
     [newPasswordHash, user.userId]
   );
+
+  // recovers fresh user data
+  const [results] = await connection.execute(
+    "SELECT userId, userUsername, userEmail, userRole FROM users WHERE userId = ?",
+    [user.userId]
+  );
+
+  const freshUser = (results as User[])[0];
+
+  // invalidates old token
   unsetUser(res);
-  const updatedUser: User | null = getUser(req);
-  setUser(res, updatedUser);
+
+  // generates new JWT (withoud duolicated exp)
+  setUser(res, freshUser);
 
   res.status(200).send("Password updated successfully");
 };
