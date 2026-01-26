@@ -37,13 +37,24 @@ const isSubmitting = ref<boolean>(false);
 const editingCommentId = ref<number | null>(null);
 const editedCommentText = ref<string>('');
 
-
 const gameInfo = ref<GameInfo>({});
 const bannerUrl = ref<string>('');
 const comments = ref<Comment[]>([]);
 const isLoading = ref<boolean>(true);
 
 const createdUrls: string[] = [];
+
+const deletingCommentId = ref<number | null>(null);
+const deleteError = ref<string | null>(null);
+
+
+const isAdmin = (): boolean => {
+    return auth.user?.userRole === 'admin' || auth.user?.userRole === 'master';
+};
+
+const canDelete = (comment: Comment): boolean => {
+    return isAuthor(comment) || isAdmin();
+};
 
 const bufferToUrl = (imageBuffer?: { data: number[] }): string => {
     if (!imageBuffer || !imageBuffer.data) return '';
@@ -137,6 +148,36 @@ const submitComment = async (): Promise<void> => {
         isSubmitting.value = false;
     }
 };
+
+const deleteComment = async (commentId: number) => {
+    deleteError.value = null;
+    deletingCommentId.value = commentId;
+
+    try {
+        const res = await fetch(`/api/comments/${commentId}`, {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${auth.token}`
+            }
+        });
+
+        if (!res.ok) {
+            deleteError.value = 'Unable to delete comment.';
+            return;
+        }
+
+        comments.value = comments.value.filter(
+            c => c.commentId !== commentId
+        );
+
+    } catch (err) {
+        deleteError.value = 'Network error while deleting comment.';
+    } finally {
+        deletingCommentId.value = null;
+        editingCommentId.value = null;
+    }
+};
+
 
 const cancelEdit = () => {
     editingCommentId.value = null;
@@ -232,24 +273,24 @@ onUnmounted(() => {
                         <p class="comment-date">
                             {{ moment(comment.commentDate).format('MMMM Do YYYY, h:mm:ss a') }}
                         </p>
-
-                        <!-- VIEW MODE -->
                         <p v-if="editingCommentId !== comment.commentId" class="comment-text">
                             {{ comment.commentText }}
                         </p>
-
-                        <!-- EDIT MODE -->
                         <textarea v-else v-model="editedCommentText" rows="3" class="comment-textarea"></textarea>
 
                         <p v-if="comment.isEdited" class="edited-label">(Edited)</p>
 
-                        <!-- ACTIONS-->
-                        <div v-if="isAuthor(comment)" class="comment-actions">
-                            <button v-if="editingCommentId !== comment.commentId" @click="startEdit(comment)">
+                        <div v-if="isAuthor(comment) || isAdmin()" class="comment-actions">
+
+                            <!-- EDIT -->
+                            <button
+                                v-if="isAuthor(comment) && editingCommentId !== comment.commentId && deletingCommentId !== comment.commentId"
+                                @click="startEdit(comment)">
                                 Edit
                             </button>
 
-                            <template v-else>
+                            <!-- SAVE / CANCEL -->
+                            <template v-if="editingCommentId === comment.commentId">
                                 <button @click="saveEdit(comment.commentId)">
                                     Save
                                 </button>
@@ -257,6 +298,28 @@ onUnmounted(() => {
                                     Cancel
                                 </button>
                             </template>
+
+                            <!-- DELETE -->
+                            <button
+                                v-if="canDelete(comment) && deletingCommentId !== comment.commentId && editingCommentId !== comment.commentId"
+                                @click="deletingCommentId = comment.commentId">
+                                Delete
+                            </button>
+
+                            <!-- DELETE CONFIRM -->
+                            <template v-if="deletingCommentId === comment.commentId">
+                                <p class="delete-warning">Delete this comment?</p>
+                                <button @click="deleteComment(comment.commentId)">
+                                    Yes
+                                </button>
+                                <button @click="deletingCommentId = null">
+                                    No
+                                </button>
+                            </template>
+
+                            <p v-if="deleteError && deletingCommentId === comment.commentId" class="error">
+                                {{ deleteError }}
+                            </p>
                         </div>
                     </div>
                 </div>

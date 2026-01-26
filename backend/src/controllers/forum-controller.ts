@@ -116,17 +116,38 @@ export const updateComment = async (req: Request, res: Response) => {
 };
 
 
+
+import { RowDataPacket } from "mysql2";
+
 export const deleteComment = async (req: Request, res: Response) => {
   const user = await requireUser(req, res, ["user", "admin", "master"]);
-  if (!user) {
-    return;
-  }
-  if (!requireProfileAccess(res, user, req.body["userId"], true)) {
-    return;
+  if (!user) return;
+
+  const commentId = req.params["commentId"];
+
+  const [rows] = await connection.execute<RowDataPacket[]>(
+    `SELECT userId FROM comments WHERE commentId = ?`,
+    [commentId]
+  );
+
+  const comment = rows[0];
+  if (!comment) {
+    return res.status(404).send("Comment not found");
   }
 
-  await connection.execute(`DELETE FROM comments WHERE commentId = ?`, [
-    req.params["commentId"],
-  ]);
-  res.status(200).send("Comment deleted successfully");
+  const commentOwnerId = comment["userId"] as number;
+
+  const isOwner = user.userId === commentOwnerId;
+  const isAdmin = user.userRole === "admin" || user.userRole === "master";
+
+  if (!isOwner && !isAdmin) {
+    return res.status(403).send("You are not allowed to delete this comment");
+  }
+
+  await connection.execute(
+    `DELETE FROM comments WHERE commentId = ?`,
+    [commentId]
+  );
+
+  return res.status(200).send("Comment deleted successfully");
 };

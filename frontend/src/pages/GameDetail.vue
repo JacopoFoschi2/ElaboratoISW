@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import StarRating from '../components/StarRating.vue';
 import moment from 'moment';
+import { computed } from 'vue';
 
 
 interface Game {
@@ -19,6 +20,7 @@ interface Game {
 
 interface Review {
     reviewId: number;
+    userId: number;
     reviewTitle: string;
     reviewBody: string;
     reviewRating: number;
@@ -45,6 +47,10 @@ const reviews = ref<Review[]>([]);
 const showReviewModal = ref<boolean>(false);
 const isOwned = ref<boolean | null>(null);
 const isWishlisted = ref<boolean | null>(null);
+const canWriteReview = ref<boolean>(false);
+const editingReview = ref<Review | null>(null);
+const deleteConfirmId = ref<number | null>(null);
+
 
 const reviewData = ref<ReviewForm>({
     title: '',
@@ -54,6 +60,17 @@ const reviewData = ref<ReviewForm>({
 
 // Memory management for images
 const createdUrls: string[] = [];
+
+const averageRating = computed(() => {
+    if (reviews.value.length === 0) return 0;
+
+    const sum = reviews.value.reduce(
+        (acc, r) => acc + r.reviewRating,
+        0
+    );
+
+    return sum / reviews.value.length;
+});
 
 const bufferToUrl = (imageBuffer?: { data: number[] }): string => {
     if (!imageBuffer || !imageBuffer.data) return '';
@@ -82,6 +99,19 @@ const fetchReviews = async (): Promise<void> => {
         console.error('Error fetching reviews:', error);
     }
 };
+
+const startEdit = (review: Review) => {
+    editingReview.value = review;
+
+    reviewData.value = {
+        title: review.reviewTitle,
+        content: review.reviewBody,
+        rating: review.reviewRating
+    };
+
+    showReviewModal.value = true;
+};
+
 
 const fetchOwnedStatus = async () => {
     if (!auth.isLoggedIn) {
@@ -166,34 +196,100 @@ const toggleWishlist = async () => {
     }
 };
 
+const isAuthor = (review: Review): boolean => {
+    if (!auth.user) return false;
+    return auth.user.userId === review.userId;
+};
+
+const fetchReviewPermission = async () => {
+    if (!auth.isLoggedIn) {
+        canWriteReview.value = false;
+        return;
+    }
+
+    try {
+        const res = await fetch(`/api/reviews/permission/${props.id}`, {
+            headers: {
+                Authorization: `Bearer ${auth.token}`
+            }
+        });
+
+        if (!res.ok) {
+            canWriteReview.value = false;
+            return;
+        }
+
+        const data = await res.json();
+        canWriteReview.value = Boolean(data.canReview);
+    } catch (err) {
+        console.error('Error checking review permission:', err);
+        canWriteReview.value = false;
+    }
+};
+
 const submitReview = async (): Promise<void> => {
     if (!auth.isLoggedIn || !auth.user) return;
 
-    try {
-        const response = await fetch(`/api/game/${props.id}/reviews`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${auth.token}`
-            },
-            body: JSON.stringify({
-                gameId: props.id,
-                userId: auth.user.userId,
-                reviewTitle: reviewData.value.title,
-                reviewRating: reviewData.value.rating,
-                reviewBody: reviewData.value.content
-            })
-        });
+    const isEdit = Boolean(editingReview.value);
 
-        if (response.ok) {
-            showReviewModal.value = false;
-            reviewData.value = { title: '', content: '', rating: 1 };
-            await fetchReviews();
+    const response = await fetch(`/api/reviews/${props.id}`, {
+        method: isEdit ? 'PUT' : 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${auth.token}`
+        },
+        body: JSON.stringify({
+            reviewTitle: reviewData.value.title,
+            reviewBody: reviewData.value.content,
+            reviewRating: reviewData.value.rating
+        })
+    });
+
+    if (!response.ok) return;
+
+    showReviewModal.value = false;
+    editingReview.value = null;
+    reviewData.value = { title: '', content: '', rating: 1 };
+
+    await refreshAfterReviewChange();
+};
+
+const deleteReview = async (review: Review) => {
+    if (deleteConfirmId.value !== review.reviewId) {
+        deleteConfirmId.value = review.reviewId;
+        return;
+    }
+
+    const response = await fetch(`/api/reviews/${props.id}`, {
+        method: 'DELETE',
+        headers: {
+            Authorization: `Bearer ${auth.token}`
         }
-    } catch (error) {
-        console.error('Error submitting review:', error);
+    });
+
+    if (!response.ok) return;
+
+    deleteConfirmId.value = null;
+    await refreshAfterReviewChange();
+};
+
+
+
+const refreshAfterReviewChange = async () => {
+    await fetchReviews();
+    await fetchReviewPermission();
+    await fetchGameRating();
+};
+
+const fetchGameRating = async () => {
+    const res = await fetch(`/api/game/${props.id}`);
+    const data = await res.json();
+    if (data?.length) {
+        game.value!.gameRating = data[0].gameRating;
     }
 };
+
+
 
 onMounted(async () => {
     try {
@@ -206,6 +302,8 @@ onMounted(async () => {
         await fetchReviews();
         await fetchOwnedStatus();
         await fetchWishlistStatus();
+        await fetchReviewPermission();
+
 
     } catch (error) {
         console.error('Error loading game details:', error);
@@ -226,8 +324,8 @@ onUnmounted(() => {
                 <img :src="bufferToUrl(game.gameCoverBin)" :alt="game.gameName" class="game-cover" />
 
                 <div class="rating-container">
-                    <p class="rating-label">Rating: {{ Math.floor(game.gameRating) }} / 5</p>
-                    <StarRating :rating="Math.floor(game.gameRating)" :size="10" />
+                    <p class="rating-label">Rating: {{ Math.floor(averageRating) }} / 5</p>
+                    <StarRating :rating="Math.floor(averageRating)" :size="10" />
                 </div>
 
                 <h3>Available on:</h3>
@@ -250,12 +348,7 @@ onUnmounted(() => {
                         </li>
                     </ul>
                 </div>
-            </aside>
 
-            <div class="right-column">
-                <h2 class="game-title">{{ game.gameName }}</h2>
-                <p class="game-release-date">{{ moment(game.gameReleaseDate).format('DD/MM/YYYY') }}</p>
-                <p class="game-description">{{ game.gameDesc }}</p>
                 <div v-if="auth.isLoggedIn" class="game-actions">
                     <template v-if="isOwned !== null && isWishlisted !== null">
 
@@ -274,13 +367,29 @@ onUnmounted(() => {
                         Checking library status...
                     </p>
                 </div>
+            </aside>
+
+            <div class="right-column">
+                <h2 class="game-title">{{ game.gameName }}</h2>
+                <p class="game-release-date">{{ moment(game.gameReleaseDate).format('DD/MM/YYYY') }}</p>
+                <p class="game-description">{{ game.gameDesc }}</p>
             </div>
         </main>
 
-        <section class="review-section" v-if="auth.isLoggedIn">
-            <button class="review-btn" @click="showReviewModal = true">Write your review</button>
+        <section class="review-section" v-if="auth.isLoggedIn && canWriteReview">
+            <button class="review-btn" @click="showReviewModal = true">
+                {{ editingReview ? 'Edit your review' : 'Write your review' }}
+            </button>
         </section>
-        <p v-else class="login-prompt">Please log in from the navigation bar to add a review.</p>
+
+        <p v-else-if="auth.isLoggedIn && !canWriteReview" class="login-prompt">
+            You already wrote a review for this game.
+        </p>
+
+        <p v-else class="login-prompt">
+            Please log in from the navigation bar to add a review.
+        </p>
+
 
         <section class="reviews-list-section" v-if="reviews.length > 0">
             <h2>User Reviews</h2>
@@ -294,6 +403,25 @@ onUnmounted(() => {
                 </div>
                 <p class="review-date">{{ moment(review.reviewTimeStamp).format('MMMM Do YYYY, h:mm:ss a') }}</p>
                 <p class="review-content">{{ review.reviewBody }}</p>
+
+                <div v-if="isAuthor(review)" class="review-actions">
+                    <button v-if="deleteConfirmId !== review.reviewId" @click="startEdit(review)">
+                        Edit
+                    </button>
+                    <button @click="deleteReview(review)">
+                        {{ deleteConfirmId === review.reviewId ? 'Confirm delete' : 'Delete' }}
+                    </button>
+                    <button v-if="deleteConfirmId === review.reviewId" @click="deleteConfirmId = null">
+                        Cancel
+                    </button>
+
+                </div>
+
+
+                <p v-if="deleteConfirmId === review.reviewId" class="delete-warning">
+                    Are you sure you want to delete this review? This action cannot be undone.
+                </p>
+
             </div>
         </section>
 
@@ -352,6 +480,25 @@ onUnmounted(() => {
         h2 {
             font-size: 2.5rem;
             margin-bottom: 50px;
+        }
+
+        .review-actions {
+            button {
+                margin-top: 10px;
+                margin-right: 10px;
+                padding: 5px 10px;
+                font-size: 1rem;
+                cursor: pointer;
+                background-color: style-variables.$button-and-border-footer-color;
+                color: style-variables.$default-text-color;
+                border: none;
+            }
+
+            .delete-warning {
+                margin-top: 10px;
+                color: red;
+                font-weight: bold;
+            }
         }
 
     }
@@ -419,6 +566,31 @@ onUnmounted(() => {
         width: 100%;
         height: auto;
     }
+
+    .game-actions {
+        display: flex;
+        gap: 15px;
+        margin: 45px 0;
+
+        button {
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border: 1px solid style-variables.$default-text-color;
+            background-color: transparent;
+            color: style-variables.$default-text-color;
+            transition: all 0.3s;
+
+            &:hover {
+                background-color: style-variables.$default-text-color;
+                color: style-variables.$default-background-color;
+            }
+        }
+
+        .wishlist-btn {
+            font-weight: bold;
+        }
+    }
 }
 
 .right-column {
@@ -446,30 +618,7 @@ onUnmounted(() => {
         color: style-variables.$default-text-color;
     }
 
-    .game-actions {
-        display: flex;
-        gap: 15px;
-        margin: 15px 0;
 
-        button {
-            padding: 10px 20px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            border: 1px solid style-variables.$default-text-color;
-            background-color: transparent;
-            color: style-variables.$default-text-color;
-            transition: all 0.3s;
-
-            &:hover {
-                background-color: style-variables.$default-text-color;
-                color: style-variables.$default-background-color;
-            }
-        }
-
-        .wishlist-btn {
-            font-weight: bold;
-        }
-    }
 }
 
 

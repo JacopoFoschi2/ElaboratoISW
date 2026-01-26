@@ -9,14 +9,20 @@ export const createReview = async (req: Request, res: Response) => {
   }
 
   await connection.execute(
-    `INSERT INTO reviews (gameId, userId, reviewRating, reviewBody, reviewTimeStamp) VALUES (?, ?, ?, ?, NOW())`,
-    [
-      req.params["gameId"],
-      user.userId,
-      req.body["reviewRating"],
-      req.body["reviewBody"],
-    ]
-  );
+  `
+  INSERT INTO reviews 
+    (gameId, userId, reviewTitle, reviewRating, reviewBody, reviewTimeStamp)
+  VALUES (?, ?, ?, ?, ?, NOW())
+  `,
+  [
+    req.params["gameId"],
+    user.userId,
+    req.body["reviewTitle"],   
+    req.body["reviewRating"],
+    req.body["reviewBody"]
+  ]
+);
+
   res.status(201).send("Review created successfully");
 };
 
@@ -78,41 +84,69 @@ export const canUserReviewGame = async (req: Request, res: Response) => {
   }
 };
 
-export const updateReview = async (req: Request, res: Response) => {
+export const updateReview = async (req: Request, res: Response): Promise<Response | void> => {
   const user = await requireUser(req, res, ["user", "admin", "master"]);
-  if (!user) {
-    return;
-  }
+  if (!user) return;
 
-  const authorized = requireProfileAccess(res, user, user.userId, false);
-  if (!authorized) {
-    return;
-  }
-
-  await connection.execute(
-    `UPDATE reviews SET reviewRating = ?, reviewBody = ?, reviewTimeStamp = NOW(), reviewWasEdited = true WHERE gameId = ? AND userId = ?`,
+  const [result] = await connection.execute(
+    `
+    UPDATE reviews
+    SET
+      reviewRating = ?,
+      reviewBody = ?,
+      reviewTimeStamp = NOW(),
+      reviewWasEdited = true
+    WHERE gameId = ? AND userId = ?
+    `,
     [
       req.body["reviewRating"],
       req.body["reviewBody"],
       req.params["gameId"],
-      user.userId,
+      user.userId
     ]
   );
+
+  const info = result as any;
+
+  if (info.affectedRows === 0) {
+    return res.status(403).json({
+      message: "You can only update your own review"
+    });
+  }
+
+  return res.status(200).json({
+    message: "Review updated successfully"
+  });
 };
 
-export const deleteReview = async (req: Request, res: Response) => {
+
+
+export const deleteReview = async (req: Request, res: Response): Promise<Response | void> => {
   const user = await requireUser(req, res, ["user", "admin", "master"]);
-  if (!user) {
-    return;
-  }
+  if (!user) return;
 
-  const authorized = requireProfileAccess(res, user, user.userId, true);
-  if (!authorized) {
-    return;
-  }
-
-  await connection.execute(
-    `DELETE FROM reviews WHERE gameId = ? AND userId = ?`,
-    [req.params["gameId"], user.userId]
+  const [result] = await connection.execute(
+    `
+    DELETE FROM reviews
+    WHERE gameId = ? AND userId = ?
+    `,
+    [
+      req.params["gameId"],
+      user.userId
+    ]
   );
+
+  const info = result as any;
+
+  if (info.affectedRows === 0) {
+    return res.status(403).json({
+      message: "You can only delete your own review"
+    });
+  }
+
+  return res.status(200).json({
+    message: "Review deleted successfully"
+  });
 };
+
+
