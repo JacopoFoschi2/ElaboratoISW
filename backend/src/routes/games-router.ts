@@ -10,6 +10,7 @@ router.get('/api/games/:genreId', gamesController.listGamesOfGenre);
 router.get('/api/games/as-you-type/:partialName', gamesController.listGamesAsYouType);
 router.get('/api/games/matching/:partialName', gamesController.listGamesMatching);
 router.get('/api/game/:gameId', gamesController.getGame);
+router.get('/api/game/all/:gameId', gamesController.getCompleteGame);
 router.put('/api/games/:gameId', gamesController.updateGame);
 router.delete('/api/games/:gameId', gamesController.deleteGame);
 

@@ -96,6 +96,14 @@ export const getGame = async (req: Request, res: Response) => {
   res.status(200).json(game);
 };
 
+export const getCompleteGame = async (req: Request, res: Response) => {
+  const [game] = await connection.execute(
+    `SELECT * FROM games WHERE gameId = ?`,
+    [req.params["gameId"]]
+  );
+  res.status(200).json(game);
+};
+
 export const updateGame = async (req: Request, res: Response) => {
   const user = await requireUser(req, res, ["master"]);
   if (!user) {
