@@ -8,6 +8,7 @@ import {
 import { User } from "../types/user";
 import { connection } from "../utils/db-connection";
 import { handleExists, requireUser, requireProfileAccess } from "../utils/query-handling";
+import { getBaseAssetsPath, readImage } from "../utils/img";
 
 const checkUsername = async (username: string | undefined) => {
   const [users] = await connection.execute(
@@ -45,15 +46,19 @@ export const createUser = async (req: Request, res: Response) => {
 
   // Create the password hash to avoid storing it in plain text
   const passwordHash = await bcrypt.hash(password, 10);
-
+  const userIconName = "def_user.jpg";
+  const assetsPath = getBaseAssetsPath("src/assets");
+  const userIconBin = readImage(assetsPath, userIconName);
   // Insert the user into the database
   await connection.execute(
-    `INSERT INTO users (userUsername, userEmail, userPassword) 
-    VALUES (?, ?, ?)`,
+    `INSERT INTO users (userUsername, userEmail, userPassword, userIconBin, userIconName) 
+    VALUES (?, ?, ?, ?, ?)`,
     [
       username,
       req.body["email"],
       passwordHash,
+      userIconBin,
+      userIconName,
     ]
   );
 
