@@ -15,6 +15,8 @@ export const useAuthStore = defineStore('auth', {
     user: null as User | null,
     avatarUrl: null as string | null,
     isLoggedIn: false,
+    categories: [] as { categoryId: number; categoryName: string }[],
+    categoriesLoaded: false,
   }),
 
   getters: {
@@ -93,5 +95,22 @@ export const useAuthStore = defineStore('auth', {
       this.token = null;
       this.isLoggedIn = false;
     },
+
+    async fetchCategories(force = false) {
+      if (this.categoriesLoaded && !force) return;
+
+      try {
+        const res = await fetch('/api/categories');
+
+        if (!res.ok) throw new Error('Failed to fetch categories');
+
+        this.categories = await res.json();
+        this.categoriesLoaded = true;
+      } catch (err) {
+        console.error('Error fetching categories', err);
+        this.categories = [];
+      }
+    },
   },
+
 });

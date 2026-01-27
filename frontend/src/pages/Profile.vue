@@ -79,7 +79,7 @@ const updateProfile = async () => {
     };
 
     if (selectedFile.value) {
-      const resized = await resizeFileToBlob(selectedFile.value, 300, 300);
+      const resized = await resizeFileToBlob(selectedFile.value, 160, 160);
       const base64 = await blobToBase64(resized);
       payload.iconBin = base64.split(',')[1];
       payload.iconName = selectedFile.value.name;
@@ -277,11 +277,11 @@ input[type="text"] {
 
 .alert-success {
   background: style-variables.$default-text-color;
-  color: #2e7d32;
+  color: black;
 }
 
 .alert-danger {
-  background: #ffebee;
+  background: style-variables.$default-text-color;
   color: style-variables.$error-color;
 }
 </style>

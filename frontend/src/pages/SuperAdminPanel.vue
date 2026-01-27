@@ -4,7 +4,7 @@
       <router-link to="/super-admin/users">Users</router-link>
       <router-link to="/super-admin/games">Games</router-link>
       <router-link to="/super-admin/categories">Categories</router-link>
-      <router-link to="/super-admin/forums">Forums</router-link>
+      <router-link to="/super-admin/games-categories">Games Categories</router-link>
     </aside>
 
     <main class="admin-content">

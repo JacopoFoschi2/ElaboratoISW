@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useAuthStore } from '../stores/auth';
+import { storeToRefs } from 'pinia';
+
+const authStore = useAuthStore();
+const { categories } = storeToRefs(authStore);
 
 interface Category {
     categoryId: number;
     categoryName: string;
 }
 
-const categories = ref<Category[]>([]);
+
 const loading = ref(false);
 const error = ref<string | null>(null);
 
@@ -18,20 +23,20 @@ const form = ref({
     categoryName: '',
 });
 
-const fetchCategories = async () => {
-    loading.value = true;
-    error.value = null;
+    // const fetchCategories = async () => {
+    //     loading.value = true;
+    //     error.value = null;
 
-    try {
-        const res = await fetch('/api/categories');
-        if (!res.ok) throw new Error();
-        categories.value = await res.json();
-    } catch {
-        error.value = 'Error loading categories';
-    } finally {
-        loading.value = false;
-    }
-};
+    //     try {
+    //         const res = await fetch('/api/categories');
+    //         if (!res.ok) throw new Error();
+    //         categories.value = await res.json();
+    //     } catch {
+    //         error.value = 'Error loading categories';
+    //     } finally {
+    //         loading.value = false;
+    //     }
+    // };
 
 const openCreate = () => {
     showForm.value = true;
@@ -78,7 +83,7 @@ const saveCategory = async () => {
         );
 
         showForm.value = false;
-        fetchCategories();
+        await authStore.fetchCategories(true);
     } catch (err) {
         console.error('Error saving category:', err);
     }
@@ -102,14 +107,16 @@ const deleteCategory = async (categoryId: number) => {
             return;
         }
 
-        fetchCategories();
+        await authStore.fetchCategories(true);
     } catch (err) {
         console.error('Error deleting category:', err);
     }
 };
 
 
-onMounted(fetchCategories);
+onMounted(async () => {
+    await authStore.fetchCategories(true);
+});
 </script>
 
 <template>
@@ -217,7 +224,7 @@ button.primary {
 }
 
 button.danger {
-    background-color: #e53935;
+    background-color: style-variables.$error-color;
     color: style-variables.$default-text-color;
 }
 

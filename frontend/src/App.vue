@@ -13,10 +13,10 @@ const { user, isLoggedIn } = storeToRefs(authStore);
 const avatarSrc = computed(() => authStore.userAvatar);
 
 const showSignIn = ref(false);
-const categories = ref<any[]>([]);
 const loginEmail = ref('');
 const loginPassword = ref('');
 const errorMessage = ref('');
+const { categories } = storeToRefs(authStore)
 
 const currentUserId = computed(() => user.value?.userId ?? null);
 
@@ -63,36 +63,10 @@ async function handleLogout() {
     }
 }
 
-async function fetchCategories() {
-    try {
-        const response = await fetch('/api/categories');
-        const catData = await response.json();
-
-        categories.value = catData.map((cat: any) => ({
-            ...cat,
-            games: [],
-        }));
-
-        for (const category of categories.value) {
-            try {
-                const gamesResponse = await fetch(`/api/games/${category.categoryId}`);
-                const gamesData = await gamesResponse.json();
-                category.games = gamesData.slice(0, 5);
-            } catch (err) {
-                console.error(
-                    `Error fetching games for category ${category.categoryId}`,
-                    err
-                );
-            }
-        }
-    } catch (error) {
-        console.error('Error fetching categories', error);
-    }
-}
 
 onMounted(async () => {
     await authStore.loadUser();
-    fetchCategories();
+    await authStore.fetchCategories(true);
 });
 </script>
 
@@ -154,8 +128,6 @@ onMounted(async () => {
                     <button type="submit">Enter</button>
                     <p>Don't have an account? <router-link to="/registration"
                             @click="toggleSignIn">Register</router-link></p>
-                    <p>Forgot your password? <router-link to="/reset-password" @click="toggleSignIn">Reset
-                            Password</router-link></p>
                 </form>
             </div>
         </div>

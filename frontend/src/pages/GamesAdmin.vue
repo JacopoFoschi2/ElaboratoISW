@@ -233,7 +233,7 @@ button.primary {
 }
 
 button.danger {
-    background-color: #e53935;
+    background-color: style-variables.$error-color;
     color: style-variables.$default-text-color;
 }
 

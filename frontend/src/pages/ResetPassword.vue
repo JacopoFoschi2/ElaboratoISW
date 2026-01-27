@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import AuthenticationService from '../services/AuthenticationService';
-
+import { useRouter } from 'vue-router';
+const router = useRouter();
 interface ChangePasswordPayload {
     currentPassword: string;
     password: string;
@@ -51,7 +52,7 @@ const handleChangePassword = async (): Promise<void> => {
         currentPassword.value = '';
         newPassword.value = '';
         confirmPassword.value = '';
-        
+        router.push('/');
 
     } catch (err: any) {
         isError.value = true;

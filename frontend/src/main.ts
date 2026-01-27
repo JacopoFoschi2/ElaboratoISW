@@ -15,7 +15,7 @@ import BestGames from "./pages/BestGames.vue";
 import UsersAdmin from "./pages/UsersAdmin.vue";
 import GamesAdmin from "./pages/GamesAdmin.vue";
 import CategoriesAdmin from "./pages/CategoriesAdmin.vue";
-import ForumsAdmin from "./pages/ForumsAdmin.vue";
+import GamesCategoriesAdmin from "./pages/GamesCategoriesAdmin.vue";
 import GameDetail from "./pages/GameDetail.vue";
 import CategoryGames from "./pages/CategoryGames.vue";
 import RecentlyReleased from "./pages/RecentlyReleased.vue";
@@ -77,7 +77,7 @@ const router = createRouter({
                 { path: 'users', component: UsersAdmin },
                 { path: 'games', component: GamesAdmin },
                 { path: 'categories', component: CategoriesAdmin },
-                { path: 'forums', component: ForumsAdmin },
+                { path: 'games-categories', component: GamesCategoriesAdmin },
             ]
         },
         {
