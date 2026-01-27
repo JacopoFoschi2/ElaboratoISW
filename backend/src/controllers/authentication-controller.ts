@@ -45,15 +45,18 @@ export const createUser = async (req: Request, res: Response) => {
 
   // Create the password hash to avoid storing it in plain text
   const passwordHash = await bcrypt.hash(password, 10);
-
+  const userIconName = "def_user.jpg";
+  const userIconBin = readImage(assetsPath, userImages, user.userIconName);
   // Insert the user into the database
   await connection.execute(
-    `INSERT INTO users (userUsername, userEmail, userPassword) 
-    VALUES (?, ?, ?)`,
+    `INSERT INTO users (userUsername, userEmail, userPassword, userIconBin, userIconName) 
+    VALUES (?, ?, ?, ?, ?)`,
     [
       username,
       req.body["email"],
       passwordHash,
+      userIconBin,
+      userIconName,
     ]
   );
 
