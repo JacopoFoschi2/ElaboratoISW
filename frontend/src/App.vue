@@ -397,8 +397,8 @@ body.sign-in-background {
     width: 100%;
 }
 
-.sign-in-container router-link {
-    color: style-variables.$button-and-border-footer-color;
+.sign-in-container a {
+    color: style-variables.$default-text-color;
     text-decoration: underline;
 }
 
