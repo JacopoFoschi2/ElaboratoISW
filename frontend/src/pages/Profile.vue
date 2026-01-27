@@ -241,11 +241,11 @@ input[type="text"] {
 }
 
 .input-error {
-  border-color: red;
+  border-color: style-variables.$error-color;
 }
 
 .error-text {
-  color: red;
+  color: style-variables.$error-color;
   font-size: 0.85rem;
   margin-top: 5px;
 }
@@ -276,12 +276,12 @@ input[type="text"] {
 }
 
 .alert-success {
-  background: #e8f5e9;
+  background: style-variables.$default-text-color;
   color: #2e7d32;
 }
 
 .alert-danger {
   background: #ffebee;
-  color: #c62828;
+  color: style-variables.$error-color;
 }
 </style>

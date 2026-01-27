@@ -516,7 +516,7 @@ onUnmounted(() => {
 
             .delete-warning {
                 margin-top: 10px;
-                color: red;
+                color: style-variables.$error-color;
                 font-weight: bold;
             }
         }

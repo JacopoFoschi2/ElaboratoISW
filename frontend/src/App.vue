@@ -150,7 +150,7 @@ onMounted(async () => {
                 <form @submit.prevent="handleLogin">
                     <input v-model="loginEmail" type="text" placeholder="insert your email..." required />
                     <input v-model="loginPassword" type="password" placeholder="insert your password..." required />
-                    <p v-if="errorMessage" class="error-message" style="color: red;">{{ errorMessage }}</p>
+                    <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
                     <button type="submit">Enter</button>
                     <p>Don't have an account? <router-link to="/registration"
                             @click="toggleSignIn">Register</router-link></p>
@@ -355,7 +355,7 @@ body.sign-in-background {
     max-width: 400px;
 
     .error-message {
-        color: red;
+        color: style-variables.$error-color;
         font-size: 0.9rem;
         width: 100%;
         margin-bottom: 1rem;

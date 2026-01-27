@@ -163,7 +163,7 @@ button {
 }
 
 .error-msg {
-    color: red;
+    color: style-variables.$error-color;
     margin-top: 15px;
     font-weight: bold;
 }
