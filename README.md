@@ -1,7 +1,5 @@
 # PCMASTERRACEDB
 
-Node.js version: v22.19.0
-
 To consult the complete report of the project please read [report](pcmasterracedb_report.pdf)
 
 ## [Desing in figma](https://www.figma.com/design/i4GJXy1o7o1REjxNKhDrOZ/Project-PcMasterRaceDB?node-id=0-1&t=7vQWqPAiKoI57x35-1)
@@ -21,8 +19,8 @@ To consult the complete report of the project please read [report](pcmasterraced
   - /api/auth/register   Creates new user
 - Read:
   - /api/auth/profile    Gets user profile from current session, doesn't get complete profile
-  - /api/users/exists/username/:username    Checks if username exists
-  - /api/users/exists/email/:email    Checks if email exists
+  - /api/users/exists/username-exists/:username    Checks if username exists
+  - /api/users/exists/email-exists/:email    Checks if email exists
 - Update:
   - /api/auth/change-password    Changes password of currently log user after checking if it's really them by their current password
 
@@ -49,7 +47,8 @@ To consult the complete report of the project please read [report](pcmasterraced
   - /api/games/:genreId    Lists all games of genre
   - /api/games/as-you-type/:partialName    Lists partial list of games matching with what you're typing
   - /api/games/matching/:partialName    List all the games matching with what you searched
-  - /api/game/:gameId    Gets details of single game
+  - /api/game/:gameId    Gets relevant details of single game
+  - /api/game/all/:gameId    Returns every details of game
 - Update:
   - /api/games/:gameId    Updates info of game, superadmin only
 - Delete:
