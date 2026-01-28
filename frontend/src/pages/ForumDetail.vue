@@ -482,6 +482,7 @@ h2 {
             .comment-text {
                 font-size: 1.5rem;
                 color: style-variables.$default-text-color;
+                width: 100%;
                 margin-bottom: 5px;
             }
 

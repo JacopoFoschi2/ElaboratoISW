@@ -57,7 +57,7 @@ const deleteUser = async (user: User) => {
 
     users.value = users.value.filter(u => u.userId !== user.userId);
   } catch {
-    alert('Error deleting user.');
+    console.error('Error deleting user.');
   } finally {
     deletingId.value = null;
   }
