@@ -5,28 +5,29 @@ import { useRouter } from 'vue-router';
 const props = defineProps<{ id?: number }>();
 const router = useRouter();
 
-const isEdit = !!props.id;
+const isEdit = props.id !== undefined;
 
 interface GameForm {
-    gameName: string;
-    gameAlternateName: string;
-    gameDesc: string;
-    gameReleaseDate: string;
-    gameSteamLink: string;
-    gameEpicLink: string;
-    gameGoGLink: string;
+  gameName: string;
+  gameAlternateName: string;
+  gameDesc: string;
+  gameReleaseDate: string;
+  gameSteamLink: string;
+  gameEpicLink: string;
+  gameGoGLink: string;
 }
 
 const form = ref<GameForm>({
-    gameName: '',
-    gameAlternateName: '',
-    gameDesc: '',
-    gameReleaseDate: '',
-    gameSteamLink: '',
-    gameEpicLink: '',
-    gameGoGLink: '',
+  gameName: '',
+  gameAlternateName: '',
+  gameDesc: '',
+  gameReleaseDate: '',
+  gameSteamLink: '',
+  gameEpicLink: '',
+  gameGoGLink: '',
 });
 
+/* ================= IMMAGINI ================= */
 
 const createdUrls: string[] = [];
 
@@ -37,94 +38,110 @@ const bigBannerFile = ref<File | null>(null);
 const gameCoverPreview = ref('');
 const gameCoverFile = ref<File | null>(null);
 
-
 const bufferToUrl = (buffer?: { data: number[] }) => {
-    if (!buffer?.data) return '';
-    const blob = new Blob([new Uint8Array(buffer.data)], { type: 'image/jpeg' });
-    const url = URL.createObjectURL(blob);
-    createdUrls.push(url);
-    return url;
+  if (!buffer?.data) return '';
+  const blob = new Blob([new Uint8Array(buffer.data)], { type: 'image/jpeg' });
+  const url = URL.createObjectURL(blob);
+  createdUrls.push(url);
+  return url;
 };
 
+/* ================= LOAD GAME (EDIT) ================= */
 
 const loadGame = async () => {
-    if (!isEdit) return;
+  if (!isEdit) return;
 
-    const res = await fetch(`/api/game/all/${props.id}`);
-    const [game] = await res.json();
+  const res = await fetch(`/api/game/all/${props.id}`);
+  if (!res.ok) return;
 
-    form.value = {
-        gameName: game.gameName,
-        gameAlternateName: game.gameAlternateName ?? '',
-        gameDesc: game.gameDesc ?? '',
-        gameReleaseDate: game.gameReleaseDate?.split('T')[0] ?? '',
-        gameSteamLink: game.gameSteamLink ?? '',
-        gameEpicLink: game.gameEpicLink ?? '',
-        gameGoGLink: game.gameGoGLink ?? '',
-    };
+  const [game] = await res.json();
 
-    smallBannerPreview.value = bufferToUrl(game.gameSmallBannerBin);
-    bigBannerPreview.value = bufferToUrl(game.gameBigBannerBin);
-    gameCoverPreview.value = bufferToUrl(game.gameCoverBin);
+  form.value = {
+    gameName: game.gameName ?? '',
+    gameAlternateName: game.gameAlternateName ?? '',
+    gameDesc: game.gameDesc ?? '',
+    gameReleaseDate: game.gameReleaseDate?.split('T')[0] ?? '',
+    gameSteamLink: game.gameSteamLink ?? '',
+    gameEpicLink: game.gameEpicLink ?? '',
+    gameGoGLink: game.gameGoGLink ?? '',
+  };
+
+  smallBannerPreview.value = bufferToUrl(game.gameSmallBannerBin);
+  bigBannerPreview.value = bufferToUrl(game.gameBigBannerBin);
+  gameCoverPreview.value = bufferToUrl(game.gameCoverBin);
 };
 
+/* ================= IMAGE INPUT ================= */
 
 const onImageChange = (e: Event, type: 'small' | 'big' | 'cover') => {
-    const file = (e.target as HTMLInputElement).files?.[0];
-    if (!file) return;
+  const file = (e.target as HTMLInputElement).files?.[0];
+  if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-        if (type === 'small') {
-            smallBannerPreview.value = reader.result as string;
-            smallBannerFile.value = file;
-        } else if (type === 'big') {
-            bigBannerPreview.value = reader.result as string;
-            bigBannerFile.value = file;
-        } else {
-            gameCoverPreview.value = reader.result as string;
-            gameCoverFile.value = file;
-        }
-    };
-    reader.readAsDataURL(file);
+  const reader = new FileReader();
+  reader.onload = () => {
+    if (type === 'small') {
+      smallBannerPreview.value = reader.result as string;
+      smallBannerFile.value = file;
+    } else if (type === 'big') {
+      bigBannerPreview.value = reader.result as string;
+      bigBannerFile.value = file;
+    } else {
+      gameCoverPreview.value = reader.result as string;
+      gameCoverFile.value = file;
+    }
+  };
+  reader.readAsDataURL(file);
 };
 
+/* ================= SUBMIT ================= */
 
 const submit = async () => {
-    const payload = new FormData();
+  const formData = new FormData();
 
-    Object.entries(form.value).forEach(([key, value]) =>
-        payload.append(key, value)
-    );
+  formData.append('gameName', form.value.gameName);
+  formData.append('gameAlternateName', form.value.gameAlternateName);
+  formData.append('gameDesc', form.value.gameDesc);
+  formData.append('gameReleaseDate', form.value.gameReleaseDate);
+  formData.append('gameSteamLink', form.value.gameSteamLink);
+  formData.append('gameEpicLink', form.value.gameEpicLink);
+  formData.append('gameGoGLink', form.value.gameGoGLink);
 
-    if (smallBannerFile.value)
-        payload.append('gameSmallBanner', smallBannerFile.value);
+  if (smallBannerFile.value) {
+    formData.append('gameSmallBanner', smallBannerFile.value);
+  }
 
-    if (bigBannerFile.value)
-        payload.append('gameBigBanner', bigBannerFile.value);
+  if (bigBannerFile.value) {
+    formData.append('gameBigBanner', bigBannerFile.value);
+  }
+  
+  if (gameCoverFile.value) {
+    formData.append('gameCover', gameCoverFile.value);
+  }
 
-    const url = isEdit
-        ? `/api/games/${props.id}`
-        : '/api/games';
+  const url = isEdit
+    ? `/api/games/${props.id}`
+    : '/api/games';
 
-    const method = isEdit ? 'PUT' : 'POST';
+  const method = isEdit ? 'PUT' : 'POST';
 
-    await fetch(url, {
-        method,
-        body: payload,
-    });
+  const res = await fetch(url, {
+    method,
+    body: formData,
+  });
 
+  if (res.ok) {
     router.push('/super-admin/games');
+  }
 };
+
+/* ================= LIFECYCLE ================= */
 
 onMounted(loadGame);
 
 onUnmounted(() => {
-    createdUrls.forEach(URL.revokeObjectURL);
+  createdUrls.forEach(url => URL.revokeObjectURL(url));
 });
 </script>
-
-
 <template>
     <div class="game-form">
         <h1>{{ isEdit ? 'Edit Game' : 'New Game' }}</h1>

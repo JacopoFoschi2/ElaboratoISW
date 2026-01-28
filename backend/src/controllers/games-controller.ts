@@ -2,34 +2,63 @@ import type { Request, Response } from "express";
 import { connection } from "../utils/db-connection";
 import { requireUser } from "../utils/query-handling";
 
+const getFile = (
+  files: any,
+  field: string
+): { buffer: Buffer; name: string } | null => {
+  const file = files?.[field]?.[0];
+  if (!file) return null;
+  return {
+    buffer: file.buffer,
+    name: file.originalname,
+  };
+};
+
+
 export const createGame = async (req: Request, res: Response) => {
   const user = await requireUser(req, res, ["master"]);
-  if (!user) {
-    return;
-  }
+  if (!user) return;
+
+  const files = req.files as any;
+
+  const smallBanner = getFile(files, "gameSmallBanner");
+  const bigBanner = getFile(files, "gameBigBanner");
+  const cover = getFile(files, "gameCover");
 
   await connection.execute(
-    `INSERT INTO games (gameName, gameDesc, gameSteamLink,
-     gameEpicLink, gameGoGLink, gameReleaseDate, gameSmallBannerName, 
-     gameSmallBannerBin, gameCoverName, gameCoverBin, gameBigBannerName, gameBigBannerBin) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO games (
+      gameName,
+      gameDesc,
+      gameSteamLink,
+      gameEpicLink,
+      gameGoGLink,
+      gameReleaseDate,
+      gameSmallBannerName,
+      gameSmallBannerBin,
+      gameCoverName,
+      gameCoverBin,
+      gameBigBannerName,
+      gameBigBannerBin
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
-      req.body["gameName"],
-      req.body["gameDesc"],
-      req.body["gameSteamLink"],
-      req.body["gameEpicLink"],
-      req.body["gameGoGLink"],
-      req.body["gameReleaseDate"],
-      req.body["gameSmallBannerName"],
-      req.body["gameSmallBannerBin"],
-      req.body["gameCoverName"],
-      req.body["gameCoverBin"],
-      req.body["gameBigBannerName"],
-      req.body["gameBigBannerBin"],
+      req.body.gameName,
+      req.body.gameDesc,
+      req.body.gameSteamLink,
+      req.body.gameEpicLink,
+      req.body.gameGoGLink,
+      req.body.gameReleaseDate,
+      smallBanner?.name ?? null,
+      smallBanner?.buffer ?? null,
+      cover?.name ?? null,
+      cover?.buffer ?? null,
+      bigBanner?.name ?? null,
+      bigBanner?.buffer ?? null,
     ]
   );
+
   res.status(201).send("Game created successfully");
 };
+
 
 export const listGamesOfGenre = async (req: Request, res: Response) => {
   const [games] = await connection.execute(
@@ -106,33 +135,49 @@ export const getCompleteGame = async (req: Request, res: Response) => {
 
 export const updateGame = async (req: Request, res: Response) => {
   const user = await requireUser(req, res, ["master"]);
-  if (!user) {
-    return;
-  }
+  if (!user) return;
+
+  const files = req.files as any;
+
+  const smallBanner = getFile(files, "gameSmallBanner");
+  const bigBanner = getFile(files, "gameBigBanner");
+  const cover = getFile(files, "gameCover");
 
   await connection.execute(
-    `UPDATE games SET gameName = ?, gameDesc = ?, gameSteamLink = ?, 
-    gameEpicLink = ?, gameGoGLink = ?, gameReleaseDate = ?, gameSmallBannerName = ?, 
-    gameSmallBannerBin = ?, gameCoverName = ?, gameCoverBin = ?, gameBigBannerName = ?, gameBigBannerBin = ? 
+    `UPDATE games SET
+      gameName = ?,
+      gameDesc = ?,
+      gameSteamLink = ?,
+      gameEpicLink = ?,
+      gameGoGLink = ?,
+      gameReleaseDate = ?,
+      gameSmallBannerName = COALESCE(?, gameSmallBannerName),
+      gameSmallBannerBin = COALESCE(?, gameSmallBannerBin),
+      gameCoverName = COALESCE(?, gameCoverName),
+      gameCoverBin = COALESCE(?, gameCoverBin),
+      gameBigBannerName = COALESCE(?, gameBigBannerName),
+      gameBigBannerBin = COALESCE(?, gameBigBannerBin)
     WHERE gameId = ?`,
     [
-      req.body["gameName"],
-      req.body["gameDesc"],
-      req.body["gameSteamLink"],
-      req.body["gameEpicLink"],
-      req.body["gameGoGLink"],
-      req.body["gameReleaseDate"],
-      req.body["gameSmallBannerName"],
-      req.body["gameSmallBannerBin"],
-      req.body["gameCoverName"],
-      req.body["gameCoverBin"],
-      req.body["gameBigBannerName"],
-      req.body["gameBigBannerBin"],
+      req.body.gameName,
+      req.body.gameDesc,
+      req.body.gameSteamLink,
+      req.body.gameEpicLink,
+      req.body.gameGoGLink,
+      req.body.gameReleaseDate,
+      smallBanner?.name ?? null,
+      smallBanner?.buffer ?? null,
+      cover?.name ?? null,
+      cover?.buffer ?? null,
+      bigBanner?.name ?? null,
+      bigBanner?.buffer ?? null,
       req.params["gameId"],
     ]
   );
+
   res.status(200).send("Game updated successfully");
 };
+
 
 export const deleteGame = async (req: Request, res: Response) => {
   const user = await requireUser(req, res, ["master"]);
