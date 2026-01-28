@@ -25,6 +25,7 @@ import OwnedGames from "./pages/OwnedGames.vue";
 import ForumDetail from "./pages/ForumDetail.vue";
 import Registration from "./pages/Registration.vue";
 import ResetPassword from "./pages/ResetPassword.vue";
+import GameAdminForm from "./pages/GameAdminForm.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -76,6 +77,10 @@ const router = createRouter({
             children: [
                 { path: 'users', component: UsersAdmin },
                 { path: 'games', component: GamesAdmin },
+                {path: 'games/new', component: GameAdminForm},
+                {path: 'games/edit/:id', component: GameAdminForm,  
+                    props: route => ({ id: Number(route.params.id) })
+                },
                 { path: 'categories', component: CategoriesAdmin },
                 { path: 'games-categories', component: GamesCategoriesAdmin },
             ]
@@ -104,11 +109,11 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     const auth = useAuthStore();
 
-    if (to.meta.requiresAuth && !authStore.user) {
-        return next('/login');
+    if (to.meta.requiresAuth && !auth.user) {
+        return next('/');
     }
 
-    if (to.meta.role && authStore.user?.userRole !== to.meta.role) {
+    if (to.meta.role && auth.user?.userRole !== to.meta.role) {
         return next('/');
     }
 

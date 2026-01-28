@@ -1,171 +1,81 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
 interface Game {
-    gameId: number;
-    gameName: string;
-    description?: string;
-    releaseDate?: string;
-    rating?: number;
+  gameId: number;
+  gameName: string;
 }
+
+const router = useRouter();
 
 const games = ref<Game[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
 
-const showForm = ref(false);
-const isEditing = ref(false);
-const selectedGameId = ref<number | null>(null);
-
-const originalGame = ref<any | null>(null);
-
-
-const form = ref({
-    gameName: '',
-    gameDesc: '',
-    gameReleaseDate: '',
-    gameSteamLink: '',
-    gameEpicLink: '',
-    gameGoGLink: '',
-});
-
 const fetchGames = async () => {
-    loading.value = true;
-    error.value = null;
+  loading.value = true;
+  error.value = null;
 
-    try {
-        const res = await fetch('/api/games/release');
-        if (!res.ok) throw new Error('Failed to load games');
-        games.value = await res.json();
-    } catch (err) {
-        error.value = 'Error loading games';
-    } finally {
-        loading.value = false;
-    }
+  try {
+    const res = await fetch('/api/games/release');
+    if (!res.ok) throw new Error();
+    games.value = await res.json();
+  } catch {
+    error.value = 'Error loading games';
+  } finally {
+    loading.value = false;
+  }
 };
 
-
-const openCreate = () => {
-    showForm.value = true;
-    isEditing.value = false;
-    selectedGameId.value = null;
-    form.value = {
-        gameName: '',
-        gameDesc: '',
-        gameReleaseDate: '',
-        gameSteamLink: '',
-        gameEpicLink: '',
-        gameGoGLink: '',
-    };
+const goToCreate = () => {
+  router.push('/super-admin/games/new');
 };
 
-const openEdit = async (game: Game) => {
-  showForm.value = true;
-  isEditing.value = true;
-  selectedGameId.value = game.gameId;
-
-  const res = await fetch(`/api/games/${game.gameId}`);
-  const data = await res.json();
-
-  form.value = {
-    gameName: data.gameName,
-    gameDesc: data.gameDesc ?? '',
-    gameReleaseDate: data.gameReleaseDate?.split('T')[0] ?? '',
-    gameSteamLink: data.gameSteamLink ?? '',
-    gameEpicLink: data.gameEpicLink ?? '',
-    gameGoGLink: data.gameGoGLink ?? '',
-  };
+const goToEdit = (id: number) => {
+  router.push(`/super-admin/games/edit/${id}`);
 };
 
-
-
-const saveGame = async () => {
-  const url = isEditing.value
-    ? `/api/games/${selectedGameId.value}`
-    : '/api/games';
-
-  const method = isEditing.value ? 'PUT' : 'POST';
-
-  await fetch(url, {
-    method,
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(form.value),
-  });
-
-  showForm.value = false;
+const deleteGame = async (id: number) => {
+  await fetch(`/api/games/${id}`, { method: 'DELETE' });
   fetchGames();
 };
-
-
-
-const deleteGame = async (gameId: number) => {
-    try {
-        const res = await fetch(`/api/games/${gameId}`, {
-            method: 'DELETE',
-        });
-
-        if (!res.ok) return;
-
-        fetchGames();
-    } catch {
-        console.error('Error deleting game');
-    }
-};
-
 
 onMounted(fetchGames);
 </script>
 
+
 <template>
-    <div class="games-admin">
-        <div class="header">
-            <h1>Games Admin</h1>
-            <button class="primary" @click="openCreate">+ New Game</button>
-        </div>
-
-        <div v-if="loading" class="loader">Loading...</div>
-        <div v-if="error" class="error">{{ error }}</div>
-
-        <table v-if="games.length">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                <tr v-for="game in games" :key="game.gameId">
-                    <td>{{ game.gameName }}</td>
-                    <td class="actions">
-                        <button @click="openEdit(game)">Edit</button>
-                        <button class="danger" @click="deleteGame(game.gameId)">Delete</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div v-if="showForm" class="modal-backdrop">
-            <div class="edit-modal">
-                <h2>{{ isEditing ? 'Edit Game' : 'New Game' }}</h2>
-
-                <input v-model="form.gameName" placeholder="Game name" />
-                <textarea v-model="form.gameDesc" placeholder="Description" />
-                <input type="date" v-model="form.gameReleaseDate" />
-                <input v-model="form.gameSteamLink" placeholder="Steam link" />
-                <input v-model="form.gameEpicLink" placeholder="Epic link" />
-                <input v-model="form.gameGoGLink" placeholder="GoG link" />
-
-                <div class="modal-actions">
-                    <button @click="showForm = false">Cancel</button>
-                    <button v-if="showForm" class="primary" :disabled="!form.gameName.trim()" @click="saveGame">
-                        Save
-                    </button>
-                </div>
-            </div>
-        </div>
+  <div class="games-admin">
+    <div class="header">
+      <h1>Games Admin</h1>
+      <button class="primary" @click="goToCreate">+ New Game</button>
     </div>
+
+    <div v-if="loading" class="loader">Loading...</div>
+    <div v-if="error" class="error">{{ error }}</div>
+
+    <table v-if="games.length">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr v-for="game in games" :key="game.gameId">
+          <td>{{ game.gameName }}</td>
+          <td class="actions">
+            <button @click="goToEdit(game.gameId)">Edit</button>
+            <button class="danger" @click="deleteGame(game.gameId)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
+
 
 <style scoped lang="scss">
 @use "../styles/style-variables.scss" as style-variables;

@@ -180,7 +180,7 @@ const toggleOwned = async () => {
     if (res.ok) {
         isOwned.value = !isOwned.value;
 
-        // se diventa owned → rimuovi da wishlist
+        // if it becomes owned: remove from wishlist
         if (isOwned.value && isWishlisted.value) {
             await fetch(`/api/wishlist/${props.id}`, {
                 method: 'DELETE',
@@ -204,7 +204,7 @@ const toggleWishlist = async () => {
     if (res.ok) {
         isWishlisted.value = !isWishlisted.value;
 
-        // se entra in wishlist → rimuovi da owned
+        // if it enters wishlist: remove from owned
         if (isWishlisted.value && isOwned.value) {
             await fetch(`/api/owned/${props.id}`, {
                 method: 'DELETE',
